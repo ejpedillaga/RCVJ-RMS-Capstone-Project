@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>  
+    <style>
+        /* Add your custom styles here */
+        .addpartners-dialog-box {
+            width: 1100px;
+            height: 853px;
+            border-radius: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            
+            z-index: 1000; /* Ensure it's on top of other content */
+        }
+        .addpartners-back-button {
+            font-size: 24px;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+        .addpartners-upload-logo {
+            width: 200px;
+            height: 200px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .addpartners-form-group {
+            margin-bottom: 20px;
+            padding-right: 20px;
+        }
+        .addpartners-form-group label {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .addpartners-form-group input, .addpartners-form-group textarea {
+            width: 100%;
+            height: 59px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 24px;
+            box-sizing: border-box;
+
+        }
+        .addpartners-form-group textarea {
+            height: 268px;
+            resize: none;
+        }
+        .addpartners-save-button {
+            background-color: #ffa500;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+        }
+
+        .inline-group {
+            display: flex;
+            flex-direction: row;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h3>RCVJ Inc.</h3>
+            <button class="toggle-btn" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <a href="employeeHome.php"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+        <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
+        <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
+        <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
+        <a href="partners.php" class="active" style="color: #EF9B50;"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
+    </div>
+
+    <div id="header">
+        <img id="logo" src="img/logo.png" alt="logo">
+        <div class="profile">
+            <img src="img/pfp.png" alt="Profile Picture">
+            <span class="name">Employee</span>
+        </div>
+    </div>
+
+    <div id="main">
+        <h2 style="font-size: 36px;">Partners</h2>
+        <div class="filter-container">
+            <div class="search-wrapper">
+                <i class="fas fa-magnifying-glass search-icon"></i>
+                <input type="text" class="search-partners" placeholder="Search Partners">
+            </div>
+            <select class="sort-by">
+                <option>Sort by: Date Added</option>
+                <option>Sort by: Company Name</option>
+                <option>Sort by: Job Title</option>
+            </select>
+            <select class="order-sort">
+                <option>Ascending</option>
+                <option>Descending</option>
+            </select>
+            <button class="add-partners-button" onclick="showDialog()">Add Partners</button>
+        </div>
+
+        <div>
+            <table>
+                <thead>
+                    <tr class="th1">
+                        <th>Logo</th>
+                        <th>Company Name</th>
+                        <th>Date Added</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+
+                    <tr class="spaceunder">
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="tr1">
+                        <td><img style="height: 100px; width: 100px;" src="img/walter.png" alt="Walter Supermarket Logo"></td>
+                        <td>WalterMart Supermarket - <br>Dasmarinas</td>
+                        <td>07/07/2024</td>
+                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;"></i></td>
+                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;"></i></td>
+                    </tr>
+
+                    <tr class="spaceunder">
+                        <td></td>
+                    </tr>
+
+                    <tr class="tr1">
+                        <td><img style="height: 100px; width: 100px;" src="img/lpu.jpg" alt="LPU Logo"></td>
+                        <td>Lyceum of the Philippines University - <br>Cavite</td>
+                        <td>07/07/2024</td>
+                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;"></i></td>
+                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;"></i></td>
+                    </tr>
+
+                    <tr class="spaceunder">
+                        <td></td>
+                    </tr>
+
+                    <tr class="tr1">
+                        <td><img style="height: 100px; width: 100px;" src="img/scipark.png" alt="SciPark Logo"></td>
+                        <td>SciPark - <br>Dasmarinas</td>
+                        <td>07/07/2024</td>
+                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;"></i></td>
+                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Dialog Box Partners-->
+    <div class="addpartners-dialog-box" id="dialogBox">
+        <div class="addpartners-back-button" onclick="hideDialog()">← Back</div>
+
+        
+        <div class="addpartners-form-group addpartners-upload-logo">
+            <div>Upload Logo</div>
+        </div>
+
+        <div class="addpartners-form-group">
+            <label for="addpartners-company-name">Company Name</label>
+            <input type="text" id="addpartners-company-name" style="width: 609px;">
+        </div>
+
+        <div class="inline-group">
+            <div class="addpartners-form-group">
+                <label for="addpartners-industry">Industry</label>
+                <input type="text" id="addpartners-industry" style="width: 247px;">
+            </div>
+            <div class="addpartners-form-group">
+                <label for="addpartners-location">Location</label>
+                <input type="text" id="addpartners-location" style="width: 315px;">
+            </div>
+        </div>
+
+        <div class="addpartners-form-group">
+            <label for="addpartners-company-description">Company Description</label>
+            <textarea id="addpartners-company-description" style="width: 609px; height: 200px;"></textarea>
+        </div>
+
+        <button class="addpartners-save-button">Save and Add</button>
+    </div>
+</body>
+</html>

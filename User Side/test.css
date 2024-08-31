@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Montserrat', sans-serif;
+}
+
+body{
+	background: #ececec;
+}
+
+
+.notification_wrap {
+  width: 90%; /* Adjust width to be responsive */
+  max-width: 500px; /* Set maximum width */
+  margin: 120px auto 0;
+}
+
+
+.notification_wrap .notification_icon {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  font-size: 32px;
+  margin: 0 auto;
+  text-align: center;
+  color: #2C1875;
+}
+.notification_wrap .notification_icon .fa-bell{
+	cursor: pointer;
+}
+
+.notification_wrap .dropdown {
+  width: 90%; /* Adjust width to be responsive */
+  max-width: 350px; /* Set maximum width */
+  height: auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.125);
+  margin: 15px auto 0;
+  padding: 15px;
+  position: relative;
+  display: none;
+  transition: 0.3s ease;
+}
+
+.notification_wrap .dropdown .notify_item{
+	display: flex;
+	align-items: center;
+	padding: 10px 0;
+	border-bottom: 1px solid #dbdaff;
+}
+
+.notification_wrap .dropdown .notify_item:last-child{
+	border-bottom: 0px;
+}
+
+.notification_wrap .dropdown .notify_item .notify_img{
+	margin-right: 15px;
+}
+
+.notification_wrap .dropdown .notify_item .notify_info p{
+	margin-bottom: 5px;
+}
+
+.notification_wrap .dropdown .notify_item .notify_info p span{
+	color: #EF9B50;
+	margin: 0 5px;
+}
+
+.notification_wrap .dropdown .notify_item .notify_info .company_name{
+	color: #c5c5e6;
+	font-size: 12px;
+}
+
+.notification_wrap .dropdown:before{
+	content: "";
+	position: absolute;
+	top: -30px;
+	left: 50%;
+	transform: translateX(-50%);
+	border: 15px solid;
+	border-color: transparent transparent #fff transparent;
+}
+
+.notification_wrap .dropdown.active{
+	display: block;
+}
+
+@media screen and (max-width: 768px) {
+  .notification_wrap {
+      margin: 80px auto 0; /* Adjust margin for smaller screens */
+  }
+
+  .notification_wrap .notification_icon {
+      width: 40px; /* Adjust size for smaller screens */
+      height: 40px;
+      font-size: 28px;
+  }
+
+  .notification_wrap .dropdown {
+      width: 90%; /* Adjust width for smaller screens */
+      max-width: 300px; /* Set maximum width for smaller screens */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .notification_wrap {
+      margin: 60px auto 0; /* Adjust margin for even smaller screens */
+  }
+
+  .notification_wrap .notification_icon {
+      width: 30px; /* Adjust size for even smaller screens */
+      height: 30px;
+      font-size: 24px;
+  }
+
+  .notification_wrap .dropdown {
+      width: 90%; /* Adjust width for even smaller screens */
+      max-width: 250px; /* Set maximum width for even smaller screens */
+  }
+
+  .notification_wrap .dropdown .notify_item .notify_info {
+    font-size: 0.9rem;
+  }
+}

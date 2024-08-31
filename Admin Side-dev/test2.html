@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Side RCVJ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mediaqueries.css">
+    <script src="script.js"></script>  
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
+    <style>
+        /* Add some styles for the form steps and arrows */
+        .form-step {
+            display: none;
+            align-items: center;
+        }
+
+        .form-step-active {
+            display: block;
+        }
+
+        .form-step header {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btns-group {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .btns-group a {
+            color: #2C1875;
+            font-size: 1.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            margin: 0 1rem;
+        }
+
+        .btns-group a:hover {
+            color: #1a0d53;
+        }
+    </style>
+</head>
+<body>
+    <div id="mySidebar" class="sidebar closed">
+        <div class="sidebar-header">
+            <h3>RCVJ Inc.</h3>
+            <button class="toggle-btn" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <a href="index.html" class="active"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+        <a href="smartsearch.html"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
+        <a href="candidates.html"><i class="fa-solid fa-user"></i> <span>Candidates</span></a>
+        <a href="schedules.html"><i class="fa-solid fa-calendar"></i> <span>Schedules</span></a>
+        <a href="partners.html"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
+        <a href="employees.html"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+    </div>
+
+    <div id="header">
+        <img id="logo" src="img/logo.png" alt="logo">
+        <div class="profile">
+            <img src="img/pfp.png" alt="Profile Picture">
+            <span class="name">Admin</span>
+        </div>
+    </div>
+
+    <div id="main">
+        <h2 style="font-size: 36px;">Jobs</h2>
+
+        <div class="btnGrp">
+            <div class="toggle-button">
+                <div class="toggle-option open" id="tab1" onclick="toggle(this)">Open (<span id="open">2</span>)</div>
+                <div class="toggle-option closed" id="tab2" onclick="toggle(this)">Closed (<span id="close">1</span>)</div>
+            </div>
+                
+            <button class="post-button" onclick="openPopup()">Post a Job</button>
+        </div>
+
+        <div class="filter-container">
+            <div class="search-wrapper">
+                <i class="fas fa-magnifying-glass search-icon"></i>
+                <input type="text" class="search-bar" placeholder="Search Jobs">
+            </div>
+            <select class="sort-by">
+                <option>Sort by: Posting Date</option>
+                <option>Sort by: Company Name</option>
+                <option>Sort by: Job Title</option>
+            </select>
+            <select class="order-sort">
+                <option>Ascending</option>
+                <option>Descending</option>
+            </select>
+        </div>
+
+        <div class="tab-content" id="tab1-content">
+            <table>
+                <thead>
+                    <tr class="th1">
+                        <th>Company</th>
+                        <th>Job Title</th>
+                        <th>Date Posted</th>
+                        <th>Candidates</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Job rows here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-content" id="tab2-content">
+            <table>
+                <thead>
+                    <tr class="th1">
+                        <th>Company</th>
+                        <th>Job Title</th>
+                        <th>Date Posted</th>
+                        <th>Candidates</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Job rows here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay"></div>
+
+        <!-- Popup dialog -->
+        <div class="popup" id="popup">
+            <h2>Job Posting</h2>
+            <p>Fill in all the needed fields</p>
+            <div class="form-container">
+                <!-- Steps -->
+                <div class="form-step form-step-active">
+                    <div class="jobposting-box">
+                        <label for="jobposting-partner-company">Partner Company</label><br>
+                        <select id="jobposting-partner-company" class="jobposting-select">
+                            <!--
+                            <option>WalterMart Supermarket - Dasmariñas</option>
+                            -->                              
+                        </select>
+                    </div>
+                    
+                    <div class="btns-group">
+                        <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="jobposting-buttons">
+                        <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                        <button class="jobposting-button jobposting-button-cancel" onclick="closePopup()">Cancel</button>
+                    </div>
+                </div>
+                
+                <div class="form-step">
+                    <div class="jobposting-box">
+                        <label for="jobposting-job-title">Job Title</label><br>
+                        <input type="text" id="jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br><br>
+                        <label for="jobposting-location">Location</label><br>
+                        <input type="text" id="jobposting-location" class="jobposting-input" placeholder="Enter job location"><br><br>
+                        <label for="jobposting-openings">Available openings</label><br>
+                        <select id="jobposting-openings" class="jobposting-select">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>  
+                            <option>9</option>
+                            <option>10</option>
+                            <option>11</option>
+                            <option>12</option>
+                            <option>13</option>
+                            <option>14</option>
+                            <option>15</option>
+                            <option>16</option>
+                            <option>17</option>
+                            <option>18</option>
+                            <option>19</option>
+                            <option>20</option>
+                        </select>
+                    </div>
+                    <div class="btns-group">
+                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                        <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="jobposting-buttons">
+                        <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                        <button class="jobposting-button jobposting-button-cancel" onclick="closePopup()">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="form-step">
+                    <div class="jobposting-box">
+                        <label for="jobposting-description">Job Description</label><br>
+                        <textarea id="jobposting-description" class="jobposting-textarea"></textarea>
+                    </div>
+                    <div class="btns-group">
+                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                        <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                    </div>
+                    <div class="jobposting-buttons">
+                        <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                        <button class="jobposting-button jobposting-button-cancel" onclick="closePopup()">Cancel</button>
+                    </div>
+                </div>
+
+                <div class="form-step">
+                    <div class="jobposting-box">
+                        <label for="jobposting-skills">Skills</label><br>
+                        <div class="jobposting-skills-container">
+                            <input type="text" id="jobposting-skills-input" placeholder="Enter a skill and press Enter">
+                        </div>
+                    </div>
+                    <div class="btns-group">
+                        <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                    </div>
+                    <div class="jobposting-buttons">
+                        <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                        <button class="jobposting-button jobposting-button-cancel" onclick="closePopup()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dialog Box Delete Employees-->
+        <div class="delete-employees-dialog-box" id="dialogBox-delete">
+            <div class="addpartners-back-button" onclick="hideDialogDelete()">
+                <i class="fas fa-chevron-left"></i> Back
+            </div>
+            <h2 style="text-align: center; margin-bottom: 2rem;">Are you sure you want to delete this Job?</h2>
+            <button class="delete-employees-save-button">Delete</button>
+        </div>
+    </div>
+
+    <script>
+        const prevBtns = document.querySelectorAll(".btn-prev");
+        const nextBtns = document.querySelectorAll(".btn-next");
+        const finishBtn = document.querySelector(".btn-finish");
+        const steps = document.querySelectorAll(".form-step");
+        let currentStep = 0;
+
+        function showStep(index) {
+            steps.forEach((step, i) => {
+                step.classList.toggle("form-step-active", i === index);
+            });
+        }
+
+        prevBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentStep = Math.max(0, currentStep - 1);
+                showStep(currentStep);
+            });
+        });
+
+        nextBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                currentStep = Math.min(steps.length - 1, currentStep + 1);
+                showStep(currentStep);
+            });
+        });
+
+    </script>
+</body>
+</html>

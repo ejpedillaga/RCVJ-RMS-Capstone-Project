@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script
+      src="https://kit.fontawesome.com/64d58efce2.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="ApplicantStyle.css" />
+    <title>Sign in & Sign up Form</title>
+  </head>
+  <body>
+    <img class="rcvjlogo" src="RCVJlogo.png" alt="RCVJ Logo" />
+    <div class="container">
+      <div class="forms-container">
+        <div class="signin-signup">
+          <form action="#" class="sign-in-form">
+            <h2 class="title">Sign in</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" placeholder="Username" />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Password" />
+            </div>
+            <input type="submit" value="Login" class="btn solid" />
+            <p class="social-text">Or Sign in as <a href="Employee&Admin.php" class="admin-class"> Employee </a></p>
+         
+          </form>
+          <form action="#" class="sign-up-form">
+            <h1 class="text-center">Create An Account</h1>
+            <!-- Progress bar -->
+            <div class="progressbar">
+              <div class="progress" id="progress"></div>
+                <div class="progress-step progress-step-active" data-title="Credentials"></div>
+                <div class="progress-step" data-title="Personal Info"></div>
+                <div class="progress-step" data-title="Job Title"></div>
+            </div>
+            <!-- Steps -->
+            <div class="form-step form-step-active">
+                <header>Credentials</header>
+                <div class="input-group">
+                    <input type="text" name="email" id="email" placeholder="Email"  required />
+                    <i class="fa-regular fa-envelope"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" id="password" placeholder="Password"  required/>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="confirm-password" id="confirm-password" placeholder="Confirm Password"  required/>
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <div class="">
+                    <a href="#" class="btn btn-next width-50 ml-auto">Continue</a>
+                </div>
+            </div>
+            <div class="form-step">
+                <header>Personal Info</header>
+                <div class="input-group form-group">
+                    <div class="input-group-item">
+                        <input type="text" name="fname" id="fname" placeholder="First Name"  required/>
+                    </div>
+                    <div class="input-group-item">
+                        <input type="text" name="lname" id="lname" placeholder="Last Name"  required/>
+                    </div>
+                </div>
+                <div class="input-group form-group">
+                    <div class="input-group-item">
+                        <select name="gender" id="gender">
+                            <option value="">Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>   
+                        <i class="fa-solid fa-venus-mars"></i>
+                    </div>
+                    <div class="input-group-item">
+                        <div class="input-wrapper">
+                          <input placeholder="Birthday" class="textbox-n" type="text" onfocus="(this.type='date')"
+                          onblur="(this.type='text')" id="date" />
+                            <i class="fa-solid fa-cake-candles"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="loc" id="loc" placeholder="Location"  required/>
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div class="input-group">
+                    <input type="text" name="phone" id="phone" placeholder="Contact Number" required/>
+                    <i class="fa-solid fa-phone"></i>
+                </div>
+                <div class="btns-group">
+                    <a href="#" class="btn btn-prev">Previous</a>
+                    <a href="#" class="btn btn-next">Next</a>
+                </div>
+            </div>
+            <div class="form-step">
+                <header>Job Title</header>
+                <div class="input-group">
+                    <select name="classi" id="classi" class="clas" placeholder="Classification" required>
+                        <option value="">Classification</option>
+                        <option value="Class1">Class 1</option>
+                        <option value="Class2">Class 2</option>
+                        <option value="Class3">Class 3</option>
+                    </select>
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="input-group">
+                    <select name="subclassi" id="subclassi" class="clas" placeholder="Sub-classification"  required>
+                        <option value="">Sub-classification</option>
+                        <option value="Sub1">Sub 1</option>
+                        <option value="Sub2">Sub 2</option>
+                        <option value="Sub3">Sub 3</option>
+                    </select>
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                <div class="btns-group">
+                    <a href="#" class="btn btn-prev">Previous</a>
+                    <a href="#" class="btn btn-finish">Finish</a>
+                </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="panels-container">
+        <div class="panel left-panel">
+          <div class="content">
+            <h3>Don't have an account yet?</h3>
+            <p>
+              Click the button below to create
+               an account.
+            </p>
+            <button class="btn transparent" id="sign-up-btn">
+              Sign up
+            </button>
+          </div>
+          <img src="img/log.svg" class="image" alt="" />
+        </div>
+        <div class="panel right-panel">
+          <div class="content">
+            <h3>Already have an account?</h3>
+            <button class="btn transparent" id="sign-in-btn">
+              Sign in
+            </button>
+          </div>
+          <img src="img/register.svg" class="image" alt="" />
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

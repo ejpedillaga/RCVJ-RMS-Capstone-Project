@@ -47,5 +47,3 @@ if ($partnerId > 0) {
 }
 
 $conn->close();
-
-

@@ -3,29 +3,36 @@ include_once("connection.php");
 
 $conn = connection();
 
-// Get the partner ID from the query string
-$employeeId = isset($_GET['employee_id']) ? intval($_GET['employee_id']) : 0;
+// Get the employee ID from the query string
+$employeeId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-
-if ($partnerId > 0) {
-    $sql = "SELECT employee_id, full_name, industry, company_location, company_description, logo FROM partner_table WHERE id = $partnerId";
-    $result = $conn->query($sql);
+if ($employeeId > 0) {
+    $sql = "SELECT employee_id, first_name, last_name FROM employee_table WHERE employee_id = ?";
+    $stmt = $conn->prepare($sql);
+    
+    // Bind the employee ID to the prepared statement
+    $stmt->bind_param("i", $employeeId);
+    
+    // Execute the prepared statement
+    $stmt->execute();
+    
+    // Get the result set from the executed statement
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $partnerData = $result->fetch_assoc();
-
-        // Encode the company logo BLOB to base64
-        $partnerData['logo'] = base64_encode($partnerData['logo']);
+        // Fetch the data as an associative array
+        $employeeData = $result->fetch_assoc();
         
-        // Ensure that you're outputting only JSON
+        // Output the data as JSON
         header('Content-Type: application/json');
-        echo json_encode($partnerData);
+        echo json_encode($employeeData);
     } else {
-        echo json_encode(["error" => "No partner found"]);
+        echo json_encode(["error" => "No employee found"]);
     }
+    
+    $stmt->close();
 } else {
-    echo json_encode(["error" => "Invalid partner ID"]);
+    echo json_encode(["error" => "Invalid or missing employee ID"]);
 }
-
 
 $conn->close();

@@ -97,6 +97,18 @@ function hideDialog() {
     logoUpload.value = ''; // Clear the file input
 }
 
+function showEmployeeDialog() {
+    document.getElementById('dialogBox').style.display = 'block';
+    document.getElementById('dialogBox').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+
+    document.getElementById('addemployees-firstname').value = '';
+    document.getElementById('addemployees-lastname').value = '';
+    document.getElementById('addemployees-userid').value = '';
+    document.getElementById('addemployees-password').value = '';
+    document.getElementById('addemployees-admin-password').value = '';
+}
+
 function hideEmployeeDialog() {
     document.getElementById('dialogBox').style.display = 'none';
     document.getElementById('dialogBox').classList.remove('show');
@@ -747,8 +759,8 @@ function populateEmployeesTable(data) {
                 <option ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog()"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete()"></i></td>
+        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
+        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i></td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -792,8 +804,6 @@ function openEditJobPopup(jobId) {
     document.getElementById('editJob-popup').classList.add('show');
     document.getElementById('overlay').classList.add('show');
     
-    // Fetch options and populate the spinner
-    fetchOptions('editJob-popup'); // Pass the ID of the popup
 
     fetch(`getJobData.php?id=${jobId}`)
         .then(response => response.json())
@@ -808,17 +818,15 @@ function openEditJobPopup(jobId) {
             document.getElementById('edit-jobposting-description').value = job.job_description;
 
             initializeSkillsInput('editJob-popup', 'edit-jobposting-skills-input', 'edit-jobposting-skills-container');
+
             // Clear any existing skills
             const skillsContainer = document.querySelector('#edit-jobposting-skills-container');
-            skillsContainer.innerHTML = ''; // Clear previous skills
+            const skillsInput = document.querySelector('#edit-jobposting-skills-input');
 
             // Add fetched skills to the container
-            job.skills.forEach(skill => addSkill(skillsContainer, skill));
+            job.skills.forEach(skill => addSkill(skillsContainer, skill, skillsInput));
         })
         .catch(error => console.error('Error fetching job data:', error));
-
-        
-
 }
 
 
@@ -950,16 +958,6 @@ function populateSpinner(popupId, options) {
         spinner.appendChild(opt);
     });
 }
-
-// Initialize spinners for all popups
-function initializeSpinners() {
-    fetchOptions('popup');
-    fetchOptions('editJob-popup');
-    fetchOptions('third-popup'); // Ensure this id matches your third popup
-}
-
-// Call this function when your page is ready or when you need to initialize spinners
-initializeSpinners();
 
 
 //Functions to add partners
@@ -1180,19 +1178,22 @@ function partnerSaveAndPostJob() {
 }
 function showEditDialog(employeeId){
     currentEmployeeId = employeeId;
-
-    console.log(employeeId);
-
     document.getElementById('edit-dialogBox').style.display = 'block';
     document.getElementById('edit-dialogBox').classList.add('show');
     document.getElementById('overlay').classList.add('show');
 
-    document.getElementById('edit-employees-firstname').value = '';
-    document.getElementById('edit-employees-lastname').value = '';
-    document.getElementById('edit-employees-userid').value = '';
-    document.getElementById('edit-employees-password').value = '';
-    document.getElementById('edit-employees-admin-password').value = '';
+    console.log(employeeId);
 
+    fetch(`getEmployeeData.php?id=${employeeId}`)
+        .then(response => response.json())
+        .then(employee => {
+
+            // Populate form fields with the partner's data
+            document.getElementById('edit-employees-firstname').value = employee.first_name;
+            document.getElementById('edit-employees-lastname').value = employee.last_name;
+            document.getElementById('edit-employees-userid').value = employee.employee_id;
+        })
+        .catch(error => console.error('Error fetching partner data:', error));
 }
 
 function hideEditDialog(){
@@ -1204,9 +1205,11 @@ function hideEditDialog(){
 function addNewEmployee(){
     const firstName = document.getElementById('addemployees-firstname').value.trim();
     const lastName = document.getElementById('addemployees-lastname').value.trim();
+    const password = document.getElementById('addemployees-password').value.trim();
 
     console.log(firstName);
     console.log(lastName);
+    console.log(password);
     
 
     // Input validation
@@ -1219,6 +1222,7 @@ function addNewEmployee(){
     const formData = new FormData();
     formData.append('first_name', firstName);
     formData.append('last_name', lastName);
+    formData.append('password', password);
 
     // Send data using Fetch
     fetch('addEmployee.php', {
@@ -1236,6 +1240,7 @@ function addNewEmployee(){
             // Clear the form fields
             document.getElementById('addemployees-firstname').value = '';
             document.getElementById('addemployees-lastname').value = '';
+            document.getElementById('addemployees-password').value = '';
 
             //Fetch and display new data
             fetchData('fetch_employees.php', populateEmployeesTable)
@@ -1437,13 +1442,14 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
         console.error('Invalid container or input element');
         return;
     }
+
     // Event listener for adding a new skill
     skillsInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
             event.preventDefault();
             const value = skillsInput.value.trim();
             if (value && !skillsSet.has(value.toLowerCase())) {
-                addSkill(skillsContainer, value); // Use the global addSkill function
+                addSkill(skillsContainer, value, skillsInput); // Pass skillsInput as an argument
                 skillsInput.value = '';
             }
         }
@@ -1464,7 +1470,7 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
 }
 
 // Function to add a new skill
-function addSkill(container, text) {
+function addSkill(container, text, skillsInput) {
     // If the container or text is invalid, exit
     if (!container || !text) return;
 
@@ -1487,8 +1493,11 @@ function addSkill(container, text) {
     });
 
     skill.appendChild(closeBtn);
-    container.appendChild(skill); // Append the skill to the container
+
+    // Insert the skill before the input element
+    container.insertBefore(skill, skillsInput);
 }
+
 
 
 document.addEventListener('DOMContentLoaded', () => {

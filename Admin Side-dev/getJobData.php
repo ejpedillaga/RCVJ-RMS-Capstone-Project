@@ -9,6 +9,7 @@ $jobId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($jobId > 0) {
     $sql = "SELECT 
             j.id, 
+            j.company_name,
             j.job_title, 
             j.job_location, 
             j.job_candidates, 

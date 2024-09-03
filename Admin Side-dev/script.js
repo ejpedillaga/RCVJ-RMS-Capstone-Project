@@ -754,15 +754,68 @@ function populateEmployeesTable(data) {
         <td id="fullname" class="fullname">${employee.full_name}</td>
         <td id="date">${employee.date_added}</td>
         <td>
-            <select class="status-dropdown">
-                <option ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
-                <option ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+            <select id="employee-status-dropdown-${employee.employee_id}" class="status-dropdown" data-original-value="${employee.status}" onchange="handleEmployeeStatusChange(${employee.employee_id})">
+                <option value="Active" ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
+                <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
         <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i></td>
     `;
     populateTable(data, 'table', rowTemplate);
+}
+
+function handleEmployeeStatusChange(employeeId) {
+    const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+    const selectedValue = dropdown.value;
+    const originalValue = dropdown.getAttribute('data-original-value');
+
+    const confirmation = confirm(`Are you sure you want to change the status of employee ID ${employeeId} to: ${selectedValue}?`);
+
+    if (confirmation) {
+        // User confirmed the change
+        console.log(`Status for employee ID ${employeeId} changed to: ${selectedValue}`);
+        // Update the original value with the new selection
+        dropdown.setAttribute('data-original-value', selectedValue);
+
+        // Send an AJAX request to update the status in the database
+        updateEmployeeStatusInDatabase(employeeId, selectedValue);
+    } else {
+        // User canceled the change, revert to the original value
+        dropdown.value = originalValue;
+        console.log('Status change canceled. Reverted to original value.');
+    }
+}
+
+function updateEmployeeStatusInDatabase(employeeId, status) {
+    // Example using fetch API to send the update request
+    fetch('updateEmployeeStatus.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            employeeId: employeeId,
+            status: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Employee status updated successfully in the database.');
+        } else {
+            console.error('Failed to update employee status in the database.');
+            // Optionally, revert the dropdown to its original value if the update fails
+            const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+            dropdown.value = dropdown.getAttribute('data-original-value');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating employee status:', error);
+        // Optionally, revert the dropdown to its original value if the update fails
+        const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+        dropdown.value = dropdown.getAttribute('data-original-value');
+    });
 }
 
 function populatePartnersTable(data) {

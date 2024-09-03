@@ -1,0 +1,250 @@
+@media screen and (max-width: 1300px) {
+    .filter-container-candidates {
+        flex-direction: column;
+    }
+    .filter-container-candidates #company-name, 
+    .filter-container-candidates #date, 
+    .filter-container-candidates #remarks, 
+    .filter-container-candidates #available, 
+    .filter-container-candidates #fullname, 
+    .filter-container-candidates #job-title {
+        font-size: 0.8rem;
+    }
+    .filter-container-candidates .search-wrapper,
+    .filter-container-candidates .search-candidates,
+    .filter-container-candidates .sort-by,
+    .filter-container-candidates .order-sort,
+    .filter-container-candidates .company-sort,
+    .filter-container-candidates .status-sort {
+        width: 100%;
+    }
+    .rejected-button, .add-partners-button, .add-employees-button {
+        width: 100%;
+        margin-left: 0rem;
+    }
+
+    #right{
+        margin-left: 40px;
+    }
+}
+
+@media screen and (max-width: 1100px) {
+    .addpartners-dialog-box{
+       height: 80%;
+       overflow: auto;
+
+    }
+    .addpartners-dialog-box-content {
+        gap: 0rem;
+        flex-direction: column;
+    }
+
+    .addpartners-upload-logo{
+        margin-bottom: 1rem;
+    }
+
+    #right{
+        margin-left: 40px;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .profile{
+        margin-right: 0rem;
+    }
+    
+    .name{
+        display: none;
+        margin-left: 0px;
+    }
+    .th1{
+        font-size: 0.9rem;
+    }
+    .tr1 img{
+        width: 60px;
+        border-radius: 10px;
+    }
+    .tr1 i{
+        font-size: 1.5rem;
+    }
+    #company-name, #date, #available, #fullname, #job-title{
+        font-size: 0.8rem;
+    }
+    .status-dropdown {
+        font-size: 0.9rem;
+    }
+
+    #right{
+        margin-left: 40px;
+    }
+
+    
+}
+
+
+@media screen and (max-width: 850px) {
+    #main{
+        margin-left: 2rem;
+        margin-right: 2rem;
+    }
+
+    .wrapper{
+        padding-left: 20px;
+    }
+
+    #header{
+        margin-left: 2rem;
+    }
+    .sidebar.closed ~ #main, #header {
+        margin-left: 6rem;
+    }
+    .filter-container{
+        flex-direction: column;
+    }
+    .search-wrapper, .search-candidates, .sort-by, .order-sort, .company-sort, .status-sort{
+        width: 100%;
+    }
+    .jobposting-buttons{
+        align-self: center;
+    }
+
+    .container-calendar {
+        flex-direction: column;
+        padding: 30px;
+    }
+
+    #left, #right {
+        width: 100%;
+        margin: 15px 0;
+    }
+
+    #event-section,
+    #reminder-section {
+        width: 100%;
+        margin-bottom: 25px;
+    }
+
+    #event-section button {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .button-container-calendar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+
+    .button-container-calendar button {
+        width: 48%;
+    }
+
+    #monthAndYear {
+        font-size: 26px;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .footer-container-calendar {
+        text-align: center;
+        margin-top: 25px;
+    }
+
+    .footer-container-calendar select {
+        width: 48%;
+        margin-bottom: 15px;
+    }
+
+    .table-calendar {
+        font-size: 15px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .sidebar {
+        width: 70px;
+    }
+    .sidebar .sidebar-header h3 {
+        display: none;
+    }
+    .sidebar a span {
+        display: none;
+    }
+    #main {
+        margin-left: 70px;
+    }
+    #header {
+        margin-left: 70px;
+    }
+    .sidebar.open {
+        width: 250px;
+    }
+    .sidebar.open .sidebar-header h3 {
+        display: block;
+    }
+    .sidebar.open a span {
+        display: inline;
+    }
+    .name{
+        display: none;
+    }
+
+    .container-calendar {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    #event-section,
+    #reminder-section {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    #event-section button {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    #left, #right{
+        width: auto;
+        margin-right: 10px;
+    }
+
+}
+
+@media screen and (max-width: 500px) {
+    .btnGrp {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .toggle-button {
+        width: 100%;
+    }
+    .toggle-option.open {
+        width: 100%;
+    }
+    
+    .toggle-option.closed {
+        width: 100%;
+    }
+    .post-button{
+        width: 100%;
+        margin-left: 0rem;
+    }
+
+    #left h1, 
+    #event-section h3, 
+    #reminder-section h3 {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .button-container-calendar button {
+        width: 48%;
+    }
+
+    #monthAndYear {
+        font-size: 18px;
+    }
+
+}

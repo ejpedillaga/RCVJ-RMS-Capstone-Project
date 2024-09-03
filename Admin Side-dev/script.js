@@ -146,13 +146,13 @@ function hideDialogEdit() {
     document.getElementById('dialogBox-edit').style.display = 'none';
 }
 
-function openThirdPopup() {
+function openThirdPopup(companyName) {
     document.getElementById('thirdPopup').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+    document.getElementById('partner-jobposting-partner-company').value = companyName;
     // Initialize pagination for the third popup
     initializePopupPagination('thirdPopup');
     initializeSkillsInput('thirdPopup','partner-jobposting-skills-input','partner-jobposting-skills-container');
-    fetchOptions('thirdPopup');
 }
 
 function closeThirdPopup() {
@@ -766,11 +766,12 @@ function populateEmployeesTable(data) {
 }
 
 function populatePartnersTable(data) {
-    const rowTemplate = (partner) => `
+    const rowTemplate = (partner) =>
+         `
         <td>
         <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100"></td>
         <td id="company-name">${partner.company_name}</td>
-        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup()"></i></td>
+        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i></td>
         <td id="date">${partner.date_added}</td>
         <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i></td>
         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i></td>
@@ -799,6 +800,7 @@ function populateJobsTable(containerSelector, data) {
 
 function openEditJobPopup(jobId) {
     currentJobId = jobId; // Store the job ID for use in the popup
+    console.log(currentJobId);
 
     // Show the edit job popup and overlay
     document.getElementById('editJob-popup').classList.add('show');
@@ -833,8 +835,6 @@ function openEditJobPopup(jobId) {
 // Function to save and post the edited job
 function editJob() {
 
-    const companySelect = document.getElementById('edit-jobposting-partner-company');
-    const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
     const jobTitle = document.getElementById('edit-jobposting-job-title').value;
     const location = document.getElementById('edit-jobposting-location').value;
     const openings = document.getElementById('edit-jobposting-openings').value;
@@ -842,12 +842,12 @@ function editJob() {
 
     // Collect skills
     const skillsArray = Array.from(skillsSet); // Convert the Set to an array
-    console.log('Company Name:', companyName)
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Openings:', openings);
     console.log('Description:', description);
     console.log('Skills Array:', skillsArray);
+    console.log('Job Id:'. currentJobId);
 
     // Input validation
     if (!jobTitle || !location || !openings) {
@@ -864,7 +864,6 @@ function editJob() {
 
     // Create form data
     const formData = new FormData();
-    formData.append('company_name', companyName);
     formData.append('job_title', jobTitle);
     formData.append('job_location', location);
     formData.append('job_candidates', openings);
@@ -1106,13 +1105,12 @@ function saveAndPostJob() {
 // Function to collect form data and send to the server from partner section
 function partnerSaveAndPostJob() {
     // Collect data from the popup
-    const companySelect = document.getElementById('jobposting-partner-company');
-    const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
 
+    const companyName = document.getElementById('partner-jobposting-partner-company').value;
     const jobTitle = document.getElementById('partner-jobposting-job-title').value;
     const location = document.getElementById('partner-jobposting-location').value;
     const candidates = document.getElementById('partner-jobposting-openings').value;
-    const description = document.getElementById('partner-jobposting-description').value.trim();
+    const description = document.getElementById('partner-jobposting-description').value;
 
 
     // Collect skills
@@ -1126,7 +1124,7 @@ function partnerSaveAndPostJob() {
     console.log('Skills Array:', skillsArray);
 
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates || !description || skillsArray.length === 0) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1160,7 +1158,7 @@ function partnerSaveAndPostJob() {
             console.log('Success:', data.message);
             // Handle success, e.g., close the popup or display a message
             alert('Job post added successfully!');
-            closePopup('popup');
+            closeThirdPopup('popup');
 
 
             window.location.reload();
@@ -1176,6 +1174,7 @@ function partnerSaveAndPostJob() {
         alert('An error occurred while adding the job.');
     });
 }
+
 function showEditDialog(employeeId){
     currentEmployeeId = employeeId;
     document.getElementById('edit-dialogBox').style.display = 'block';
@@ -1200,6 +1199,60 @@ function hideEditDialog(){
     document.getElementById('edit-dialogBox').style.display = 'none';
     document.getElementById('edit-dialogBox').classList.remove('show');
     document.getElementById('overlay').classList.remove('show');
+}
+
+function editEmployee(){
+    const firstName = document.getElementById('edit-employees-firstname').value.trim();
+    const lastName = document.getElementById('edit-employees-lastname').value.trim();
+    const pw = document.getElementById('edit-employees-userid').value.trim();
+
+    console.log(firstName);
+    console.log(lastName);
+    console.log(pw);
+
+
+    // Input validation
+    if (!firstName || !lastName || !pw) {
+        alert('Please fill out all required fields.');
+        return; // Prevent form submission
+    }
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    //formData.append('password', pw);
+    formData.append('employee_id', currentEmployeeId);
+
+
+    // Send data using fetch
+    fetch('editEmployee.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            console.log('Success:', data.message);
+            alert('Employee data updated successfully!');
+            hideEditDialog();
+
+            // Clear the form fields
+            document.getElementById('addemployees-firstname').value = '';
+            document.getElementById('addemployees-lastname').value = '';
+            document.getElementById('addemployees-password').value = '';
+
+            //Fetch and display new data
+            fetchData('fetch_employees.php', populateEmployeesTable)
+        } else {
+            console.error('Error:', data.error);
+            alert('An error occurred while updating the employee data: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the employee data.');
+    });
 }
 
 function addNewEmployee(){
@@ -1312,6 +1365,7 @@ function editPartner() {
     console.log('Industry:', industry);
     console.log('Location:', companyLocation);
     console.log('Description:', companyDescription);
+    console.log('Partner Id:', currentPartnerId)
 
     // Create FormData object to handle file and text data
     const formData = new FormData();

@@ -1,34 +1,52 @@
 <?php
-    include 'connection.php';
-    $conn = connection();
+include 'connection.php';
+$conn = connection();
+session_start();
+
+// Check if the user is logged in and fetch their full name
+$user_name = 'Sign Up'; // Default username if not logged in
+
+if (isset($_SESSION['user'])) {
+    $user_email = $_SESSION['user'];
     
-    // Get company name from query parameter
-    $company_name = isset($_GET['company_name']) ? $_GET['company_name'] : '';
-    
-    // Prepare and execute SQL query to get company details
-    $sql = "SELECT logo, company_name, company_location, industry, company_description FROM partner_table WHERE company_name = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $company_name);
+    $stmt = $conn->prepare("SELECT fname, lname FROM applicant_table WHERE email = ?");
+    $stmt->bind_param("s", $user_email);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $company = $result->fetch_assoc();
+    $user_result = $stmt->get_result();
 
-    if ($company && isset($company['logo'])) {
-        $company['logo'] = base64_encode($company['logo']);
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
+        $user_name = $user['fname'] . ' ' . $user['lname'];
     }
-
     $stmt->close();
+}
 
-    // Prepare and execute SQL query to get job listings for the company with 'open' status
-    $sql_jobs = "SELECT id, job_title, job_location, date_posted, job_candidates FROM job_table WHERE company_name = ? AND job_status = 'open'";
-    $stmt_jobs = $conn->prepare($sql_jobs);
-    $stmt_jobs->bind_param("s", $company_name);
-    $stmt_jobs->execute();
-    $result_jobs = $stmt_jobs->get_result();
+// Get company name from query parameter
+$company_name = isset($_GET['company_name']) ? $_GET['company_name'] : '';
 
-    
-    $stmt_jobs->close();
-    $conn->close();
+// Prepare and execute SQL query to get company details
+$sql = "SELECT logo, company_name, company_location, industry, company_description FROM partner_table WHERE company_name = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $company_name);
+$stmt->execute();
+$result = $stmt->get_result();
+$company = $result->fetch_assoc();
+
+if ($company && isset($company['logo'])) {
+    $company['logo'] = base64_encode($company['logo']);
+}
+
+$stmt->close();
+
+// Prepare and execute SQL query to get job listings for the company with 'open' status
+$sql_jobs = "SELECT id, job_title, job_location, date_posted, job_candidates FROM job_table WHERE company_name = ? AND job_status = 'open'";
+$stmt_jobs = $conn->prepare($sql_jobs);
+$stmt_jobs->bind_param("s", $company_name);
+$stmt_jobs->execute();
+$result_jobs = $stmt_jobs->get_result();
+
+$stmt_jobs->close();
+$conn->close();
 ?>
 <!DOCTYPE html>
 <html>
@@ -81,7 +99,7 @@
                     </div>
                 </div>
                     <img src="images/user.svg" alt="">
-                    <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
+                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
         </nav>
 

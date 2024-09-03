@@ -2,40 +2,35 @@
 include 'connection.php';
 
 $conn = connection();
-
-$sql = "SELECT logo, company_name FROM partner_table";
-$result = $conn->query($sql);
 session_start();
 
+// Fetch partner company logos and names
+$sql = "SELECT logo, company_name FROM partner_table";
+$result = $conn->query($sql);
+
+// Check if the user is logged in
 if (isset($_SESSION['user'])) {
-    // Fetch user's full name from the session
     $user_email = $_SESSION['user'];
 
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345";
-    $dbname = "admin_database";
+    // Use a prepared statement to safely query user data
+    $stmt = $conn->prepare("SELECT fname, lname FROM applicant_table WHERE email = ?");
+    $stmt->bind_param("s", $user_email);
+    $stmt->execute();
+    $user_result = $stmt->get_result();
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
         $user_name = $user['fname'] . ' ' . $user['lname'];
     } else {
         $user_name = 'User';
     }
 
-    $conn->close();
+    $stmt->close();
 } else {
     $user_name = 'Sign Up';
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>

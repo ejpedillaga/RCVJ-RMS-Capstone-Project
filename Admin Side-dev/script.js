@@ -787,15 +787,67 @@ function populateJobsTable(containerSelector, data) {
         <td id="date">${job.date_posted}</td>
         <td id="available">${job.job_candidates}</td>
         <td>
-            <select id="job-status-dropdown" class="status-dropdown">
-                <option ${job.job_status === 'Open' ? 'selected' : ''}>Open</option>
-                <option ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
+            <select id="job-status-dropdown-${job.id}" class="status-dropdown" data-original-value="${job.job_status}" onchange="handleStatusChange(${job.id})">
+                <option value="Open" ${job.job_status === 'Open' ? 'selected' : ''}>Open</option>
+                <option value="Closed" ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
             </select>
         </td>
         <td id="edit"><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i></td>
     `;
 
     populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
+}
+
+function handleStatusChange(jobId) {
+    const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+    const selectedValue = dropdown.value;
+    const originalValue = dropdown.getAttribute('data-original-value');
+
+    const confirmation = confirm(`Are you sure you want to change the job status for job ID ${jobId} to: ${selectedValue}?`);
+
+    if (confirmation) {
+        // User confirmed the change
+        console.log(`Job status for job ID ${jobId} changed to: ${selectedValue}`);
+        // Update the original value with the new selection
+        dropdown.setAttribute('data-original-value', selectedValue);
+
+        // Send an AJAX request to update the status in the database
+        updateJobStatusInDatabase(jobId, selectedValue);
+    } else {
+        // User canceled the change, revert to the original value
+        dropdown.value = originalValue;
+        console.log('Job status change canceled. Reverted to original value.');
+    }
+}
+
+function updateJobStatusInDatabase(jobId, status) {
+    fetch('updateJobStatus.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            jobId: jobId,
+            status: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Job status updated successfully in the database.');
+        } else {
+            console.error('Failed to update job status in the database.');
+            // Revert the dropdown to its original value if the update fails
+            const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+            dropdown.value = dropdown.getAttribute('data-original-value');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating job status:', error);
+        // Revert the dropdown to its original value if the update fails
+        const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+        dropdown.value = dropdown.getAttribute('data-original-value');
+    });
 }
 
 function openEditJobPopup(jobId) {

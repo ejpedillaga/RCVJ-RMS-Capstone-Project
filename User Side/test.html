@@ -1,37 +1,3 @@
-<?php
-session_start();
-
-if (isset($_SESSION['user'])) {
-    // Fetch user's full name from the session
-    $user_email = $_SESSION['user'];
-
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345";
-    $dbname = "admin_database";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $user_name = $user['fname'] . ' ' . $user['lname'];
-    } else {
-        $user_name = 'User';
-    }
-
-    $conn->close();
-} else {
-    $user_name = 'Sign Up';
-}
-?>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -51,9 +17,9 @@ if (isset($_SESSION['user'])) {
             <div>
                 <ul class="nav-links">
                     <li><a href="Home.php">Home</a></li>
-                    <li><a href="Jobs.php">Jobs</a></li>
+                    <li><a class="active" href="#">Jobs</a></li>
                     <li><a href="About.php">About</a></li>
-                    <li><a class="active" href="#">Partner Companies</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
                 </ul>
             </div>
             <div class="nav-acc">
@@ -83,7 +49,7 @@ if (isset($_SESSION['user'])) {
                     </div>
                 </div>
                     <img src="images/user.svg" alt="">
-                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                    <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
                 </div>
         </nav>
 
@@ -127,9 +93,9 @@ if (isset($_SESSION['user'])) {
                 </div>
                 <div class="menu-links">
                     <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
-                    <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
+                    <li><a class="active"href="#" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
-                    <li><a class="active" href="#" onclick="toggleMenu()">Partner Companies</a></li>
+                    <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
                     <div class="nav-acc">
                         <img src="images/user.svg" alt="">
                         <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
@@ -137,49 +103,54 @@ if (isset($_SESSION['user'])) {
                 </div>
             </div>
         </nav>
-
-        <section class="partner-section">
+        
+        <section class="details-section">
             <div class="main-container">
-                <!--Header-->
-                <div class="partner-header">
-                    <div class="search-container">
-                        <div class="search-box">
-                            <div class="search-input" id="partner-companies">
-                                <i class="search-icon fas fa-search"></i>
-                                <input type="text" placeholder="Company Name">
-                            </div>
+                <div class="back-button">
+                    <a href="#" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>Back
+                    </a>
+                </div>
+                <div class="details-header">
+                    <div class="company-box">
+                        <h2 class="title3">Job Title</h2>
+                        <p id="company-name">Company Name</p>
+                        <p id="location">Location</p>
+                        <p id="date-posted">Posted on: MM/DD/YY</p>
+                        <p id="available">Available Spots: 0</p>
+                        <div class="buttons-container">
+                            <button class="button-apply">Apply</button>
+                            <button class="button-cp" onclick="redirectTo('CompanyProfile.php')">Company Profile</button>
                         </div>
                     </div>
-                    <h1 class="title7">Find a company for you from our <span style="color: #EF9B50;">partners</span></h3>
+                    <img id="company-logo" src="images/waltermart.png" alt="">
                 </div>
-
-                <!--Body-->
-                <h1 class="title3" style="margin-top: 2rem;">Partner Companies</h1>     
-                <div id="partner-results" class="partner-main-container">
-                    <ul>
-                        <?php
-                        if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
-                                echo '<li>';
-                                echo '<div class="partner-card" onclick="window.location.href=\'CompanyProfile.php?company_name=' . urlencode($row['company_name']) . '\'">';
-                                echo '<img id="company-logo" src="data:image/jpeg;base64,' . htmlspecialchars($row['logo']) . '" alt="' . htmlspecialchars($row['company_name']) . '">';
-                                echo '<p id="company-name">' . htmlspecialchars($row['company_name']) . '</p>';
-                                echo '</div>';
-                                echo '</li>';
-                            }
-                        } else {
-                            echo "<p>No partner companies found.</p>";
-                        }
-                        ?>
+                <div class="desc-box">
+                    <h3>Job Description</h3>
+                    <p id="description">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
+                    <h3>Qualifications</h3>
+                    <ul id="qualifications list">
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
+                    </ul>
+                    <h3>Skills</h3>
+                    <ul id="skills list">
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
+                        <li>Sample</li>
                     </ul>
                 </div>
-            </div>           
             </div>
+            <div class="shape-container2">
+                <div class="rectangle-4"></div>
+                <div class="rectangle-5"></div>
+           </div>
         </section>
-        <div class="shape-container2">
-            <div class="rectangle-4"></div>
-            <div class="rectangle-5"></div>
-       </div>
         <footer class="footer-distributed">
 
             <div class="footer-left">
@@ -217,3 +188,5 @@ if (isset($_SESSION['user'])) {
         <script defer src="script.js"></script>
     </body>
 </html>
+
+

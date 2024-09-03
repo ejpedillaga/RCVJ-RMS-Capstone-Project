@@ -1,8 +1,35 @@
 <?php
-    include 'connection.php';
-    $conn = connection();
-    $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
+session_start();
+
+if (isset($_SESSION['user'])) {
+    // Fetch user's full name from the session
+    $user_email = $_SESSION['user'];
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "12345";
+    $dbname = "admin_database";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    $sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $user_name = $user['fname'] . ' ' . $user['lname'];
+    } else {
+        $user_name = 'User';
+    }
+
+    $conn->close();
+} else {
+    $user_name = 'Sign Up';
+}
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +84,7 @@
                 </div>
             </div>
                 <img src="images/user.svg" alt="">
-                <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
+                <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
             </div>
         </nav>
 

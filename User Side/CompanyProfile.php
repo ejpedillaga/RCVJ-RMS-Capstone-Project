@@ -144,7 +144,7 @@
                     </a>
                 </div>
                 <div class="companyprofile-header">
-                    <img id="company-logo" src="data:image/jpeg;base64,<?php echo htmlspecialchars($company['logo']); ?>" alt="Company Logo">
+                    <img id="company-logo" src="<?php echo htmlspecialchars($company['logo']); ?>" alt="">
                     <h1 class="title3"><?php echo htmlspecialchars($company['company_name']); ?></h1>
                 </div>
 

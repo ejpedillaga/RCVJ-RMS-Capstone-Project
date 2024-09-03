@@ -1,4 +1,10 @@
 <?php
+include 'connection.php';
+
+$conn = connection();
+
+$sql = "SELECT logo, company_name FROM partner_table";
+$result = $conn->query($sql);
 session_start();
 
 if (isset($_SESSION['user'])) {
@@ -160,6 +166,9 @@ if (isset($_SESSION['user'])) {
                         <?php
                         if ($result->num_rows > 0) {
                             while($row = $result->fetch_assoc()) {
+                                if (isset($row['logo'])) {
+                                    $row['logo'] = base64_encode($row['logo']);
+                                }
                                 echo '<li>';
                                 echo '<div class="partner-card" onclick="window.location.href=\'CompanyProfile.php?company_name=' . urlencode($row['company_name']) . '\'">';
                                 echo '<img id="company-logo" src="data:image/jpeg;base64,' . htmlspecialchars($row['logo']) . '" alt="' . htmlspecialchars($row['company_name']) . '">';

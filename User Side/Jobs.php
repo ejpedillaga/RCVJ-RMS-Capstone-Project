@@ -1,4 +1,7 @@
 <?php
+include 'connection.php';
+$conn = connection();
+$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
 session_start();
 
 if (isset($_SESSION['user'])) {

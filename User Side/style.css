@@ -876,6 +876,7 @@ footer {
 .jobs-card .job-header{
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
 }
 
 .job-header h2{

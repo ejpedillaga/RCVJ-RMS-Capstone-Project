@@ -37,6 +37,12 @@ $stmt->bind_param("i", $job_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $job = $result->fetch_assoc();
+
+// Encode the company logo in base64
+if ($job && isset($job['logo'])) {
+    $job['logo'] = base64_encode($job['logo']);
+}
+
 $company_name = $job['company_name'];
 $stmt->close();
 $conn->close();

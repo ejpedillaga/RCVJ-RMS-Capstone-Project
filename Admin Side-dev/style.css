@@ -1124,6 +1124,16 @@ table td:last-child{
     font-size: 15px;
 }
 
+#event-section select {
+    margin: 10px 12px;
+    padding: 5px 5px 5px 7px;
+    width: 90%;
+    border-radius: 10px;
+    height:30px;
+    background:#97959e11;
+    font-size: 15px;
+}
+
     
 #event-section button {
     background: var(--secondary-color);
@@ -1172,6 +1182,7 @@ table td:last-child{
     left: 50%;
     transform: translateX(-50%);
     display: none;
+    pointer-events: none;
     transition: all 0.3s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     z-index: 1;
@@ -1266,11 +1277,6 @@ table td:last-child{
 .date-picker:nth-child(1) {
     color: red;
     /* Sunday */
-}
-
-.date-picker:nth-child(6) {
-    color: green;
-    /* Friday */
 }
 
 /* Hover effect for date cells */

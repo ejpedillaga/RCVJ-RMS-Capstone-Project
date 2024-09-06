@@ -97,10 +97,10 @@ if (isset($_SESSION['user'])) {
             </div>
             <div>
                 <ul class="nav-links">
-                    <li><a href="Home.html">Home</a></li>
-                    <li><a href="Jobs.html">Jobs</a></li>
-                    <li><a href="About.html">About</a></li>
-                    <li><a href="Partner.html">Partner Companies</a></li>
+                    <li><a href="Home.php">Home</a></li>
+                    <li><a href="Jobs.php">Jobs</a></li>
+                    <li><a href="About.php">About</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
                 </ul>
             </div>
             <div class="nav-acc">
@@ -175,9 +175,9 @@ if (isset($_SESSION['user'])) {
                     </div>
                     <div class="menu-links">
                         <li><a class="active" href="#" onclick="toggleMenu()">Home</a></li>
-                        <li><a href="Jobs.html" onclick="toggleMenu()">Jobs</a></li>
-                        <li><a href="About.html" onclick="toggleMenu()">About</a></li>
-                        <li><a href="Partner.html" onclick="toggleMenu()">Partner Companies</a></li>
+                        <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
+                        <li><a href="About.php" onclick="toggleMenu()">About</a></li>
+                        <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
                         <div class="nav-acc">
                             <img src="images/user.svg" alt="">
                             <button id="profile">User Name</button>
@@ -812,7 +812,7 @@ if (isset($_SESSION['user'])) {
                                 </div>
                             </div>
                         </div>
-                        <div id="my-jobs-card" onclick="redirectTo('MyJobs.html')" class="profile-card">
+                        <div id="my-jobs-card" onclick="redirectTo('MyJobs.php')" class="profile-card">
                             <div class="content">
                                 <div class="mjc-header">
                                     <div class="my-jobs">

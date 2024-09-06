@@ -1,38 +1,30 @@
 <?php
 include 'connection.php';
 $conn = connection();
-$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
 session_start();
+
+$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
+$jobs_result = $conn->query($sql); // Execute the job listing query
 
 if (isset($_SESSION['user'])) {
     // Fetch user's full name from the session
     $user_email = $_SESSION['user'];
 
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345";
-    $dbname = "admin_database";
+    // Use the existing connection
+    $user_sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
+    $user_result = $conn->query($user_sql);
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
-    $result = $conn->query($sql);
-
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
         $user_name = $user['fname'] . ' ' . $user['lname'];
     } else {
         $user_name = 'User';
     }
-
-    $conn->close();
 } else {
     $user_name = 'Sign Up';
 }
+
+$conn->close(); // Close the connection once all queries are done
 ?>
 
 <!DOCTYPE html>
@@ -168,8 +160,8 @@ if (isset($_SESSION['user'])) {
                 <div class="jobs-main-container">
                     <ul>
                     <?php
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
+                    if ($jobs_result->num_rows > 0) {
+                        while($row = $jobs_result->fetch_assoc()) {
                             echo '<li>';
                             echo '<div class="jobs-card" onclick="window.location.href=\'JobDetails.php?id=' . $row["id"] . '\'">';
                             echo '<div class="job-header">';
@@ -190,7 +182,6 @@ if (isset($_SESSION['user'])) {
                     } else {
                         echo '<li>No jobs found.</li>';
                     }
-                    $conn->close();
                     ?>
                     </ul>
                 </div>

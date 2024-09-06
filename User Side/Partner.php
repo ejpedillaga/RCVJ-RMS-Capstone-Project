@@ -2,10 +2,37 @@
 include 'connection.php';
 
 $conn = connection();
+session_start();
 
+// Fetch partner company logos and names
 $sql = "SELECT logo, company_name FROM partner_table";
 $result = $conn->query($sql);
+
+// Check if the user is logged in
+if (isset($_SESSION['user'])) {
+    $user_email = $_SESSION['user'];
+
+    // Use a prepared statement to safely query user data
+    $stmt = $conn->prepare("SELECT fname, lname FROM applicant_table WHERE email = ?");
+    $stmt->bind_param("s", $user_email);
+    $stmt->execute();
+    $user_result = $stmt->get_result();
+
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
+        $user_name = $user['fname'] . ' ' . $user['lname'];
+    } else {
+        $user_name = 'User';
+    }
+
+    $stmt->close();
+} else {
+    $user_name = 'Sign Up';
+}
+
+$conn->close();
 ?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -57,7 +84,7 @@ $result = $conn->query($sql);
                     </div>
                 </div>
                     <img src="images/user.svg" alt="">
-                    <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
+                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
         </nav>
 

@@ -170,11 +170,12 @@ $conn->close();
                     </div>
                     <div class="input-group-item">
                         <div class="input-wrapper">
-                          <input placeholder="Birthday" class="textbox-n" type="text" onfocus="(this.type='date')"
-                          onblur="(this.type='text')" id="date" />
+                          <input placeholder="Birthday" class="textbox-n" type="date" onfocus="(this.type='date')"
+                          onblur="(this.type='text')" id="date" name="date"/>
                             <i class="fa-solid fa-cake-candles"></i>
                         </div>
                     </div>
+
                 </div>
                 <div class="input-group">
                     <input type="text" name="loc" id="loc" placeholder="Location"  required/>

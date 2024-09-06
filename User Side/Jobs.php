@@ -1,8 +1,30 @@
 <?php
-    include 'connection.php';
-    $conn = connection();
-    $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
-    $result = $conn->query($sql);
+include 'connection.php';
+$conn = connection();
+session_start();
+
+$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
+$jobs_result = $conn->query($sql); // Execute the job listing query
+
+if (isset($_SESSION['user'])) {
+    // Fetch user's full name from the session
+    $user_email = $_SESSION['user'];
+
+    // Use the existing connection
+    $user_sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
+    $user_result = $conn->query($user_sql);
+
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
+        $user_name = $user['fname'] . ' ' . $user['lname'];
+    } else {
+        $user_name = 'User';
+    }
+} else {
+    $user_name = 'Sign Up';
+}
+
+$conn->close(); // Close the connection once all queries are done
 ?>
 
 <!DOCTYPE html>
@@ -57,7 +79,7 @@
                 </div>
             </div>
                 <img src="images/user.svg" alt="">
-                <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
+                <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
             </div>
         </nav>
 
@@ -138,8 +160,8 @@
                 <div class="jobs-main-container">
                     <ul>
                     <?php
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
+                    if ($jobs_result->num_rows > 0) {
+                        while($row = $jobs_result->fetch_assoc()) {
                             echo '<li>';
                             echo '<div class="jobs-card" onclick="window.location.href=\'JobDetails.php?id=' . $row["id"] . '\'">';
                             echo '<div class="job-header">';
@@ -160,7 +182,6 @@
                     } else {
                         echo '<li>No jobs found.</li>';
                     }
-                    $conn->close();
                     ?>
                     </ul>
                 </div>

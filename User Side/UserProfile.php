@@ -1,3 +1,84 @@
+<?php
+session_start();
+
+$user_data = [
+    'fname' => '',
+    'lname' => '',
+    'location' => '',
+    'gender' => '',
+    'phone' => '',
+    'email' => '',
+    'birthday' => '',
+    'classi' => '',
+    'subclassi' => ''
+];
+
+$user_name = 'User';
+$user_location = 'Unknown Location';
+
+if (isset($_SESSION['user'])) {
+    $user_email = $_SESSION['user'];
+
+    $servername = "localhost";
+    $username = "root";
+    $password = "12345";
+    $dbname = "admin_database";
+
+    $conn = new mysqli($servername, $username, $password, $dbname);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        // Fetch and sanitize form data
+        $fname = $conn->real_escape_string($_POST['fname']);
+        $lname = $conn->real_escape_string($_POST['lname']);
+        $location = $conn->real_escape_string($_POST['location']);
+        $gender = $conn->real_escape_string($_POST['gender']);
+        $phone = $conn->real_escape_string($_POST['phone']);
+        $birthday = $conn->real_escape_string($_POST['birthday']);
+        $classi = $conn->real_escape_string($_POST['classi']);
+        $subclassi = $conn->real_escape_string($_POST['subclassi']);
+
+        // Update the user's data in the database
+        $sql = "UPDATE applicant_table SET 
+                fname = '$fname', 
+                lname = '$lname', 
+                location = '$location', 
+                gender = '$gender', 
+                phone = '$phone', 
+                birthday = '$birthday', 
+                classi = '$classi', 
+                subclassi = '$subclassi'
+                WHERE email = '$user_email'";
+
+        if ($conn->query($sql) === TRUE) {
+            $_SESSION['message'] = "Profile updated successfully!";
+            // Refresh the page to reflect changes
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error updating profile: " . $conn->error;
+        }
+    }
+
+    // Fetch the user's data to populate the form
+    $sql = "SELECT fname, lname, location, gender, phone, email, birthday, classi, subclassi 
+            FROM applicant_table WHERE email = '$user_email'";
+    $result = $conn->query($sql);
+
+    if ($result->num_rows > 0) {
+        $user_data = $result->fetch_assoc();
+        $user_name = $user_data['fname'] . ' ' . $user_data['lname'];
+        $user_location = $user_data['location'];
+    }
+
+    $conn->close();
+}
+?>
+
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -16,10 +97,10 @@
             </div>
             <div>
                 <ul class="nav-links">
-                    <li><a href="Home.html">Home</a></li>
-                    <li><a href="Jobs.html">Jobs</a></li>
-                    <li><a href="About.html">About</a></li>
-                    <li><a href="Partner.html">Partner Companies</a></li>
+                    <li><a href="Home.php">Home</a></li>
+                    <li><a href="Jobs.php">Jobs</a></li>
+                    <li><a href="About.php">About</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
                 </ul>
             </div>
             <div class="nav-acc">
@@ -50,7 +131,7 @@
                     </div>
                 </div>
                     <img src="images/user.svg" alt="">
-                    <button id="profile">Juan</button>
+                    <button><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
             </nav>
 
@@ -94,9 +175,9 @@
                     </div>
                     <div class="menu-links">
                         <li><a class="active" href="#" onclick="toggleMenu()">Home</a></li>
-                        <li><a href="Jobs.html" onclick="toggleMenu()">Jobs</a></li>
-                        <li><a href="About.html" onclick="toggleMenu()">About</a></li>
-                        <li><a href="Partner.html" onclick="toggleMenu()">Partner Companies</a></li>
+                        <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
+                        <li><a href="About.php" onclick="toggleMenu()">About</a></li>
+                        <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
                         <div class="nav-acc">
                             <img src="images/user.svg" alt="">
                             <button id="profile">User Name</button>
@@ -113,73 +194,76 @@
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
-                        <form action="">
-                            <div class="form-group">
-                                <div>
-                                    <label class="label" for="first-name">First Name</label>
-                                    <input type="text" id="first-name" class="input-field" value="Juan Miguel">
-                                </div>
-
-                                <div>
-                                    <label class="label" for="last-name">Last Name</label>
-                                    <input type="text" id="last-name" class="input-field" value="Escalante">                                    </div>
-                                </div>
-
-                                <div id="location-group" class="form-group">
-                                    <div>
-                                        <label class="label" for="location">Location</label>
-                                        <input type="text" id="location" class="input-field" value="Imus, Cavite">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="gender">Gender</label>
-                                        <select id="gender" class="select-field">
-                                            <option value="Male" selected>Male</option>
-                                            <option value="Female">Female</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="label" for="contact-number">Contact Number</label>
-                                        <input type="tel" id="contact-number" class="input-field" value="09122354678">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="email">Email Address</label>
-                                        <input type="email" id="email" class="input-field" value="juanih@gmail.com">
-                                    </div>
-
-                                    <div>
-                                        <label class="label" for="birthday">Birthday</label>
-                                        <input type="date" id="birthday" class="input-field" value="2001-10-27">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="classification">Classification</label>
-                                        <select id="classification" class="select-field">
-                                            <option value="Sales" selected>Sales</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="label" for="sub-classificiation">Sub-Classification</label>
-                                        <select id="sub-classificiation" class="select-field">
-                                            <option value="Management">Management</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div id="button-group" class="form-group">
-                                    <button class="button">Save</button>
-                                </div>
+                    <form action="" method="POST">
+                        <div class="form-group">
+                            <div>
+                                <label class="label" for="first-name">First Name</label>
+                                <input type="text" id="first-name" name="fname" class="input-field" value="<?php echo htmlspecialchars($user_data['fname']); ?>">
                             </div>
-                        </form>
+
+                            <div>
+                                <label class="label" for="last-name">Last Name</label>
+                                <input type="text" id="last-name" name="lname" class="input-field" value="<?php echo htmlspecialchars($user_data['lname']); ?>">
+                            </div>
+                        </div>
+
+                        <div id="location-group" class="form-group">
+                            <div>
+                                <label class="label" for="location">Location</label>
+                                <input type="text" id="location" name="location" class="input-field" value="<?php echo htmlspecialchars($user_data['location']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                <label class="label" for="gender">Gender</label>
+                                <select id="gender" name="gender" class="select-field">
+                                    <option value="Male" <?php if ($user_data['gender'] == 'Male') echo 'selected'; ?>>Male</option>
+                                    <option value="Female" <?php if ($user_data['gender'] == 'Female') echo 'selected'; ?>>Female</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="label" for="contact-number">Contact Number</label>
+                                <input type="tel" id="contact-number" name="phone" class="input-field" value="<?php echo htmlspecialchars($user_data['phone']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                <label class="label" for="email">Email Address</label>
+                                <input type="email" id="email" name="email" class="input-field" value="<?php echo htmlspecialchars($user_data['email']); ?>" readonly>
+                            </div>
+
+                            <div>
+                                <label class="label" for="birthday">Birthday</label>
+                                <input type="date" id="birthday" name="birthday" class="input-field" value="<?php echo htmlspecialchars($user_data['birthday']); ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                <label class="label" for="classification">Classification</label>
+                                <select id="classification" name="classi" class="select-field">
+                                    <option value="Sales" <?php if ($user_data['classi'] == 'Sales') echo 'selected'; ?>>Sales</option>
+                                    <!-- Add more classification options as needed -->
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="label" for="sub-classification">Sub-Classification</label>
+                                <select id="sub-classification" name="subclassi" class="select-field">
+                                    <option value="Management" <?php if ($user_data['subclassi'] == 'Management') echo 'selected'; ?>>Management</option>
+                                    <!-- Add more sub-classification options as needed -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="button-group" class="form-group">
+                            <button type="submit" class="button">Save</button>
+                        </div>
+                    </form>
+
                         <a href="javascript:void(0)" class="closebtn" onclick="closeNav('editProfile-sidenav', 'profile-container')">&times;</a>
                     </div>
                 </div>
@@ -710,16 +794,16 @@
                             <div class="content">
                                 <img id="profile-picture" src="images/profileicon.svg" alt="">
                                 <div>
-                                    <h1>Juan Escalante</h1>
+                                    <h1><?php echo htmlspecialchars($user_name); ?></h1>
                                     <div class="profile-contacts">
                                         <div class="user-address">
                                             <img class="profile-logo" src="images/image 29.svg" alt="">
-                                            <p>Imus, Cavite</p>
+                                            <p><?php echo htmlspecialchars($user_location); ?></p>
                                         </div>
                                         
                                         <div class="user-email">
                                             <img class="profile-logo" src="images/image 30.svg" alt="">
-                                            <p>juanih@gmail.com</p>
+                                            <p><?php echo htmlspecialchars($user_email); ?></p>
                                         </div>
                                     </div>
                                 </div>
@@ -728,7 +812,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="my-jobs-card" onclick="redirectTo('MyJobs.html')" class="profile-card">
+                        <div id="my-jobs-card" onclick="redirectTo('MyJobs.php')" class="profile-card">
                             <div class="content">
                                 <div class="mjc-header">
                                     <div class="my-jobs">

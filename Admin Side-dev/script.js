@@ -146,13 +146,13 @@ function hideDialogEdit() {
     document.getElementById('dialogBox-edit').style.display = 'none';
 }
 
-function openThirdPopup() {
+function openThirdPopup(companyName) {
     document.getElementById('thirdPopup').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+    document.getElementById('partner-jobposting-partner-company').value = companyName;
     // Initialize pagination for the third popup
     initializePopupPagination('thirdPopup');
     initializeSkillsInput('thirdPopup','partner-jobposting-skills-input','partner-jobposting-skills-container');
-    fetchOptions('thirdPopup');
 }
 
 function closeThirdPopup() {
@@ -429,272 +429,272 @@ document.addEventListener('DOMContentLoaded', function() {
         }); 
     } 
 });
-function displaySchedule(){
-    // Define an array to store events
-    let events = [];
 
-    // letiables to store event input fields and reminder list
-    let eventDateInput =
-        document.getElementById("eventDate");
-    let eventTitleInput =
-        document.getElementById("eventTitle");
-    let eventDescriptionInput =
-        document.getElementById("eventDescription");
-    let reminderList =
-        document.getElementById("reminderList");
+// Define an array to store events
+let events = [];
 
-    // Counter to generate unique event IDs
-    let eventIdCounter = 1;
+// letiables to store event input fields and reminder list
+let eventDateInput =
+    document.getElementById("eventDate");
+let eventTitleInput =
+    document.getElementById("eventTitle");
+let eventDescriptionInput =
+    document.getElementById("eventDescription");
+let reminderList =
+    document.getElementById("reminderList");
 
-    // Function to add events
-    function addEvent() {
-        let date = eventDateInput.value;
-        let title = eventTitleInput.value;
-        let description = eventDescriptionInput.value;
+// Counter to generate unique event IDs
+let eventIdCounter = 1;
 
-        if (date && title) {
-            // Create a unique event ID
-            let eventId = eventIdCounter++;
+// Function to add events
+function addEvent() {
+    let date = eventDateInput.value;
+    let title = eventTitleInput.value;
+    let description = eventDescriptionInput.value;
 
-            events.push(
-                {
-                    id: eventId, date: date,
-                    title: title,
-                    description: description
-                }
-            );
-            showCalendar(currentMonth, currentYear);
-            eventDateInput.value = "";
-            eventTitleInput.value = "";
-            eventDescriptionInput.value = "";
-            displayReminders();
-        }
-    }
+    if (date && title) {
+        // Create a unique event ID
+        let eventId = eventIdCounter++;
 
-    // Function to delete an event by ID
-    function deleteEvent(eventId) {
-        // Find the index of the event with the given ID
-        let eventIndex =
-            events.findIndex((event) =>
-                event.id === eventId);
-
-        if (eventIndex !== -1) {
-            // Remove the event from the events array
-            events.splice(eventIndex, 1);
-            showCalendar(currentMonth, currentYear);
-            displayReminders();
-        }
-    }
-
-    // Function to display reminders
-    function displayReminders() {
-        reminderList.innerHTML = "";
-        for (let i = 0; i < events.length; i++) {
-            let event = events[i];
-            let eventDate = new Date(event.date);
-            if (eventDate.getMonth() ===
-                currentMonth &&
-                eventDate.getFullYear() ===
-                currentYear) {
-                let listItem = document.createElement("li");
-                listItem.innerHTML =
-                    `<strong>${event.title}</strong> - 
-                ${event.description} on 
-                ${eventDate.toLocaleDateString()}`;
-
-                // Add a delete button for each reminder item
-                let deleteButton =
-                    document.createElement("button");
-                deleteButton.className = "delete-event";
-                deleteButton.textContent = "Delete";
-                deleteButton.onclick = function () {
-                    deleteEvent(event.id);
-                };
-
-                listItem.appendChild(deleteButton);
-                reminderList.appendChild(listItem);
+        events.push(
+            {
+                id: eventId, date: date,
+                title: title,
+                description: description
             }
-        }
-    }
-
-    // Function to generate a range of 
-    // years for the year select input
-    function generate_year_range(start, end) {
-        let years = "";
-        for (let year = start; year <= end; year++) {
-            years += "<option value='" +
-                year + "'>" + year + "</option>";
-        }
-        return years;
-    }
-
-    // Initialize date-related letiables
-    today = new Date();
-    currentMonth = today.getMonth();
-    currentYear = today.getFullYear();
-    selectYear = document.getElementById("year");
-    selectMonth = document.getElementById("month");
-
-    createYear = generate_year_range(1970, 2050);
-
-    document.getElementById("year").innerHTML = createYear;
-
-    let calendar = document.getElementById("calendar");
-
-    let months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-    ];
-    let days = [
-        "Sun", "Mon", "Tue", "Wed",
-        "Thu", "Fri", "Sat"];
-
-    $dataHead = "<tr>";
-    for (dhead in days) {
-        $dataHead += "<th data-days='" +
-            days[dhead] + "'>" +
-            days[dhead] + "</th>";
-    }
-    $dataHead += "</tr>";
-
-    document.getElementById("thead-month").innerHTML = $dataHead;
-
-    monthAndYear =
-        document.getElementById("monthAndYear");
-    showCalendar(currentMonth, currentYear);
-
-    // Function to navigate to the next month
-    function next() {
-        currentYear = currentMonth === 11 ?
-            currentYear + 1 : currentYear;
-        currentMonth = (currentMonth + 1) % 12;
+        );
         showCalendar(currentMonth, currentYear);
-    }
-
-    // Function to navigate to the previous month
-    function previous() {
-        currentYear = currentMonth === 0 ?
-            currentYear - 1 : currentYear;
-        currentMonth = currentMonth === 0 ?
-            11 : currentMonth - 1;
-        showCalendar(currentMonth, currentYear);
-    }
-
-    // Function to jump to a specific month and year
-    function jump() {
-        currentYear = parseInt(selectYear.value);
-        currentMonth = parseInt(selectMonth.value);
-        showCalendar(currentMonth, currentYear);
-    }
-
-    // Function to display the calendar
-    function showCalendar(month, year) {
-        let firstDay = new Date(year, month, 1).getDay();
-        tbl = document.getElementById("calendar-body");
-        tbl.innerHTML = "";
-        monthAndYear.innerHTML = months[month] + " " + year;
-        selectYear.value = year;
-        selectMonth.value = month;
-
-        let date = 1;
-        for (let i = 0; i < 6; i++) {
-            let row = document.createElement("tr");
-            for (let j = 0; j < 7; j++) {
-                if (i === 0 && j < firstDay) {
-                    cell = document.createElement("td");
-                    cellText = document.createTextNode("");
-                    cell.appendChild(cellText);
-                    row.appendChild(cell);
-                } else if (date > daysInMonth(month, year)) {
-                    break;
-                } else {
-                    cell = document.createElement("td");
-                    cell.setAttribute("data-date", date);
-                    cell.setAttribute("data-month", month + 1);
-                    cell.setAttribute("data-year", year);
-                    cell.setAttribute("data-month_name", months[month]);
-                    cell.className = "date-picker";
-                    cell.innerHTML = "<span>" + date + "</span";
-
-                    if (
-                        date === today.getDate() &&
-                        year === today.getFullYear() &&
-                        month === today.getMonth()
-                    ) {
-                        cell.className = "date-picker selected";
-                    }
-
-                    // Check if there are events on this date
-                    if (hasEventOnDate(date, month, year)) {
-                        cell.classList.add("event-marker");
-                        cell.appendChild(
-                            createEventTooltip(date, month, year)
-                    );
-                    }
-
-                    row.appendChild(cell);
-                    date++;
-                }
-            }
-            tbl.appendChild(row);
-        }
-
+        eventDateInput.value = "";
+        eventTitleInput.value = "";
+        eventDescriptionInput.value = "";
         displayReminders();
     }
+}
 
-    // Function to create an event tooltip
-    function createEventTooltip(date, month, year) {
-        let tooltip = document.createElement("div");
-        tooltip.className = "event-tooltip";
-        let eventsOnDate = getEventsOnDate(date, month, year);
-        for (let i = 0; i < eventsOnDate.length; i++) {
-            let event = eventsOnDate[i];
-            let eventDate = new Date(event.date);
-            let eventText = `<strong>${event.title}</strong> - 
-                ${event.description} on 
-                ${eventDate.toLocaleDateString()}`;
-            let eventElement = document.createElement("p");
-            eventElement.innerHTML = eventText;
-            tooltip.appendChild(eventElement);
+// Function to delete an event by ID
+function deleteEvent(eventId) {
+    // Find the index of the event with the given ID
+    let eventIndex =
+        events.findIndex((event) =>
+            event.id === eventId);
+
+    if (eventIndex !== -1) {
+        // Remove the event from the events array
+        events.splice(eventIndex, 1);
+        showCalendar(currentMonth, currentYear);
+        displayReminders();
+    }
+}
+
+// Function to display reminders
+function displayReminders() {
+    reminderList.innerHTML = "";
+    for (let i = 0; i < events.length; i++) {
+        let event = events[i];
+        let eventDate = new Date(event.date);
+        if (eventDate.getMonth() ===
+            currentMonth &&
+            eventDate.getFullYear() ===
+            currentYear) {
+            let listItem = document.createElement("li");
+            listItem.innerHTML =
+                `<strong>${event.title}</strong> - 
+            ${event.description} on 
+            ${eventDate.toLocaleDateString()}`;
+
+            // Add a delete button for each reminder item
+            let deleteButton =
+                document.createElement("button");
+            deleteButton.className = "delete-event";
+            deleteButton.textContent = "Delete";
+            deleteButton.onclick = function () {
+                deleteEvent(event.id);
+            };
+
+            listItem.appendChild(deleteButton);
+            reminderList.appendChild(listItem);
         }
-        return tooltip;
     }
+}
 
-    // Function to get events on a specific date
-    function getEventsOnDate(date, month, year) {
-        return events.filter(function (event) {
-            let eventDate = new Date(event.date);
-            return (
-                eventDate.getDate() === date &&
-                eventDate.getMonth() === month &&
-                eventDate.getFullYear() === year
-            );
-        });
+// Function to generate a range of 
+// years for the year select input
+function generate_year_range(start, end) {
+    let years = "";
+    for (let year = start; year <= end; year++) {
+        years += "<option value='" +
+            year + "'>" + year + "</option>";
     }
+    return years;
+}
 
-    // Function to check if there are events on a specific date
-    function hasEventOnDate(date, month, year) {
-        return getEventsOnDate(date, month, year).length > 0;
-    }
+// Initialize date-related letiables
+today = new Date();
+currentMonth = today.getMonth();
+currentYear = today.getFullYear();
+selectYear = document.getElementById("year");
+selectMonth = document.getElementById("month");
 
-    // Function to get the number of days in a month
-    function daysInMonth(iMonth, iYear) {
-        return 32 - new Date(iYear, iMonth, 32).getDate();
-    }
+createYear = generate_year_range(1970, 2050);
 
-    // Call the showCalendar function initially to display the calendar
+document.getElementById("year").innerHTML = createYear;
+
+let calendar = document.getElementById("calendar");
+
+let months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+let days = [
+    "Sun", "Mon", "Tue", "Wed",
+    "Thu", "Fri", "Sat"];
+
+$dataHead = "<tr>";
+for (dhead in days) {
+    $dataHead += "<th data-days='" +
+        days[dhead] + "'>" +
+        days[dhead] + "</th>";
+}
+$dataHead += "</tr>";
+
+document.getElementById("thead-month").innerHTML = $dataHead;
+
+monthAndYear =
+    document.getElementById("monthAndYear");
+showCalendar(currentMonth, currentYear);
+
+// Function to navigate to the next month
+function next() {
+    currentYear = currentMonth === 11 ?
+        currentYear + 1 : currentYear;
+    currentMonth = (currentMonth + 1) % 12;
     showCalendar(currentMonth, currentYear);
 }
+
+// Function to navigate to the previous month
+function previous() {
+    currentYear = currentMonth === 0 ?
+        currentYear - 1 : currentYear;
+    currentMonth = currentMonth === 0 ?
+        11 : currentMonth - 1;
+    showCalendar(currentMonth, currentYear);
+}
+
+// Function to jump to a specific month and year
+function jump() {
+    currentYear = parseInt(selectYear.value);
+    currentMonth = parseInt(selectMonth.value);
+    showCalendar(currentMonth, currentYear);
+}
+
+// Function to display the calendar
+function showCalendar(month, year) {
+    let firstDay = new Date(year, month, 1).getDay();
+    tbl = document.getElementById("calendar-body");
+    tbl.innerHTML = "";
+    monthAndYear.innerHTML = months[month] + " " + year;
+    selectYear.value = year;
+    selectMonth.value = month;
+
+    let date = 1;
+    for (let i = 0; i < 6; i++) {
+        let row = document.createElement("tr");
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay) {
+                cell = document.createElement("td");
+                cellText = document.createTextNode("");
+                cell.appendChild(cellText);
+                row.appendChild(cell);
+            } else if (date > daysInMonth(month, year)) {
+                break;
+            } else {
+                cell = document.createElement("td");
+                cell.setAttribute("data-date", date);
+                cell.setAttribute("data-month", month + 1);
+                cell.setAttribute("data-year", year);
+                cell.setAttribute("data-month_name", months[month]);
+                cell.className = "date-picker";
+                cell.innerHTML = "<span>" + date + "</span";
+
+                if (
+                    date === today.getDate() &&
+                    year === today.getFullYear() &&
+                    month === today.getMonth()
+                ) {
+                    cell.className = "date-picker selected";
+                }
+
+                // Check if there are events on this date
+                if (hasEventOnDate(date, month, year)) {
+                    cell.classList.add("event-marker");
+                    cell.appendChild(
+                        createEventTooltip(date, month, year)
+                );
+                }
+
+                row.appendChild(cell);
+                date++;
+            }
+        }
+        tbl.appendChild(row);
+    }
+
+    displayReminders();
+}
+
+// Function to create an event tooltip
+function createEventTooltip(date, month, year) {
+    let tooltip = document.createElement("div");
+    tooltip.className = "event-tooltip";
+    let eventsOnDate = getEventsOnDate(date, month, year);
+    for (let i = 0; i < eventsOnDate.length; i++) {
+        let event = eventsOnDate[i];
+        let eventDate = new Date(event.date);
+        let eventText = `<strong>${event.title}</strong> - 
+            ${event.description} on 
+            ${eventDate.toLocaleDateString()}`;
+        let eventElement = document.createElement("p");
+        eventElement.innerHTML = eventText;
+        tooltip.appendChild(eventElement);
+    }
+    return tooltip;
+}
+
+// Function to get events on a specific date
+function getEventsOnDate(date, month, year) {
+    return events.filter(function (event) {
+        let eventDate = new Date(event.date);
+        return (
+            eventDate.getDate() === date &&
+            eventDate.getMonth() === month &&
+            eventDate.getFullYear() === year
+        );
+    });
+}
+
+// Function to check if there are events on a specific date
+function hasEventOnDate(date, month, year) {
+    return getEventsOnDate(date, month, year).length > 0;
+}
+
+// Function to get the number of days in a month
+function daysInMonth(iMonth, iYear) {
+    return 32 - new Date(iYear, iMonth, 32).getDate();
+}
+
+// Call the showCalendar function initially to display the calendar
+showCalendar(currentMonth, currentYear);
+
 
 function fetchData(url, callback) {
     fetch(url)
@@ -754,9 +754,9 @@ function populateEmployeesTable(data) {
         <td id="fullname" class="fullname">${employee.full_name}</td>
         <td id="date">${employee.date_added}</td>
         <td>
-            <select class="status-dropdown">
-                <option ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
-                <option ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+            <select id="employee-status-dropdown-${employee.employee_id}" class="status-dropdown" data-original-value="${employee.status}" onchange="handleEmployeeStatusChange(${employee.employee_id})">
+                <option value="Active" ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
+                <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
         <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
@@ -765,12 +765,66 @@ function populateEmployeesTable(data) {
     populateTable(data, 'table', rowTemplate);
 }
 
+function handleEmployeeStatusChange(employeeId) {
+    const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+    const selectedValue = dropdown.value;
+    const originalValue = dropdown.getAttribute('data-original-value');
+
+    const confirmation = confirm(`Are you sure you want to change the status of employee ID ${employeeId} to: ${selectedValue}?`);
+
+    if (confirmation) {
+        // User confirmed the change
+        console.log(`Status for employee ID ${employeeId} changed to: ${selectedValue}`);
+        // Update the original value with the new selection
+        dropdown.setAttribute('data-original-value', selectedValue);
+
+        // Send an AJAX request to update the status in the database
+        updateEmployeeStatusInDatabase(employeeId, selectedValue);
+    } else {
+        // User canceled the change, revert to the original value
+        dropdown.value = originalValue;
+        console.log('Status change canceled. Reverted to original value.');
+    }
+}
+
+function updateEmployeeStatusInDatabase(employeeId, status) {
+    // Example using fetch API to send the update request
+    fetch('updateEmployeeStatus.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            employeeId: employeeId,
+            status: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Employee status updated successfully in the database.');
+        } else {
+            console.error('Failed to update employee status in the database.');
+            // Optionally, revert the dropdown to its original value if the update fails
+            const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+            dropdown.value = dropdown.getAttribute('data-original-value');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating employee status:', error);
+        // Optionally, revert the dropdown to its original value if the update fails
+        const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
+        dropdown.value = dropdown.getAttribute('data-original-value');
+    });
+}
+
 function populatePartnersTable(data) {
-    const rowTemplate = (partner) => `
+    const rowTemplate = (partner) =>
+         `
         <td>
         <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100"></td>
         <td id="company-name">${partner.company_name}</td>
-        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup()"></i></td>
+        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i></td>
         <td id="date">${partner.date_added}</td>
         <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i></td>
         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i></td>
@@ -786,9 +840,9 @@ function populateJobsTable(containerSelector, data) {
         <td id="date">${job.date_posted}</td>
         <td id="available">${job.job_candidates}</td>
         <td>
-            <select id="job-status-dropdown" class="status-dropdown">
-                <option ${job.job_status === 'Open' ? 'selected' : ''}>Open</option>
-                <option ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
+            <select id="job-status-dropdown-${job.id}" class="status-dropdown" data-original-value="${job.job_status}" onchange="handleStatusChange(${job.id})">
+                <option value="Open" ${job.job_status === 'Open' ? 'selected' : ''}>Open</option>
+                <option value="Closed" ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
             </select>
         </td>
         <td id="edit"><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i></td>
@@ -797,8 +851,61 @@ function populateJobsTable(containerSelector, data) {
     populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
 }
 
+function handleStatusChange(jobId) {
+    const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+    const selectedValue = dropdown.value;
+    const originalValue = dropdown.getAttribute('data-original-value');
+
+    const confirmation = confirm(`Are you sure you want to change the job status for job ID ${jobId} to: ${selectedValue}?`);
+
+    if (confirmation) {
+        // User confirmed the change
+        console.log(`Job status for job ID ${jobId} changed to: ${selectedValue}`);
+        // Update the original value with the new selection
+        dropdown.setAttribute('data-original-value', selectedValue);
+
+        // Send an AJAX request to update the status in the database
+        updateJobStatusInDatabase(jobId, selectedValue);
+    } else {
+        // User canceled the change, revert to the original value
+        dropdown.value = originalValue;
+        console.log('Job status change canceled. Reverted to original value.');
+    }
+}
+
+function updateJobStatusInDatabase(jobId, status) {
+    fetch('updateJobStatus.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            jobId: jobId,
+            status: status
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Job status updated successfully in the database.');
+        } else {
+            console.error('Failed to update job status in the database.');
+            // Revert the dropdown to its original value if the update fails
+            const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+            dropdown.value = dropdown.getAttribute('data-original-value');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating job status:', error);
+        // Revert the dropdown to its original value if the update fails
+        const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
+        dropdown.value = dropdown.getAttribute('data-original-value');
+    });
+}
+
 function openEditJobPopup(jobId) {
     currentJobId = jobId; // Store the job ID for use in the popup
+    console.log(currentJobId);
 
     // Show the edit job popup and overlay
     document.getElementById('editJob-popup').classList.add('show');
@@ -833,8 +940,6 @@ function openEditJobPopup(jobId) {
 // Function to save and post the edited job
 function editJob() {
 
-    const companySelect = document.getElementById('edit-jobposting-partner-company');
-    const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
     const jobTitle = document.getElementById('edit-jobposting-job-title').value;
     const location = document.getElementById('edit-jobposting-location').value;
     const openings = document.getElementById('edit-jobposting-openings').value;
@@ -842,12 +947,12 @@ function editJob() {
 
     // Collect skills
     const skillsArray = Array.from(skillsSet); // Convert the Set to an array
-    console.log('Company Name:', companyName)
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Openings:', openings);
     console.log('Description:', description);
     console.log('Skills Array:', skillsArray);
+    console.log('Job Id:'. currentJobId);
 
     // Input validation
     if (!jobTitle || !location || !openings) {
@@ -864,7 +969,6 @@ function editJob() {
 
     // Create form data
     const formData = new FormData();
-    formData.append('company_name', companyName);
     formData.append('job_title', jobTitle);
     formData.append('job_location', location);
     formData.append('job_candidates', openings);
@@ -1106,13 +1210,12 @@ function saveAndPostJob() {
 // Function to collect form data and send to the server from partner section
 function partnerSaveAndPostJob() {
     // Collect data from the popup
-    const companySelect = document.getElementById('jobposting-partner-company');
-    const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
 
+    const companyName = document.getElementById('partner-jobposting-partner-company').value;
     const jobTitle = document.getElementById('partner-jobposting-job-title').value;
     const location = document.getElementById('partner-jobposting-location').value;
     const candidates = document.getElementById('partner-jobposting-openings').value;
-    const description = document.getElementById('partner-jobposting-description').value.trim();
+    const description = document.getElementById('partner-jobposting-description').value;
 
 
     // Collect skills
@@ -1126,7 +1229,7 @@ function partnerSaveAndPostJob() {
     console.log('Skills Array:', skillsArray);
 
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates || !description || skillsArray.length === 0) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1160,7 +1263,7 @@ function partnerSaveAndPostJob() {
             console.log('Success:', data.message);
             // Handle success, e.g., close the popup or display a message
             alert('Job post added successfully!');
-            closePopup('popup');
+            closeThirdPopup('popup');
 
 
             window.location.reload();
@@ -1176,6 +1279,7 @@ function partnerSaveAndPostJob() {
         alert('An error occurred while adding the job.');
     });
 }
+
 function showEditDialog(employeeId){
     currentEmployeeId = employeeId;
     document.getElementById('edit-dialogBox').style.display = 'block';
@@ -1200,6 +1304,60 @@ function hideEditDialog(){
     document.getElementById('edit-dialogBox').style.display = 'none';
     document.getElementById('edit-dialogBox').classList.remove('show');
     document.getElementById('overlay').classList.remove('show');
+}
+
+function editEmployee(){
+    const firstName = document.getElementById('edit-employees-firstname').value.trim();
+    const lastName = document.getElementById('edit-employees-lastname').value.trim();
+    const pw = document.getElementById('edit-employees-userid').value.trim();
+
+    console.log(firstName);
+    console.log(lastName);
+    console.log(pw);
+
+
+    // Input validation
+    if (!firstName || !lastName || !pw) {
+        alert('Please fill out all required fields.');
+        return; // Prevent form submission
+    }
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    //formData.append('password', pw);
+    formData.append('employee_id', currentEmployeeId);
+
+
+    // Send data using fetch
+    fetch('editEmployee.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            console.log('Success:', data.message);
+            alert('Employee data updated successfully!');
+            hideEditDialog();
+
+            // Clear the form fields
+            document.getElementById('addemployees-firstname').value = '';
+            document.getElementById('addemployees-lastname').value = '';
+            document.getElementById('addemployees-password').value = '';
+
+            //Fetch and display new data
+            fetchData('fetch_employees.php', populateEmployeesTable)
+        } else {
+            console.error('Error:', data.error);
+            alert('An error occurred while updating the employee data: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the employee data.');
+    });
 }
 
 function addNewEmployee(){
@@ -1312,6 +1470,7 @@ function editPartner() {
     console.log('Industry:', industry);
     console.log('Location:', companyLocation);
     console.log('Description:', companyDescription);
+    console.log('Partner Id:', currentPartnerId)
 
     // Create FormData object to handle file and text data
     const formData = new FormData();

@@ -199,6 +199,7 @@ function closePopup(popupId) {
 // Open specific popups
 function openJobPostingPopup() {
     openPopup('popup');
+    initializePopupPagination('popup');
     initializeSkillsInput('popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
 }
 
@@ -904,6 +905,7 @@ function updateJobStatusInDatabase(jobId, status) {
 }
 
 function openEditJobPopup(jobId) {
+    initializePopupPagination('editJob-popup');
     currentJobId = jobId; // Store the job ID for use in the popup
     console.log(currentJobId);
 
@@ -1581,8 +1583,7 @@ function initializePopupPagination(popupId) {
 }
 
 // Initialize pagination for all popups
-initializePopupPagination('popup');
-initializePopupPagination('editJob-popup');
+
 initializePopupPagination('thirdPopup')
 
 

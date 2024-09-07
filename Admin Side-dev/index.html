@@ -206,12 +206,36 @@
                             </div>
                             <div class="btns-group">
                                 <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
                             </div>
                             <div class="jobposting-buttons">
                                 <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
                             </div>
                         </div>
+
+                        <div class="form-step">
+                            <div class="jobposting-box">
+                                <label for="jobposting-qualifications">Qualifications</label><br>
+                                <div class="jobposting-container">
+                                    <div id="jobposting-qualifications-container" class="jobposting-qualifications-container">
+                                        <input type="text" id="jobposting-qualifications-input" placeholder="Enter a qualification and press Enter">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="added_qualifications">Qualifications Added</label>
+                                        <ul id="added_qualifications_list"></ul>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                            </div>
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
+                            </div>
+                        </div>          
                     </div>
                 </div>
 
@@ -272,7 +296,7 @@
                             </div>
                             <div class="jobposting-buttons">
                                 <button class="jobposting-button jobposting-button-save" onclick="editJob()">Save and Post</button>
-                                <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('editJob-popup')">Cancel</button>
+                                <button class= "jobposting-button jobposting-button-cancel" onclick="closePopup('editJob-popup')">Cancel</button>
                             </div>
                         </div>
 
@@ -291,6 +315,7 @@
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('editJob-popup')">Cancel</button>
                             </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -305,5 +330,32 @@
                 </div>
         </div>
     </div>
+    <script>
+        document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the form from submitting
+
+        var skillInput = document.getElementById('jobposting-qualifications-input');
+        var skillValue = skillInput.value.trim();
+
+        if (skillValue !== '') {
+            var ul = document.getElementById('added_qualifications_list');
+            var li = document.createElement('li');
+            li.innerHTML = `
+                <span>${skillValue}</span>
+                <button class="close-btn">&times;</button>
+            `;
+            ul.appendChild(li);
+            skillInput.value = ''; // Clear the input after adding
+
+            // Add event listener to the close button
+            li.querySelector('.close-btn').addEventListener('click', function() {
+                li.remove();
+            });
+        }
+    }
+});
+    </script>
+
 </body>
 </html>

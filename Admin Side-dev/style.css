@@ -730,6 +730,11 @@ table td:last-child{
 
 .popup h2 {
     font-size: 36px;
+    margin-bottom: 0;
+}
+
+.popup h2 {
+    margin-top: 0;
 }
 
 

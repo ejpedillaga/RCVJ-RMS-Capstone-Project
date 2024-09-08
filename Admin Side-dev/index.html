@@ -109,12 +109,12 @@
                 <!-- Popup dialog -->
                 <div class="popup" id="popup">
                     <h2>Job Posting</h2>
-                    <p>Fill in all the needed fields</p>
+                    <p><span style="color: red;">*</span> <strong>indicates a required field.</strong></p>
                     <div class="form-container">
                         <!-- Steps -->
                         <div class="form-step form-step-active">
                             <div class="jobposting-box">
-                                <label for="jobposting-partner-company">Partner Company</label>
+                                <label for="jobposting-partner-company">Partner Company <span style="color: red;">*</span></label>
                                 <select id="jobposting-partner-company" class="jobposting-select">
                                     <!--
                                     <option>WalterMart Supermarket - Dasmariñas</option>
@@ -133,11 +133,11 @@
                         
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-job-title">Job Title</label>
-                                <input type="text" id="jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br><br>
-                                <label for="jobposting-location">Location</label>
-                                <input type="text" id="jobposting-location" class="jobposting-input" placeholder="Enter job location"><br><br>
-                                <label for="jobposting-openings">Available openings</label>
+                                <label for="jobposting-job-title">Job Title <span style="color: red;">*</span></label>
+                                <input type="text" id="jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br>
+                                <label for="jobposting-location">Location <span style="color: red;">*</span></label>
+                                <input type="text" id="jobposting-location" class="jobposting-input" placeholder="Enter job location"><br>
+                                <label for="jobposting-openings">Available openings <span style="color: red;">*</span></label>
                                 <input type="number" id="jobposting-openings" class="jobposting-select" min="1" 
                             max="100" placeholder="Enter number of open positions from 1-100">
                             </div>
@@ -171,7 +171,7 @@
                             <div class="jobposting-box">
                                 <div class="jobposting-container">
                                     <div id="jobposting-qualifications-container" class="jobposting-qualifications-container">
-                                        <label for="jobposting-qualifications">Qualifications</label>
+                                        <label for="jobposting-qualifications">Qualifications <span style="color: red;">*</span></label>
                                         <input type="text" id="jobposting-qualifications-input" placeholder="Enter a qualification and press Enter">
                                     </div>
                                     <div class="form-group">
@@ -193,7 +193,7 @@
 
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-skills">Skills</label>
+                                <label for="jobposting-skills">Skills <span style="color: red;">*</span></label>
                                 <div id="add-jobposting-skills-container" class="jobposting-skills-container">
                                     <input type="text" id="jobposting-skills-input" placeholder="Enter a skill and press Enter">
                                 </div>
@@ -212,12 +212,12 @@
                 <!-- Edit Job Post Popup dialog -->
                 <div class="popup" id="editJob-popup">
                     <h2>Job Posting</h2>
-                    <p>Fill in all the needed fields</p>
+                    <p><span style="color: red;">*</span> <strong>indicates a required field.</strong></p>
                     <div class="form-container">
                         <!-- Steps -->
                         <div class="form-step form-step-active">
                             <div class="jobposting-box">
-                                <label for="jobposting-partner-company">Partner Company</label><br>
+                                <label for="jobposting-partner-company">Partner Company <span style="color: red;">*</span></label>
                                 <input type="text" id="edit-jobposting-partner-company" class="jobposting-select" readonly>
                                     <!--
                                     <option>WalterMart Supermarket - Dasmariñas</option>
@@ -236,11 +236,11 @@
                         
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-job-title">Job Title</label><br>
-                                <input type="text" id="edit-jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br><br>
-                                <label for="jobposting-location">Location</label><br>
-                                <input type="text" id="edit-jobposting-location" class="jobposting-input" placeholder="Enter job location"><br><br>
-                                <label for="jobposting-openings">Available openings</label><br>
+                                <label for="jobposting-job-title">Job Title <span style="color: red;">*</span></label>
+                                <input type="text" id="edit-jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br>
+                                <label for="jobposting-location">Location <span style="color: red;">*</span></label>
+                                <input type="text" id="edit-jobposting-location" class="jobposting-input" placeholder="Enter job location"><br>
+                                <label for="jobposting-openings">Available openings <span style="color: red;">*</span></label>
                                 <input type="number" id="edit-jobposting-openings" class="jobposting-select" min="1" 
                             max="100" placeholder="Enter number of open positions from 1-100">
                             </div>
@@ -257,7 +257,7 @@
 
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-description">Job Description</label><br>
+                                <label for="jobposting-description">Job Description</label>
                                 <textarea id="edit-jobposting-description" class="jobposting-textarea"></textarea>
                             </div>
                             <div class="btns-group">
@@ -272,7 +272,31 @@
 
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-skills">Skills</label><br>
+                                <div class="jobposting-container">
+                                    <div id="jobposting-qualifications-container" class="jobposting-qualifications-container">
+                                        <label for="jobposting-qualifications">Qualifications <span style="color: red;">*</span></label>
+                                        <input type="text" id="jobposting-qualifications-input" placeholder="Enter a qualification and press Enter">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="added_qualifications">Qualifications Added</label>
+                                        <ul id="added_qualifications_list"></ul>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                            </div>
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="editJob()">Save and Post</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('editJob-popup')">Cancel</button>
+                            </div>
+                        </div>   
+
+                        <div class="form-step">
+                            <div class="jobposting-box">
+                                <label for="jobposting-skills">Skills <span style="color: red;">*</span></label>
                                 <div id="edit-jobposting-skills-container" class="jobposting-skills-container">
                                     <input type="text" id="edit-jobposting-skills-input" placeholder="Enter a skill and press Enter">
                                 </div>

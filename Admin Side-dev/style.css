@@ -589,6 +589,7 @@ table td:last-child{
     flex: 1;
     display: flex;
     flex-direction: column;
+    align-self: center;
 }
 
 .jobposting-qualifications-container input {    
@@ -729,6 +730,11 @@ table td:last-child{
 
 .popup h2 {
     font-size: 36px;
+    margin-bottom: 0;
+}
+
+.popup h2 {
+    margin-top: 0;
 }
 
 
@@ -1436,6 +1442,10 @@ table td:last-child{
  .form-step {
     display: none;
     align-items: center;
+}
+
+.form-step label{
+    margin-bottom: 1rem;
 }
 
 .form-step-active {

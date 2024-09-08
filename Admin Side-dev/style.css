@@ -511,16 +511,10 @@ table td:last-child{
 .jobposting-container {
     overflow: auto;
 }
-.jobposting-box {
-    border-radius: 10px;
-    padding: 50px;
-    background-color: var(--light-violet);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
 
 .jobposting-box label{
     font-weight: bold;
+    
 }
 
 .jobposting-input, .jobposting-select {
@@ -535,7 +529,7 @@ table td:last-child{
 
 .jobposting-textarea {
     width: 100%;
-    height: 454px;
+    height: 250px;
     border-radius: 10px;
     border: 1px solid #ccc;
     padding: 10px;
@@ -545,7 +539,7 @@ table td:last-child{
 
 .jobposting-skills-container {
     display: flex;
-    flex-wrap: wrap; /* Allows tags to wrap to the next line */
+    flex-wrap: wrap; 
     border: 1px solid #ccc;
     padding: 5px;
     border-radius: 10px;
@@ -553,7 +547,7 @@ table td:last-child{
 }
 
 .jobposting-skills-container input {
-    flex: 1; /* Allow input to take up remaining space */
+    flex: 1; 
     border: none;
     outline: none;
     font-size: 16px;
@@ -570,8 +564,119 @@ table td:last-child{
     color: white;
     border-radius: 3px;
     font-size: 14px;
-    white-space: nowrap; /* Prevent text from wrapping */
+    white-space: nowrap; 
 }
+
+.jobposting-box {
+    background-color: #d1d5fa; 
+    padding: 28px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.jobposting-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.jobposting-qualifications-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.jobposting-qualifications-container input {    
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.jobposting-qualifications label{
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 20px;
+}
+
+.form-group label  {
+    margin-bottom: 10px;
+}
+
+#added_qualifications_list {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; 
+    max-height: 200px; 
+}
+
+#added_qualifications_list li {
+    background-color: #f57c42; 
+    color: white;
+    font-size: 14px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+#added_qualifications_list li button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/*Scrollbar*/
+#added_qualifications_list li button:hover {
+    color: #333; 
+}
+
+
+#added_qualifications_list::-webkit-scrollbar {
+    width: 12px;
+}
+
+#added_qualifications_list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+#added_qualifications_list::-webkit-scrollbar-thumb {
+    background: #f57c42;
+    border-radius: 10px;
+    border: 3px solid #f0f0f0;
+}
+
+#added_qualifications_list::-webkit-scrollbar-thumb:hover {
+    background: #3a2d8d; 
+}
+
+
 
 .jobposting-skill .close {
     margin-left: 10px;
@@ -1359,4 +1464,21 @@ table td:last-child{
     color: #1a0d53;
 }
 
+.popup .candidate-container{
+    padding: 0rem 8rem;
+}
+.popup .candidate-header{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+}
+.popup .candidate-container h2, h3{
+    margin: 0;
+}
 
+.popup .candidate-header .locationemail{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}

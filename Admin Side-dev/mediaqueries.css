@@ -65,6 +65,13 @@
     .status-dropdown {
         font-size: 0.9rem;
     }
+    .popup .candidate-container {
+        padding: 0rem;
+    }
+    .popup .candidate-header {
+        flex-direction: column;
+        text-align: center;
+    }
 }
 
 

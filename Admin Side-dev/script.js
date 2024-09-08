@@ -69,6 +69,18 @@ function toggle(element) {
     closedOption.classList.toggle('closed');
 }
 
+function showInfo() {
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('info').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+
+function hideInfo() {
+    document.getElementById('info').style.display = 'none';
+    document.getElementById('info').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
+}
+
 /*Dialog Box*/
 function showDialog() {
     document.getElementById('dialogBox').style.display = 'block';
@@ -254,153 +266,6 @@ function previewEditLogo(event) {
         reader.readAsDataURL(file);
     }
 }
-/* First attempt to populate tables
-//Check what page is currently viewed
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the current page URL or some identifier
-    const currentPage = window.location.pathname;
-
-    if (currentPage.includes('candidates.html')) {
-        initCandidatesPage();
-    } else if (currentPage.includes('rejected.html')) {
-        initRejectedPage();
-    }
-    // Add more conditions for other pages if needed
-});
-
-function initCandidatesPage() {
-    fetch('fetch_candidates.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching candidates:', error));
-
-    function populateTable(candidates) {
-        const tableBody = document.querySelector('table');
-        candidates.forEach(candidate => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${candidate.full_name}</td>
-                <td><strong>${candidate.job_title}</strong></td>
-                <td>${candidate.company_name}</td>
-                <td>${candidate.date_applied}</td>
-                <td>
-                    <select class="status-dropdown">
-                        <option ${candidate.status === 'Interview' ? 'selected' : ''}>Interview</option>
-                        <option ${candidate.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                        <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
-                        <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
-                    </select>
-                </td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initRejectedPage() {
-    fetch('fetch_rejecteds.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching rejecteds:', error));
-
-    function populateTable(rejecteds) {
-        const tableBody = document.querySelector('table');
-        rejecteds.forEach(rejected => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${rejected.full_name}</td>
-                <td><strong>${rejected.remarks}</strong></td>
-                <td>${rejected.date_rejected}</td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initRejectedPage() {
-    fetch('fetch_rejecteds.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching rejecteds:', error));
-
-    function populateTable(rejecteds) {
-        const tableBody = document.querySelector('table');
-        rejecteds.forEach(rejected => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${rejected.full_name}</td>
-                <td><strong>${rejected.remarks}</strong></td>
-                <td>${rejected.date_rejected}</td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initIndexPage() {
-    // Add your initialization code for index.html
-}
-*/
 
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
@@ -731,6 +596,9 @@ function populateCandidatesTable(data) {
                 <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
                 <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
             </select>
+        </td>
+        <td>
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
         </td>
         <td>
             <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>

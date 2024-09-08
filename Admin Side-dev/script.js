@@ -597,12 +597,14 @@ function populateCandidatesTable(data) {
                 <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
             </select>
         </td>
-        <td>
+            <td class="candidates-tooltip-container">
             <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
         </td>
-        <td>
+        <td class="candidates-tooltip-container">
             <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-        </td> 
+            <span class="tooltip-text">Delete Candidate</span>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -628,8 +630,18 @@ function populateEmployeesTable(data) {
                 <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i></td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
+                <span class="tooltip-text">Edit <br>Employee</span>
+            </div>
+        </td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
+                <span class="tooltip-text">Delete Employee</span>
+            </div>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -691,12 +703,28 @@ function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
         <td>
-        <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100"></td>
+            <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
+        </td>
         <td id="company-name">${partner.company_name}</td>
-        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i>
+                <span class="tooltip-text">Post a Job for Partner</span>
+            </div>
+        </td>
         <td id="date">${partner.date_added}</td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i>
+                <span class="tooltip-text">Edit Partner Company</span>
+            </div>
+        </td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i>
+                <span class="tooltip-text">Delete Partner Company</span>
+            </div>
+        </td>
     `;
     
     populateTable(data, 'table', rowTemplate);
@@ -714,11 +742,18 @@ function populateJobsTable(containerSelector, data) {
                 <option value="Closed" ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
             </select>
         </td>
-        <td id="edit"><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i></td>
+        <td id="edit">
+    <div class="tooltip-container">
+        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
+        <span class="tooltip-text">Edit Job Listing</span>
+    </div>
+</td>
+
     `;
 
     populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
 }
+
 
 function handleStatusChange(jobId) {
     const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);

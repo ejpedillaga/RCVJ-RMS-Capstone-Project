@@ -12,7 +12,8 @@ $user_data = [
     'birthday' => '',
     'classi' => '',
     'subclassi' => '',
-    'userid' => ''  // Add userid to the user_data array
+    'userid' => '',  // Add userid to the user_data array
+    'personal_description' => ''
 ];
 
 $education_data = [
@@ -54,7 +55,7 @@ if (isset($_SESSION['user'])) {
     }
 
     // Fetch the user's data to populate the form (from applicant_table)
-    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi 
+    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi, personal_description 
             FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
 
@@ -65,6 +66,24 @@ if (isset($_SESSION['user'])) {
         $userid = $user_data['userid'];  // Ensure we have the userid for further operations
     } else {
         echo "Error: User not found in the applicant_table.";
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_description'])) {
+        // Fetch and sanitize personal description form data
+        $personal_description = $conn->real_escape_string($_POST['description']);
+
+        // Update the user's personal description in the applicant_table
+        $sql_update_description = "UPDATE applicant_table SET 
+            personal_description = '$personal_description'
+            WHERE userid = '$userid'";
+
+        if ($conn->query($sql_update_description) === TRUE) {
+            $_SESSION['message'] = "Personal description updated successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error updating personal description: " . $conn->error;
+        }
     }
 
     // Handle profile form submission
@@ -425,16 +444,14 @@ if (isset($_SESSION['message'])) {
                         <p>Describe people who you are</p>
                     </div>
                     <div class="personal-description-form">
-                        <form action="">
+                        <form action="" method="POST">
                             <div class="form-group">
                                 <div>
-                                    <!--<p>Describe people who you are</p>-->
-                                    <textarea id="description" class="textarea" rows="20" cols="80"></textarea>
+                                    <textarea id="description" name="description" class="textarea" rows="20" cols="80"><?php echo htmlspecialchars($user_data['personal_description']); ?></textarea>
                                 </div>
                             </div>
-
                             <div id="button-group" class="form-group">
-                                <button class="button">Save</button>
+                                <button type="submit" name="save_description" class="button">Save</button>
                             </div>
                         </form>
                     </div>

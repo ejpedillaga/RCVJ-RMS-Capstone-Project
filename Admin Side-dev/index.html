@@ -114,7 +114,7 @@
                         <!-- Steps -->
                         <div class="form-step form-step-active">
                             <div class="jobposting-box">
-                                <label for="jobposting-partner-company">Partner Company</label><br>
+                                <label for="jobposting-partner-company">Partner Company</label>
                                 <select id="jobposting-partner-company" class="jobposting-select">
                                     <!--
                                     <option>WalterMart Supermarket - Dasmariñas</option>
@@ -133,11 +133,11 @@
                         
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-job-title">Job Title</label><br>
+                                <label for="jobposting-job-title">Job Title</label>
                                 <input type="text" id="jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br><br>
-                                <label for="jobposting-location">Location</label><br>
+                                <label for="jobposting-location">Location</label>
                                 <input type="text" id="jobposting-location" class="jobposting-input" placeholder="Enter job location"><br><br>
-                                <label for="jobposting-openings">Available openings</label><br>
+                                <label for="jobposting-openings">Available openings</label>
                                 <input type="number" id="jobposting-openings" class="jobposting-select" min="1" 
                             max="100" placeholder="Enter number of open positions from 1-100">
                             </div>
@@ -154,7 +154,7 @@
 
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-description">Job Description</label><br>
+                                <label for="jobposting-description">Job Description</label>
                                 <textarea id="jobposting-description" class="jobposting-textarea"></textarea>
                             </div>
                             <div class="btns-group">
@@ -166,29 +166,12 @@
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
                             </div>
                         </div>
-
+                        
                         <div class="form-step">
                             <div class="jobposting-box">
-                                <label for="jobposting-skills">Skills</label><br>
-                                <div id="add-jobposting-skills-container" class="jobposting-skills-container">
-                                    <input type="text" id="jobposting-skills-input" placeholder="Enter a skill and press Enter">
-                                </div>
-                            </div>
-                            <div class="btns-group">
-                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
-                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
-                            </div>
-                            <div class="jobposting-buttons">
-                                <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
-                                <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
-                            </div>
-                        </div>
-
-                        <div class="form-step">
-                            <div class="jobposting-box">
-                                <label for="jobposting-qualifications">Qualifications</label><br>
                                 <div class="jobposting-container">
                                     <div id="jobposting-qualifications-container" class="jobposting-qualifications-container">
+                                        <label for="jobposting-qualifications">Qualifications</label>
                                         <input type="text" id="jobposting-qualifications-input" placeholder="Enter a qualification and press Enter">
                                     </div>
                                     <div class="form-group">
@@ -200,12 +183,29 @@
                             </div>
                             <div class="btns-group">
                                 <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
                             </div>
                             <div class="jobposting-buttons">
                                 <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
                             </div>
-                        </div>          
+                        </div>   
+
+                        <div class="form-step">
+                            <div class="jobposting-box">
+                                <label for="jobposting-skills">Skills</label>
+                                <div id="add-jobposting-skills-container" class="jobposting-skills-container">
+                                    <input type="text" id="jobposting-skills-input" placeholder="Enter a skill and press Enter">
+                                </div>
+                            </div>
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                            </div>
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
+                            </div>
+                        </div>       
                     </div>
                 </div>
 

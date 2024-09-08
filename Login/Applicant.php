@@ -127,9 +127,9 @@ $conn->close();
               <div class="progress" id="progress" style="width: 15%;"></div>
                 <div class="progress-step progress-step-active" data-title="Credentials"></div>
                 <div class="progress-step" data-title="Personal Info"></div>
-                <div class="progress-step" data-title="Job Title"></div>
+                <div class="progress-step" data-title="Specialization"></div>
             </div>
-            <!-- Steps -->
+            <!-- Steps -->  
             <div class="form-step form-step-active">
                 <header>Credentials</header>
                 <div class="input-group">
@@ -191,7 +191,7 @@ $conn->close();
                 </div>
             </div>
             <div class="form-step">
-                <header>Job Title</header>
+                <header>Specialization</header>
                 <div class="input-group">
                     <select name="classi" id="classi" class="clas" placeholder="Classification" required>
                         <option value="">Classification</option>

@@ -244,15 +244,13 @@ if (isset($_SESSION['message'])) {
 }
 ?>
 
-
-
 <!DOCTYPE html>
 <html>
     <head>
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
@@ -573,20 +571,35 @@ if (isset($_SESSION['message'])) {
                                 </div>
 
                                 <div class="form-group">
-                                    <div>
-                                        <label class="label" for="sy_ended">Year Ended</label>
-                                        <select id="sy_ended" name="sy_ended" class="select-field" required>
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['sy_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                    <div class="year-container">
+                                        <div>
+                                            <label class="label" for="sy_started">Year Started</label>
+                                            <select id="sy_started" name="sy_started" class="select-field" required>
+                                                <option value="" disabled selected>Year Started</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['sy_started']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="label" for="sy_ended">Year Ended</label>
+                                            <select id="sy_ended" name="sy_ended" class="select-field" required>
+                                                <option value="" disabled selected>Year Ended</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['sy_ended']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <!-- Master's Section -->
                                 <div class="form-group">
                                     <div>
                                         <label class="label" for="masters">Master's <span>(Optional)</span></label>
@@ -595,20 +608,35 @@ if (isset($_SESSION['message'])) {
                                 </div>
 
                                 <div class="form-group">
-                                    <div>
-                                        <label class="label" for="masters_ended">Year Ended</label>
-                                        <select id="masters_ended" name="masters_ended" class="select-field">
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['masters_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                    <div class="year-container">
+                                        <div>
+                                            <label class="label" for="masters_started">Year Started</label>
+                                            <select id="masters_started" name="masters_started" class="select-field">
+                                                <option value="" disabled selected>Year Started</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['masters_started']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="label" for="masters_ended">Year Ended</label>
+                                            <select id="masters_ended" name="masters_ended" class="select-field">
+                                                <option value="" disabled selected>Year Ended</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['masters_ended']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
+                                <!-- Doctoral Section -->
                                 <div class="form-group">
                                     <div>
                                         <label class="label" for="doctoral">Doctoral <span>(Optional)</span></label>
@@ -617,17 +645,31 @@ if (isset($_SESSION['message'])) {
                                 </div>
 
                                 <div class="form-group">
-                                    <div>
-                                        <label class="label" for="doctoral_ended">Year Ended</label>
-                                        <select id="doctoral_ended" name="doctoral_ended" class="select-field">
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['doctoral_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                    <div class="year-container">
+                                        <div>
+                                            <label class="label" for="doctoral_started">Year Started</label>
+                                            <select id="doctoral_started" name="doctoral_started" class="select-field">
+                                                <option value="" disabled selected>Year Started</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['doctoral_started']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="label" for="doctoral_ended">Year Ended</label>
+                                            <select id="doctoral_ended" name="doctoral_ended" class="select-field">
+                                                <option value="" disabled selected>Year Ended</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['doctoral_ended']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -642,7 +684,7 @@ if (isset($_SESSION['message'])) {
                 <div id="overlay" class="overlay"></div>
                 <!--License and Education Sidenav-->
                 <div id="LnE-sidenav" class="sidenav">
-                    <div class="sidenav-header sidenav-content">Add License or Certificates
+                    <div class="sidenav-header sidenav-content">Add License/Certificate
                         <br>
                         <p>Showcase your licenses, certificates, memberships, and accreditations.</p>
                     </div>
@@ -650,7 +692,7 @@ if (isset($_SESSION['message'])) {
                     <div class="LnE-form sidenav-content">
                         <form action="">
                             <div id="license_group" class="form-group sidenav-content">
-                                <label for="license" class="label">License Name</label>
+                                <label for="license" class="label">License/Certificate Name</label>
                                 <input type="text" id="license" class="input-field">
                             </div>
 
@@ -755,12 +797,6 @@ if (isset($_SESSION['message'])) {
                                     </select>
                                 </div>
                             </div>
-
-                            <div id="certificate_group" class="form-group">
-                                <label for="certificate" class="label">Certificate Name</label>
-                                <input type="text" id="certificate" class="input-field">
-                            </div>
-
                             <div id="button-group" class="form-group">
                                 <button class="button">Save</button>
                             </div>
@@ -902,8 +938,8 @@ if (isset($_SESSION['message'])) {
                                 <button onclick="openNav('education_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
-                                <h3>ResumÃ©</h3>
-                                <p>Upload a resumÃ© for easy applying and access no matter where you are.</p>
+                                <h3>Resume</h3>
+                                <p>Upload a resume for easy applying and access no matter where you are.</p>
                                 <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
                             </div>
                         </div>
@@ -943,9 +979,6 @@ if (isset($_SESSION['message'])) {
                     </div>                    
                 </div>
             </footer>
-            
-            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-            <script defer src="script.js"></script>
 
             <!-- Success Modal -->
             <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -969,6 +1002,8 @@ if (isset($_SESSION['message'])) {
 
             <!-- Add these lines in the <head> of your HTML -->
             <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

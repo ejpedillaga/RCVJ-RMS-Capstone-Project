@@ -373,7 +373,6 @@ if (isset($_SESSION['message'])) {
             <!--Usual Structure-->
             <section class="profile-section">
                 <!--Edit Profile Sidenav-->
-                <div id="overlay" class="overlay"></div>
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
@@ -451,9 +450,6 @@ if (isset($_SESSION['message'])) {
                     </div>
                 </div>
 
-                <!--Personal Description Sidenav-->
-                <!-- Overlay -->
-                <div id="overlay" class="overlay"></div>
                 <!-- Personal Description Sidenav -->
                 <div id="personal-description-sidenav" class="sidenav">
                     <div class="sidenav-header">Add some description about <br> yourself<br>
@@ -474,7 +470,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('personal-description-sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Past Jobs Sidenav-->
                 <div id="past-jobs-sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">Past Jobs</div>
@@ -568,7 +563,6 @@ if (isset($_SESSION['message'])) {
                         <a href="javascript:void(0)" class="closebtn" onclick="closeNav('past-jobs-sidenav', 'profile-container')">&times;</a>
                     </div>
 
-                <div id="overlay" class="overlay"></div>
                     <!-- Education Sidenav -->
                     <div id="education_sidenav" class="sidenav">
                         <div class="sidenav-header sidenav-content">Education</div>
@@ -625,7 +619,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('education_sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--License and Education Sidenav-->
                 <div id="LnE-sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">Add License/Certificate
@@ -749,7 +742,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('LnE-sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Skills Sidenav-->
                 <div id="skills_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
@@ -805,7 +797,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Profile Container-->
                 <div id="profile-container" class="main-container">
                     <!--Header-->
@@ -859,26 +850,57 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
-                                <button onclick="openNav('personal-description-sidenav', 'profile-container')">Add</button>
+                                <?php if (!empty($user_data['personal_description'])): ?>
+                                    <div class="info-container">
+                                        <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                                <button onclick="openNav('personal-description-sidenav', 'profile-container')">Edit</button>
                             </div>
                             <div class="section">
                                 <h3>Licences & Certificates</h3>
                                 <p>Showcase your professional credentials. Add your relevant licences, certificates, memberships and accreditations here.</p>
+                                <div class="info-container">
+                                    <p>LnE goes here</p>
+                                </div>
                                 <button onclick="openNav('LnE-sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Past Jobs</h3>
                                 <p>The more you let employers know about your experience, the more you can stand out.</p>
+                                <?php if (!empty($job_experience_data['job_title'])): ?>
+                                    <div class="info-container">
+                                        <div class="edit-icon" onclick="openNav('past-jobs-sidenav', 'profile-container')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <h4 id="pj-jt"><?php echo htmlspecialchars($job_experience_data['job_title']); ?></h2>
+                                        <p id="pj-cn"><?php echo htmlspecialchars($job_experience_data['company_name']); ?></p>
+                                        <p id="pj-year"><?php echo htmlspecialchars($job_experience_data['month_started']); ?> <?php echo htmlspecialchars($job_experience_data['year_started']); ?> - <?php echo htmlspecialchars($job_experience_data['month_ended']); ?> <?php echo htmlspecialchars($job_experience_data['year_ended']); ?></p>
+                                    </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('past-jobs-sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Skills</h3>
                                 <p>Let employers know how valuable you can be to them.</p>
+                                <div class="info-container">
+                                    <p>Skills goes here</p>
+                                </div>
                                 <button onclick="openNav('skills_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Education</h3>
                                 <p>Tell employers about your education.</p>
+                                <?php if (!empty($education_data['school'])): ?>
+                                    <div class="info-container">
+                                        <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <h4 id="educ-school"><?php echo htmlspecialchars($education_data['school']); ?></h4>
+                                        <p id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></p>
+                                        <p id="educ-year"><?php echo htmlspecialchars($education_data['sy_started']); ?> - <?php echo htmlspecialchars($education_data['sy_ended']); ?></p>
+                                    </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('education_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">

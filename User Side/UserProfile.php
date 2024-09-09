@@ -16,13 +16,17 @@ $user_data = [
     'personal_description' => ''
 ];
 
+// **1. Add 'masters_started' and 'doctoral_started' to the education_data array**
 $education_data = [
     'school' => '',
     'course' => '',
+    'sy_started' => '',
     'sy_ended' => '',
     'masters' => '',
+    'masters_started' => '',  // Added
     'masters_ended' => '',
     'doctoral' => '',
+    'doctoral_started' => '', // Added
     'doctoral_ended' => ''
 ];
 
@@ -68,6 +72,7 @@ if (isset($_SESSION['user'])) {
         echo "Error: User not found in the applicant_table.";
     }
 
+    // Handle personal description form submission
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_description'])) {
         // Fetch and sanitize personal description form data
         $personal_description = $conn->real_escape_string($_POST['description']);
@@ -125,9 +130,11 @@ if (isset($_SESSION['user'])) {
         }
     }
 
+    // **2. Update the SQL query to include 'masters_started' and 'doctoral_started'**
     // Fetch the education data to populate the education form
     if (isset($userid)) {  // Ensure userid is available before fetching education data
-        $sql_edu = "SELECT school, course, sy_ended, masters, masters_ended, doctoral, doctoral_ended 
+        $sql_edu = "SELECT school, course, sy_started, sy_ended, masters, masters_started, masters_ended, 
+                    doctoral, doctoral_started, doctoral_ended 
                     FROM education_table WHERE userid = '$userid'";
         $result_edu = $conn->query($sql_edu);
 
@@ -138,13 +145,16 @@ if (isset($_SESSION['user'])) {
 
     // Handle form submission for education data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_education'])) {
-        // Fetch and sanitize education form data
+        // **3. Fetch and sanitize education form data, including the new fields**
         $school = $conn->real_escape_string($_POST['school']);
         $course = $conn->real_escape_string($_POST['course']);
+        $sy_started = $conn->real_escape_string($_POST['sy_started']);
         $sy_ended = $conn->real_escape_string($_POST['sy_ended']);
         $masters = $conn->real_escape_string($_POST['masters']);
+        $masters_started = $conn->real_escape_string($_POST['masters_started']); // Added
         $masters_ended = $conn->real_escape_string($_POST['masters_ended']);
         $doctoral = $conn->real_escape_string($_POST['doctoral']);
+        $doctoral_started = $conn->real_escape_string($_POST['doctoral_started']); // Added
         $doctoral_ended = $conn->real_escape_string($_POST['doctoral_ended']);
 
         // Insert or update education data for the user
@@ -152,21 +162,26 @@ if (isset($_SESSION['user'])) {
         $check_result = $conn->query($check_sql);
 
         if ($check_result->num_rows > 0) {
-            // If record exists, update
+            // **4. Update statement includes the new fields**
             $sql_update_edu = "UPDATE education_table SET
                 school = '$school',
                 course = '$course',
+                sy_started = '$sy_started',
                 sy_ended = '$sy_ended',
                 masters = '$masters',
+                masters_started = '$masters_started',
                 masters_ended = '$masters_ended',
                 doctoral = '$doctoral',
+                doctoral_started = '$doctoral_started',
                 doctoral_ended = '$doctoral_ended'
                 WHERE userid = '$userid'";
-            $conn->query($sql_update_edu);
+            if (!$conn->query($sql_update_edu)) { // Optional: check if update was successful
+                echo "Error updating education data: " . $conn->error;
+            }
         } else {
-            // If no record, insert
-            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_ended, masters, masters_ended, doctoral, doctoral_ended) 
-                VALUES ('$userid', '$school', '$course', '$sy_ended', '$masters', '$masters_ended', '$doctoral', '$doctoral_ended')";
+            // **5. Insert statement includes the new fields**
+            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_started, sy_ended, masters, masters_started, masters_ended, doctoral, doctoral_started, doctoral_ended) 
+                VALUES ('$userid', '$school', '$course', '$sy_started', '$sy_ended', '$masters', '$masters_started', '$masters_ended', '$doctoral', '$doctoral_started', '$doctoral_ended')";
             if (!$conn->query($sql_insert_edu)) {
                 echo "Error inserting education data: " . $conn->error;
             }
@@ -211,14 +226,16 @@ if (isset($_SESSION['user'])) {
                 month_started = '$month_started',
                 year_started = $year_started,
                 month_ended = '$month_ended',
-                year_ended = $year_ended,
+                year_ended = " . ($year_ended !== null ? $year_ended : "NULL") . ",
                 career_history = '$career_history'
                 WHERE userid = '$userid'";
-            $conn->query($sql_update_job);
+            if (!$conn->query($sql_update_job)) { // Optional: check if update was successful
+                echo "Error updating job experience data: " . $conn->error;
+            }
         } else {
             // If no record, insert
             $sql_insert_job = "INSERT INTO job_experience_table (userid, job_title, company_name, month_started, year_started, month_ended, year_ended, career_history) 
-                VALUES ('$userid', '$job_title', '$company_name', '$month_started', $year_started, '$month_ended', $year_ended, '$career_history')";
+                VALUES ('$userid', '$job_title', '$company_name', '$month_started', $year_started, '$month_ended', " . ($year_ended !== null ? $year_ended : "NULL") . ", '$career_history')";
             if (!$conn->query($sql_insert_job)) {
                 echo "Error inserting job experience data: " . $conn->error;
             }
@@ -243,6 +260,7 @@ if (isset($_SESSION['message'])) {
     unset($_SESSION['message']);  // Clear the message after displaying
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>

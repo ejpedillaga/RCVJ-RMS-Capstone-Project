@@ -100,10 +100,19 @@
         <!-- Overlay -->
         <div class="overlay" id="overlay"></div>
 
-        <!-- Dialog Box Employees-->
+        <!-- Dialog Box Employees-->z
         <div class="addemployees-dialog-box" id="dialogBox">
             <div class="addpartners-back-button" onclick="hideEmployeeDialog()">
                 <i class="fas fa-chevron-left"></i> Back
+            </div>
+
+            <div class="addemployees-form-group">
+                <label for="addemployees-role">Role</label>
+                <select id="addemployees-role">
+                    <option value="hr-staff">HR Staff</option>
+                    <option value="hr-manager">HR Manager</option>
+                    <option value="it-staff">IT Staff</option>
+                </select>
             </div>
     
             <div class="addemployees-form-group">
@@ -130,7 +139,7 @@
                 <label for="addemployees-admin-password">Admin Password</label>
                 <input type="text" id="addemployees-admin-password">
             </div>
-    
+
             <div style="text-align: center;">
                 <button class="addemployees-save-button" onclick="addNewEmployee()">Save and Add</button>
             </div>
@@ -140,6 +149,15 @@
         <div class="addemployees-dialog-box" id="edit-dialogBox">
             <div class="addpartners-back-button" onclick="hideEditDialog()">
                 <i class="fas fa-chevron-left"></i> Back
+            </div>
+
+            <div class="addemployees-form-group">
+                <label for="addemployees-role">Role</label>
+                <select id="addemployees-role">
+                    <option value="hr-staff">HR Staff</option>
+                    <option value="hr-manager">HR Manager</option>
+                    <option value="it-staff">IT Staff</option>
+                </select>
             </div>
     
             <div class="addemployees-form-group">

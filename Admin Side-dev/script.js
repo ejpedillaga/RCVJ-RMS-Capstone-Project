@@ -188,6 +188,7 @@ function openPopup(popupId) {
     document.getElementById(popupId).classList.add('show');
     document.getElementById('overlay').classList.add('show');
     fetchOptions(popupId);
+    populateJobTitles();
 }
 
 
@@ -197,13 +198,13 @@ function closePopup(popupId) {
     document.getElementById('overlay').classList.remove('show');
     
     // Optionally clear skills and other form data
-    const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
+    /*const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
     const skills = skillsContainer.querySelectorAll('.jobposting-skill');
     skills.forEach(skill => skillsContainer.removeChild(skill));
     
     // Clear the skills set
     skillsSet.clear();
-    
+    */
     // Optionally, clear the input field
     //document.querySelector(`#${popupId} #${popupId}-skills-input`).value = '';
 }
@@ -212,7 +213,7 @@ function closePopup(popupId) {
 function openJobPostingPopup() {
     openPopup('popup');
     initializePopupPagination('popup');
-    initializeSkillsInput('popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+    populateJobTitles();
 }
 
 
@@ -1041,25 +1042,26 @@ function saveAndPostJob() {
     // Collect data from the popup
     const companySelect = document.getElementById('jobposting-partner-company');
     const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
-
-    const jobTitle = document.getElementById('jobposting-job-title').value;
+    const jobTitleSelect = document.getElementById('jobposting-job-title');
+    const jobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex].text;
+    
     const location = document.getElementById('jobposting-location').value;
     const candidates = document.getElementById('jobposting-openings').value;
     const description = document.getElementById('jobposting-description').value.trim();
 
 
     // Collect skills
-    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+    //const skillsArray = Array.from(skillsSet); // Convert the Set to an array
 
     console.log('Company Name:', companyName);
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Candidates:', candidates);
     console.log('Description:', description);
-    console.log('Skills Array:', skillsArray);
+    //console.log('Skills Array:', skillsArray);
 
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates /*|| skillsArray.length === 0*/) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1078,7 +1080,7 @@ function saveAndPostJob() {
     formData.append('location', location);
     formData.append('candidates', candidates);
     formData.append('description', description);
-    formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
+    //formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
 
     
 
@@ -1636,8 +1638,8 @@ function hideJobTitle() {
     document.getElementById('edit-jobposting-partner-company').value = '';
 
     // Reset the Classification dropdown values
-    document.getElementById('classi').selectedIndex = 0; // Select the first option
-    document.getElementById('subclassi').selectedIndex = 0; // Select the first option
+    document.getElementById('classification').selectedIndex = 0; // Select the first option
+    document.getElementById('subclassification').selectedIndex = 0; // Select the first option
 
     // Clear the Gender radio buttons
     const genderRadios = document.querySelectorAll('input[name="gender"]');
@@ -1648,9 +1650,7 @@ function hideJobTitle() {
     educRadios.forEach(radio => radio.checked = false);
 }
 
-function saveJobTitle(event) {
-    // Prevent the default behavior (e.g., form submission)
-    event.preventDefault();
+function saveJobTitle() {
 
     const jobTitle = document.getElementById('job_title').value.trim();
     const classification = document.getElementById('classification').value;
@@ -1682,6 +1682,8 @@ function saveJobTitle(event) {
         return;
     }
 
+    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+
     // Log the input values to ensure they are captured correctly
     console.log("Job Title:", jobTitle);
     console.log("Classification:", classification);
@@ -1690,6 +1692,7 @@ function saveJobTitle(event) {
     console.log("Educational Attainment:", educationalAttainment);
     console.log("Cert/License:", certLicense);
     console.log("Years of Experience:", yearsOfExperience);
+    console.log('Skills Array:', skillsArray);
 
     // Create an object to hold the data
     const data = {
@@ -1699,8 +1702,12 @@ function saveJobTitle(event) {
         gender: gender,
         educational_attainment: educationalAttainment,
         cert_license: certLicense,
-        years_of_experience: yearsOfExperience
+        years_of_experience: yearsOfExperience,
+        skills: skillsArray
     };
+
+    const jsonData = JSON.stringify(data); // Convert data to JSON string
+    console.log(jsonData); // Debug: Print JSON string to console
 
     // Send data via AJAX to PHP
     fetch('save_job_title.php', {
@@ -1708,7 +1715,7 @@ function saveJobTitle(event) {
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: jsonData, // Send JSON data
     })
     .then(response => response.json())
     .then(result => {
@@ -1726,6 +1733,7 @@ function saveJobTitle(event) {
 
             // Optionally hide the popup after saving
             hideJobTitle('add-job-title-popup');
+            populateJobTitles();
         } else {
             alert('Error saving job title!');
         }
@@ -1733,5 +1741,29 @@ function saveJobTitle(event) {
     .catch(error => {
         console.error('Error:', error);
     });
+
 }
+
+function populateJobTitles() {
+    fetch('get_job_titles.php')
+        .then(response => response.json())
+        .then(data => {
+            const jobTitleSelect = document.getElementById('jobposting-job-title');
+            jobTitleSelect.innerHTML = '<option value="" disabled selected>Choose a job title</option>'; // Clear and set default option
+            
+            data.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.job_title_id;  // You can use job_title_id as the value
+                option.textContent = job.job_title; // Display the job title
+                jobTitleSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching job titles:', error);
+        });
+}
+
+// Call this function when the page loads or when needed to populate the dropdown
+document.addEventListener('DOMContentLoaded', populateJobTitles);
+
 

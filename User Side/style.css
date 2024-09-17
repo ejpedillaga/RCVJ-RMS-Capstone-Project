@@ -1767,10 +1767,37 @@ body.overlay-active .overlay {
 }
 
 .education-container {
-  border: 1px solid #00000038; 
-  padding: 10px;
-  border-radius: 5px; 
   width: 95%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  height: fit-content;
+  font-size: 14px;
+  color: #333;
+  margin-left: 15px;
+  box-shadow: 0rem .2rem .2rem #a8a7c5;
+  justify-content: center;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  display: inline-block;
+}
+
+.radio-item {
+  display: flex;
+  align-items: center; 
+  margin-bottom: 10px; 
+  align-items: center;
+
+}
+
+.radio-item label {
+  margin-left: 10px; 
+  margin-top: 6px;
+  font-size: 13px;
 }
 
 .education-form #course_highlights{

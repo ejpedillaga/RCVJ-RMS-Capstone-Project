@@ -560,17 +560,21 @@ if (isset($_SESSION['message'])) {
                             <form action="" method="POST">
 
                             <div class="form-group education-container">
-                                <div>
-                                    <label class="label" for="education">Level of Education:</label><br>
-                                    <input type="radio" id="highschool" name="education" value="Highschool">
-                                    <label for="highschool">Highschool Graduate</label><br>
-                                    
-                                    <input type="radio" id="undergraduate" name="education" value="Undergraduate">
-                                    <label for="undergraduate">Undergraduate</label><br>
-                                    
-                                    <input type="radio" id="college" name="education" value="College Graduate">
-                                    <label for="college">College Graduate</label><br>
-                                </div>
+                                    <label class="label">Level of Education:</label>
+                                    <div class="radio-group">
+                                        <div class="radio-item">
+                                            <input type="radio" id="highschool" name="education" value="Highschool">
+                                            <label for="highschool">Highschool Graduate</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="undergraduate" name="education" value="Undergraduate">
+                                            <label for="undergraduate">Undergraduate</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="college" name="education" value="College Graduate">
+                                            <label for="college">College Graduate</label>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="form-group">

@@ -40,6 +40,15 @@ $job_experience_data = [
     'career_history' => ''
 ];
 
+$license_data = [
+    'id' => '',
+    'license_name' => '',
+    'month_issued' => '',
+    'year_issued' => '',
+    'month_expired' => '',
+    'year_expired' => ''
+];
+
 $user_name = 'User';
 $user_location = 'Unknown Location';
 
@@ -246,6 +255,150 @@ if (isset($_SESSION['user'])) {
         exit;
     }
 
+    //license
+    if (isset($userid)) {  // Ensure userid is available before fetching license data
+        $sql_license = "SELECT id, license_name, month_issued, year_issued, month_expired, year_expired 
+                        FROM certification_license_table WHERE userid = '$userid'";
+        $result_license = $conn->query($sql_license);
+
+        if ($result_license->num_rows > 0) {
+            $license_data = $result_license->fetch_assoc();
+        }
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_license'])) {
+        // Fetch and sanitize form data
+        $license_name = $conn->real_escape_string($_POST['license_name']);
+        $month_issued = $conn->real_escape_string($_POST['month_issued']);
+        $year_issued = (int) $_POST['year_issued'];
+        $month_expired = $conn->real_escape_string($_POST['month_expired']);
+        $year_expired = !empty($_POST['year_expired']) ? (int) $_POST['year_expired'] : null;
+
+        // Insert or update license data for the user
+        $check_sql = "SELECT * FROM certification_license_table WHERE userid = '$userid'";
+        $check_result = $conn->query($check_sql);
+
+        if ($check_result->num_rows > 0) {
+            // If record exists, update
+            $sql_update_license = "UPDATE certification_license_table SET
+                license_name = '$license_name',
+                month_issued = '$month_issued',
+                year_issued = $year_issued,
+                month_expired = '$month_expired',
+                year_expired = " . ($year_expired !== null ? $year_expired : "NULL") . "
+                WHERE userid = '$userid'";
+            if (!$conn->query($sql_update_license)) { // Optional: check if update was successful
+                echo "Error updating license data: " . $conn->error;
+            }
+        } else {
+            // If no record, insert
+            $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired) 
+                VALUES ('$userid', '$license_name', '$month_issued', $year_issued, '$month_expired', " . ($year_expired !== null ? $year_expired : "NULL") . ")";
+            if (!$conn->query($sql_insert_license)) {
+                echo "Error inserting license data: " . $conn->error;
+            }
+        }
+
+        $_SESSION['message'] = "License data saved successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    // Fetch the user's skills if userid is set
+    if (isset($userid)) {
+        $sql_skills = "SELECT s.skill_name
+                    FROM skill_table s
+                    JOIN user_skills_table us ON s.skill_id = us.skill_id
+                    WHERE us.userid = '$userid'";
+        $result_skills = $conn->query($sql_skills);
+
+        if ($result_skills->num_rows > 0) {
+            // Collect all skills into an array
+            $skills = [];
+            while ($row = $result_skills->fetch_assoc()) {
+                $skills[] = $row['skill_name'];
+            }
+            // Encode the skills array into JSON for use in JavaScript
+            $skills_json = json_encode($skills);
+        } else {
+            $skills_json = json_encode([]);
+        }
+    }
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['skills_json'])) {
+        $skills_json = $_POST['skills_json'];
+        $skills = json_decode($skills_json, true); // Decode the JSON array
+    
+        // Fetch the existing skills for the user
+        $sql_existing_skills = "SELECT s.skill_id, s.skill_name 
+                                FROM skill_table s
+                                JOIN user_skills_table us ON s.skill_id = us.skill_id
+                                WHERE us.userid = ?";
+        $stmt_existing = $conn->prepare($sql_existing_skills);
+        $stmt_existing->bind_param('i', $userid);
+        $stmt_existing->execute();
+        $existing_skills_result = $stmt_existing->get_result();
+        $existing_skills = [];
+        while ($row = $existing_skills_result->fetch_assoc()) {
+            $existing_skills[$row['skill_id']] = $row['skill_name'];
+        }
+    
+        // Convert skills array to associative array for easy lookup
+        $new_skills = array_flip($skills);
+    
+        // Determine skills to add
+        $skills_to_add = array_diff($skills, $existing_skills);
+    
+        // Determine skills to delete
+        $skills_to_delete = array_diff($existing_skills, $skills);
+    
+        // Add new skills
+        foreach ($skills_to_add as $skill_name) {
+            $sql_check_skill = "SELECT skill_id FROM skill_table WHERE skill_name = ?";
+            $stmt_check = $conn->prepare($sql_check_skill);
+            $stmt_check->bind_param('s', $skill_name);
+            $stmt_check->execute();
+            $result_check = $stmt_check->get_result();
+            if ($result_check->num_rows > 0) {
+                // Skill exists
+                $skill_id = $result_check->fetch_assoc()['skill_id'];
+            } else {
+                // Insert new skill
+                $sql_insert_skill = "INSERT INTO skill_table (skill_name) VALUES (?)";
+                $stmt_insert = $conn->prepare($sql_insert_skill);
+                $stmt_insert->bind_param('s', $skill_name);
+                if ($stmt_insert->execute()) {
+                    $skill_id = $stmt_insert->insert_id;
+                } else {
+                    echo "Error inserting skill: " . $conn->error;
+                    continue;
+                }
+            }
+    
+            // Insert skill into user_skills_table
+            $sql_insert_user_skill = "INSERT INTO user_skills_table (userid, skill_id) VALUES (?, ?)";
+            $stmt_user_skill = $conn->prepare($sql_insert_user_skill);
+            $stmt_user_skill->bind_param('ii', $userid, $skill_id);
+            if (!$stmt_user_skill->execute()) {
+                echo "Error inserting user skill: " . $conn->error;
+            }
+        }
+    
+        // Delete removed skills
+        foreach ($skills_to_delete as $skill_id => $skill_name) {
+            $sql_delete_user_skill = "DELETE FROM user_skills_table WHERE userid = ? AND skill_id = ?";
+            $stmt_delete_user_skill = $conn->prepare($sql_delete_user_skill);
+            $stmt_delete_user_skill->bind_param('ii', $userid, $skill_id);
+            if (!$stmt_delete_user_skill->execute()) {
+                echo "Error deleting user skill: " . $conn->error;
+            }
+        }
+    
+        $_SESSION['message'] = "Skills updated successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+    
     $conn->close();
 }
 
@@ -627,59 +780,35 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <div class="LnE-form sidenav-content">
-                        <form action="">
+                        <form action="" method="POST">
                             <div id="license_group" class="form-group sidenav-content">
                                 <label for="license" class="label">License/Certificate Name</label>
-                                <input type="text" id="license" class="input-field">
+                                <input type="text" id="license" name="license_name" class="input-field" value="<?php echo htmlspecialchars($license_data['license_name']); ?>" required>
                             </div>
 
                             <label for="issue_date_group" class="label sidenav-content">Issue Date</label>
                             <div id="issue_date_group" class="form-group sidenav-content">                              
                                 <div>
-                                    <select id="month_issued" class="select-field">
-                                        <option value="" disabled selected>Month</option>
-                                        <option value="January">January</option>
-                                        <option value="February">February</option>
-                                        <option value="March">March</option>
-                                        <option value="April">April</option>
-                                        <option value="May">May</option>
-                                        <option value="June">June</option>
-                                        <option value="July">July</option>
-                                        <option value="August">August</option>
-                                        <option value="September">September</option>
-                                        <option value="October">October</option>
-                                        <option value="November">November</option>
-                                        <option value="December">December</option>
+                                    <select id="month_issued" class="select-field" name="month_issued" required>
+                                    <option value="" disabled>Select Month</option>
+                                    <?php
+                                    $months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                                    foreach ($months as $month) {
+                                        $selected = ($license_data['month_issued'] == $month) ? 'selected' : '';
+                                        echo "<option value=\"$month\" $selected>$month</option>";
+                                    }
+                                    ?>
                                     </select>
                                 </div>
                                 <div>
-                                    <select id="year_issued" class="select-field">
-                                            <option value="" disabled selected>Year</option>
-                                            <option value="2000">2000</option>
-                                            <option value="2001">2001</option>
-                                            <option value="2002">2002</option>
-                                            <option value="2003">2003</option>
-                                            <option value="2004">2004</option>
-                                            <option value="2005">2005</option>
-                                            <option value="2006">2006</option>
-                                            <option value="2007">2007</option>
-                                            <option value="2008">2008</option>
-                                            <option value="2009">2009</option>
-                                            <option value="2010">2010</option>
-                                            <option value="2011">2011</option>
-                                            <option value="2012">2012</option>
-                                            <option value="2013">2013</option>
-                                            <option value="2014">2014</option>
-                                            <option value="2015">2015</option>
-                                            <option value="2016">2016</option>
-                                            <option value="2017">2017</option>
-                                            <option value="2018">2018</option>
-                                            <option value="2019">2019</option>
-                                            <option value="2020">2020</option>
-                                            <option value="2021">2021</option>
-                                            <option value="2022">2022</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
+                                    <select id="year_issued" name="year_issued" class="select-field" required>
+                                    <option value="" disabled>Select Year</option>
+                                    <?php
+                                    for ($year = 2000; $year <= 2024; $year++) {
+                                        $selected = ($license_data['year_issued'] == $year) ? 'selected' : '';
+                                        echo "<option value=\"$year\" $selected>$year</option>";
+                                    }
+                                    ?>
                                     </select>
                                 </div>
                             </div>
@@ -687,55 +816,30 @@ if (isset($_SESSION['message'])) {
                             <label for="expiry_date_group" class="label sidenav-content">Expiry Date</label>
                             <div id="expiry_date_group" class="form-group sidenav-content">
                                 <div>
-                                    <select id="month_expired" class="select-field">
-                                        <option value="" disabled selected>Month</option>
-                                        <option value="January">January</option>
-                                        <option value="February">February</option>
-                                        <option value="March">March</option>
-                                        <option value="April">April</option>
-                                        <option value="May">May</option>
-                                        <option value="June">June</option>
-                                        <option value="July">July</option>
-                                        <option value="August">August</option>
-                                        <option value="September">September</option>
-                                        <option value="October">October</option>
-                                        <option value="November">November</option>
-                                        <option value="December">December</option>
+                                    <select id="month_expired" name="month_expired" class="select-field" required>
+                                    <option value="" disabled>Select Month</option>
+                                    <?php
+                                    foreach ($months as $month) {
+                                        $selected = ($license_data['month_expired'] == $month) ? 'selected' : '';
+                                        echo "<option value=\"$month\" $selected>$month</option>";
+                                    }
+                                    ?>
                                     </select>
                                 </div>
                                 <div>
-                                    <select id="year_expired" class="select-field">
-                                            <option value="" disabled selected>Year</option>
-                                            <option value="2000">2000</option>
-                                            <option value="2001">2001</option>
-                                            <option value="2002">2002</option>
-                                            <option value="2003">2003</option>
-                                            <option value="2004">2004</option>
-                                            <option value="2005">2005</option>
-                                            <option value="2006">2006</option>
-                                            <option value="2007">2007</option>
-                                            <option value="2008">2008</option>
-                                            <option value="2009">2009</option>
-                                            <option value="2010">2010</option>
-                                            <option value="2011">2011</option>
-                                            <option value="2012">2012</option>
-                                            <option value="2013">2013</option>
-                                            <option value="2014">2014</option>
-                                            <option value="2015">2015</option>
-                                            <option value="2016">2016</option>
-                                            <option value="2017">2017</option>
-                                            <option value="2018">2018</option>
-                                            <option value="2019">2019</option>
-                                            <option value="2020">2020</option>
-                                            <option value="2021">2021</option>
-                                            <option value="2022">2022</option>
-                                            <option value="2023">2023</option>
-                                            <option value="2024">2024</option>
+                                    <select id="year_expired" name="year_expired" class="select-field" required>
+                                    <option value="" disabled>Select Year</option>
+                                    <?php
+                                    for ($year = 2000; $year <= 2030; $year++) {
+                                        $selected = ($license_data['year_expired'] == $year) ? 'selected' : '';
+                                        echo "<option value=\"$year\" $selected>$year</option>";
+                                    }
+                                    ?>
                                     </select>
                                 </div>
                             </div>
                             <div id="button-group" class="form-group">
-                                <button class="button">Save</button>
+                                <button class="button" type="submit" name="save_license">Save</button>
                             </div>
                         </form>
                     </div>
@@ -751,11 +855,11 @@ if (isset($_SESSION['message'])) {
                     </div>
 
                     <div class="skills-form sidenav-content">
-                        <form id="skills_form">
+                        <form id="skills_form" method="POST">
                             <label for="add_skills_group" class="sidenav-content">Add skill/s</label>
                             <div id="add_skills_group" class="form-group two-columns sidenav-content">
                                 <div>
-                                    <input type="text" id="skills" class="input-field">
+                                    <input type="text" id="skills" name="skills[]" class="input-field">
                                 </div>
                                 <div>
                                     <button id="add_skill_btn" class="button" type="button">Add</button>
@@ -850,7 +954,7 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
-                                <?php if (!empty($user_data['personal_description'])): ?>
+                                <?php if (!empty($license_data['license_name'])): ?>
                                     <div class="info-container">
                                         <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
                                     </div>
@@ -860,9 +964,15 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Licences & Certificates</h3>
                                 <p>Showcase your professional credentials. Add your relevant licences, certificates, memberships and accreditations here.</p>
-                                <div class="info-container">
-                                    <p>LnE goes here</p>
-                                </div>
+                                <?php if (!empty($license_data['license_name'])): ?>
+                                    <div class="info-container">
+                                        <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <h4><?php echo htmlspecialchars($license_data['license_name']); ?></h4>
+                                        <p><?php echo htmlspecialchars($license_data['month_issued']); ?> <?php echo htmlspecialchars($license_data['year_issued']); ?> - <?php echo htmlspecialchars($license_data['month_expired']); ?> <?php echo htmlspecialchars($license_data['year_expired']); ?></p>
+                                    </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('LnE-sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
@@ -883,9 +993,13 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Skills</h3>
                                 <p>Let employers know how valuable you can be to them.</p>
+                                <?php if (!empty($skills)): ?>
                                 <div class="info-container">
-                                    <p>Skills goes here</p>
+                                    <ul id="user_skills_list">
+                                        <!-- Skills will be populated here -->
+                                    </ul>
                                 </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('skills_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
@@ -973,6 +1087,22 @@ if (isset($_SESSION['message'])) {
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+            <script type="text/javascript">
+                var userSkills = <?php echo $skills_json; ?>;
+
+                // Function to display user skills in the info-container
+                function displayUserSkills() {
+                    var ul = document.getElementById('user_skills_list');
+                    userSkills.forEach(function(skill) {
+                        var li = document.createElement('li');
+                        li.textContent = skill;
+                        ul.appendChild(li);
+                    });
+                }
+
+                // Call the function to populate the skills list
+                document.addEventListener('DOMContentLoaded', displayUserSkills);
+            </script>
 
 
         </body>

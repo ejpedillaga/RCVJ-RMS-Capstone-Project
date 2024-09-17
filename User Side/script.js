@@ -95,30 +95,74 @@ function closeNav(sidenavId, containerId) {
 }
 
 /*Add Skills*/
-document.getElementById('add_skill_btn').addEventListener('click', function() {
-  var skillInput = document.getElementById('skills');
-  var skillValue = skillInput.value.trim();
+document.getElementById('add_skill_btn').addEventListener('click', addSkill);
 
-  if (skillValue !== '') {
-      var ul = document.getElementById('added_skills_list');
+document.getElementById('skills').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent the default form submission behavior
+        addSkill();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  var ul = document.getElementById('added_skills_list');
+  
+  // Populate the skills list from userSkills
+  userSkills.forEach(function(skill) {
       var li = document.createElement('li');
-      li.innerHTML = `
-        <span>${skillValue}</span>
-        <button class="close-btn">&times;</button>
-      `;
+      li.innerHTML = 
+        `<span>${skill}</span>
+         <button class="close-btn">&times;</button>`;
       ul.appendChild(li);
-      skillInput.value = '';
 
       // Add event listener to the close button
       li.querySelector('.close-btn').addEventListener('click', function() {
-        li.remove();
+          li.remove();
       });
-  }
+  });
 });
 
+function addSkill() {
+    var skillInput = document.getElementById('skills');
+    var skillValue = skillInput.value.trim();
+
+    if (skillValue !== '') {
+        var ul = document.getElementById('added_skills_list');
+        var li = document.createElement('li');
+        li.innerHTML = 
+          `<span>${skillValue}</span>
+          <button class="close-btn">&times;</button>`;
+        ul.appendChild(li);
+        skillInput.value = '';
+
+        // Add event listener to the close button
+        li.querySelector('.close-btn').addEventListener('click', function() {
+            li.remove();
+        });
+    }
+}
+
 document.getElementById('skills_form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  // Handle form submission logic here
+    event.preventDefault(); // Prevent default form submission
+
+    // Gather skills from the list
+    var skills = [];
+    document.querySelectorAll('#added_skills_list li span').forEach(function(span) {
+        skills.push(span.textContent.trim());
+    });
+
+    // Convert skills to JSON format
+    var skillsJson = JSON.stringify(skills);
+
+    // Create a hidden input to include skills in the form submission
+    var hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'skills_json';
+    hiddenInput.value = skillsJson;
+    this.appendChild(hiddenInput);
+
+    // Submit the form
+    this.submit();
 });
 
 /*Add Course Highlight*/

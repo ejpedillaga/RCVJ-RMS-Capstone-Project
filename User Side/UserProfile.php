@@ -973,7 +973,7 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
-                                <?php if (!empty($license_data['license_name'])): ?>
+                                <?php if (!empty($user_data['personal_description'])): ?>
                                     <div class="info-container">
                                         <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
                                     </div>

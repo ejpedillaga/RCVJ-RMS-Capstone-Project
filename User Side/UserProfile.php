@@ -16,13 +16,17 @@ $user_data = [
     'personal_description' => ''
 ];
 
+// **1. Add 'masters_started' and 'doctoral_started' to the education_data array**
 $education_data = [
     'school' => '',
     'course' => '',
+    'sy_started' => '',
     'sy_ended' => '',
     'masters' => '',
+    'masters_started' => '',  // Added
     'masters_ended' => '',
     'doctoral' => '',
+    'doctoral_started' => '', // Added
     'doctoral_ended' => ''
 ];
 
@@ -68,6 +72,7 @@ if (isset($_SESSION['user'])) {
         echo "Error: User not found in the applicant_table.";
     }
 
+    // Handle personal description form submission
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_description'])) {
         // Fetch and sanitize personal description form data
         $personal_description = $conn->real_escape_string($_POST['description']);
@@ -125,9 +130,11 @@ if (isset($_SESSION['user'])) {
         }
     }
 
+    // **2. Update the SQL query to include 'masters_started' and 'doctoral_started'**
     // Fetch the education data to populate the education form
     if (isset($userid)) {  // Ensure userid is available before fetching education data
-        $sql_edu = "SELECT school, course, sy_ended, masters, masters_ended, doctoral, doctoral_ended 
+        $sql_edu = "SELECT school, course, sy_started, sy_ended, masters, masters_started, masters_ended, 
+                    doctoral, doctoral_started, doctoral_ended 
                     FROM education_table WHERE userid = '$userid'";
         $result_edu = $conn->query($sql_edu);
 
@@ -138,13 +145,16 @@ if (isset($_SESSION['user'])) {
 
     // Handle form submission for education data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_education'])) {
-        // Fetch and sanitize education form data
+        // **3. Fetch and sanitize education form data, including the new fields**
         $school = $conn->real_escape_string($_POST['school']);
         $course = $conn->real_escape_string($_POST['course']);
+        $sy_started = $conn->real_escape_string($_POST['sy_started']);
         $sy_ended = $conn->real_escape_string($_POST['sy_ended']);
         $masters = $conn->real_escape_string($_POST['masters']);
+        $masters_started = $conn->real_escape_string($_POST['masters_started']); // Added
         $masters_ended = $conn->real_escape_string($_POST['masters_ended']);
         $doctoral = $conn->real_escape_string($_POST['doctoral']);
+        $doctoral_started = $conn->real_escape_string($_POST['doctoral_started']); // Added
         $doctoral_ended = $conn->real_escape_string($_POST['doctoral_ended']);
 
         // Insert or update education data for the user
@@ -152,21 +162,26 @@ if (isset($_SESSION['user'])) {
         $check_result = $conn->query($check_sql);
 
         if ($check_result->num_rows > 0) {
-            // If record exists, update
+            // **4. Update statement includes the new fields**
             $sql_update_edu = "UPDATE education_table SET
                 school = '$school',
                 course = '$course',
+                sy_started = '$sy_started',
                 sy_ended = '$sy_ended',
                 masters = '$masters',
+                masters_started = '$masters_started',
                 masters_ended = '$masters_ended',
                 doctoral = '$doctoral',
+                doctoral_started = '$doctoral_started',
                 doctoral_ended = '$doctoral_ended'
                 WHERE userid = '$userid'";
-            $conn->query($sql_update_edu);
+            if (!$conn->query($sql_update_edu)) { // Optional: check if update was successful
+                echo "Error updating education data: " . $conn->error;
+            }
         } else {
-            // If no record, insert
-            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_ended, masters, masters_ended, doctoral, doctoral_ended) 
-                VALUES ('$userid', '$school', '$course', '$sy_ended', '$masters', '$masters_ended', '$doctoral', '$doctoral_ended')";
+            // **5. Insert statement includes the new fields**
+            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_started, sy_ended, masters, masters_started, masters_ended, doctoral, doctoral_started, doctoral_ended) 
+                VALUES ('$userid', '$school', '$course', '$sy_started', '$sy_ended', '$masters', '$masters_started', '$masters_ended', '$doctoral', '$doctoral_started', '$doctoral_ended')";
             if (!$conn->query($sql_insert_edu)) {
                 echo "Error inserting education data: " . $conn->error;
             }
@@ -211,14 +226,16 @@ if (isset($_SESSION['user'])) {
                 month_started = '$month_started',
                 year_started = $year_started,
                 month_ended = '$month_ended',
-                year_ended = $year_ended,
+                year_ended = " . ($year_ended !== null ? $year_ended : "NULL") . ",
                 career_history = '$career_history'
                 WHERE userid = '$userid'";
-            $conn->query($sql_update_job);
+            if (!$conn->query($sql_update_job)) { // Optional: check if update was successful
+                echo "Error updating job experience data: " . $conn->error;
+            }
         } else {
             // If no record, insert
             $sql_insert_job = "INSERT INTO job_experience_table (userid, job_title, company_name, month_started, year_started, month_ended, year_ended, career_history) 
-                VALUES ('$userid', '$job_title', '$company_name', '$month_started', $year_started, '$month_ended', $year_ended, '$career_history')";
+                VALUES ('$userid', '$job_title', '$company_name', '$month_started', $year_started, '$month_ended', " . ($year_ended !== null ? $year_ended : "NULL") . ", '$career_history')";
             if (!$conn->query($sql_insert_job)) {
                 echo "Error inserting job experience data: " . $conn->error;
             }
@@ -245,14 +262,13 @@ if (isset($_SESSION['message'])) {
 ?>
 
 
-
 <!DOCTYPE html>
 <html>
     <head>
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
@@ -357,7 +373,6 @@ if (isset($_SESSION['message'])) {
             <!--Usual Structure-->
             <section class="profile-section">
                 <!--Edit Profile Sidenav-->
-                <div id="overlay" class="overlay"></div>
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
@@ -435,9 +450,6 @@ if (isset($_SESSION['message'])) {
                     </div>
                 </div>
 
-                <!--Personal Description Sidenav-->
-                <!-- Overlay -->
-                <div id="overlay" class="overlay"></div>
                 <!-- Personal Description Sidenav -->
                 <div id="personal-description-sidenav" class="sidenav">
                     <div class="sidenav-header">Add some description about <br> yourself<br>
@@ -458,7 +470,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('personal-description-sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Past Jobs Sidenav-->
                 <div id="past-jobs-sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">Past Jobs</div>
@@ -552,7 +563,6 @@ if (isset($_SESSION['message'])) {
                         <a href="javascript:void(0)" class="closebtn" onclick="closeNav('past-jobs-sidenav', 'profile-container')">&times;</a>
                     </div>
 
-                <div id="overlay" class="overlay"></div>
                     <!-- Education Sidenav -->
                     <div id="education_sidenav" class="sidenav">
                         <div class="sidenav-header sidenav-content">Education</div>
@@ -573,61 +583,31 @@ if (isset($_SESSION['message'])) {
                                 </div>
 
                                 <div class="form-group">
-                                    <div>
-                                        <label class="label" for="sy_ended">Year Ended</label>
-                                        <select id="sy_ended" name="sy_ended" class="select-field" required>
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['sy_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="masters">Master's <span>(Optional)</span></label>
-                                        <input type="text" id="masters" name="masters" class="input-field" value="<?php echo htmlspecialchars($education_data['masters']); ?>">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="masters_ended">Year Ended</label>
-                                        <select id="masters_ended" name="masters_ended" class="select-field">
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['masters_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="doctoral">Doctoral <span>(Optional)</span></label>
-                                        <input type="text" id="doctoral" name="doctoral" class="input-field" value="<?php echo htmlspecialchars($education_data['doctoral']); ?>">
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <div>
-                                        <label class="label" for="doctoral_ended">Year Ended</label>
-                                        <select id="doctoral_ended" name="doctoral_ended" class="select-field">
-                                            <option value="" disabled>Year Ended</option>
-                                            <?php
-                                            for ($year = date('Y'); $year >= 2000; $year--) {
-                                                $selected = ($year == $education_data['doctoral_ended']) ? 'selected' : '';
-                                                echo "<option value=\"$year\" $selected>$year</option>";
-                                            }
-                                            ?>
-                                        </select>
+                                    <div class="year-container">
+                                        <div>
+                                            <label class="label" for="sy_started">Year Started</label>
+                                            <select id="sy_started" name="sy_started" class="select-field" required>
+                                                <option value="" disabled selected>Year Started</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['sy_started']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="label" for="sy_ended">Year Ended</label>
+                                            <select id="sy_ended" name="sy_ended" class="select-field" required>
+                                                <option value="" disabled selected>Year Ended</option>
+                                                <?php
+                                                for ($year = date('Y'); $year >= 2000; $year--) {
+                                                    $selected = ($year == $education_data['sy_ended']) ? 'selected' : '';
+                                                    echo "<option value=\"$year\" $selected>$year</option>";
+                                                }
+                                                ?>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -639,10 +619,9 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('education_sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--License and Education Sidenav-->
                 <div id="LnE-sidenav" class="sidenav">
-                    <div class="sidenav-header sidenav-content">Add License or Certificates
+                    <div class="sidenav-header sidenav-content">Add License/Certificate
                         <br>
                         <p>Showcase your licenses, certificates, memberships, and accreditations.</p>
                     </div>
@@ -650,7 +629,7 @@ if (isset($_SESSION['message'])) {
                     <div class="LnE-form sidenav-content">
                         <form action="">
                             <div id="license_group" class="form-group sidenav-content">
-                                <label for="license" class="label">License Name</label>
+                                <label for="license" class="label">License/Certificate Name</label>
                                 <input type="text" id="license" class="input-field">
                             </div>
 
@@ -755,12 +734,6 @@ if (isset($_SESSION['message'])) {
                                     </select>
                                 </div>
                             </div>
-
-                            <div id="certificate_group" class="form-group">
-                                <label for="certificate" class="label">Certificate Name</label>
-                                <input type="text" id="certificate" class="input-field">
-                            </div>
-
                             <div id="button-group" class="form-group">
                                 <button class="button">Save</button>
                             </div>
@@ -769,7 +742,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('LnE-sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Skills Sidenav-->
                 <div id="skills_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
@@ -825,7 +797,6 @@ if (isset($_SESSION['message'])) {
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 
-                <div id="overlay" class="overlay"></div>
                 <!--Profile Container-->
                 <div id="profile-container" class="main-container">
                     <!--Header-->
@@ -879,31 +850,62 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
-                                <button onclick="openNav('personal-description-sidenav', 'profile-container')">Add</button>
+                                <?php if (!empty($user_data['personal_description'])): ?>
+                                    <div class="info-container">
+                                        <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
+                                    </div>
+                                <?php endif; ?>
+                                <button onclick="openNav('personal-description-sidenav', 'profile-container')">Edit</button>
                             </div>
                             <div class="section">
                                 <h3>Licences & Certificates</h3>
                                 <p>Showcase your professional credentials. Add your relevant licences, certificates, memberships and accreditations here.</p>
+                                <div class="info-container">
+                                    <p>LnE goes here</p>
+                                </div>
                                 <button onclick="openNav('LnE-sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Past Jobs</h3>
                                 <p>The more you let employers know about your experience, the more you can stand out.</p>
+                                <?php if (!empty($job_experience_data['job_title'])): ?>
+                                    <div class="info-container">
+                                        <div class="edit-icon" onclick="openNav('past-jobs-sidenav', 'profile-container')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <h4 id="pj-jt"><?php echo htmlspecialchars($job_experience_data['job_title']); ?></h2>
+                                        <p id="pj-cn"><?php echo htmlspecialchars($job_experience_data['company_name']); ?></p>
+                                        <p id="pj-year"><?php echo htmlspecialchars($job_experience_data['month_started']); ?> <?php echo htmlspecialchars($job_experience_data['year_started']); ?> - <?php echo htmlspecialchars($job_experience_data['month_ended']); ?> <?php echo htmlspecialchars($job_experience_data['year_ended']); ?></p>
+                                    </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('past-jobs-sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Skills</h3>
                                 <p>Let employers know how valuable you can be to them.</p>
+                                <div class="info-container">
+                                    <p>Skills goes here</p>
+                                </div>
                                 <button onclick="openNav('skills_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Education</h3>
                                 <p>Tell employers about your education.</p>
+                                <?php if (!empty($education_data['school'])): ?>
+                                    <div class="info-container">
+                                        <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container')">
+                                            <i class="fas fa-edit"></i>
+                                        </div>
+                                        <h4 id="educ-school"><?php echo htmlspecialchars($education_data['school']); ?></h4>
+                                        <p id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></p>
+                                        <p id="educ-year"><?php echo htmlspecialchars($education_data['sy_started']); ?> - <?php echo htmlspecialchars($education_data['sy_ended']); ?></p>
+                                    </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('education_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
-                                <h3>ResumÃ©</h3>
-                                <p>Upload a resumÃ© for easy applying and access no matter where you are.</p>
+                                <h3>Resume</h3>
+                                <p>Upload a resume for easy applying and access no matter where you are.</p>
                                 <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
                             </div>
                         </div>
@@ -943,9 +945,6 @@ if (isset($_SESSION['message'])) {
                     </div>                    
                 </div>
             </footer>
-            
-            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-            <script defer src="script.js"></script>
 
             <!-- Success Modal -->
             <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
@@ -969,6 +968,8 @@ if (isset($_SESSION['message'])) {
 
             <!-- Add these lines in the <head> of your HTML -->
             <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
             <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>

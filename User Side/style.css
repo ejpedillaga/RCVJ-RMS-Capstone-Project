@@ -1296,7 +1296,7 @@ footer {
  /*Profile*/
  .profile-section {
   display: flex;
-  margin-top: 5rem;
+  margin-top: 3rem;
   padding: 0 2rem;
   justify-content: space-around;
 }
@@ -1390,7 +1390,7 @@ img#profile-picture{
 
 .my-jobs p{
   font-size: 2rem;
-  font-weight: 800;
+  font-weight: 500;
   color: white;
   font-family: "Encode Sans Semi Expanded", sans-serif;
   margin-right: 10rem;
@@ -1446,13 +1446,14 @@ img#profile-picture{
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  box-shadow: .1rem .1rem #0d0c22;
   width: 10rem;
   font-weight:bold;
+  transition: all 0.3s;
 }
 
 .section button:hover {
-  background-color: #d8811d;
+  background-color: #2C1875;
+  color: #ffffff;
 }
 
 
@@ -1484,7 +1485,7 @@ body.overlay-active::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(175, 173, 208, 0.049);; 
+  background-color: rgba(0, 0, 0, 0.05);; 
   z-index: 1000; 
   display: none; 
 }
@@ -1520,7 +1521,7 @@ body.overlay-active .overlay {
 /*Header style for all sidenavs in profile*/
 .sidenav-header {
   position: absolute;
-  top: 4rem;
+  top: 1rem;
   left: .8rem;
   font-size: 32px;
   margin-left: 5px;
@@ -1542,6 +1543,7 @@ body.overlay-active .overlay {
   font-size: 36px;
   margin-left: 50px;
   z-index: 1110;
+  color: #25165C;
 }
 
 .sidenav .textarea{
@@ -1574,13 +1576,13 @@ body.overlay-active .overlay {
 }
 
 .sidenav .button:hover {
-  background-color: #0069d9;
+  background-color: #EF9B50;
 }
 
 .sidenav #button-group.form-group {
   column-count: 1;
   margin: auto;
-  text-align: center
+  text-align: center;
 }
 
 
@@ -1645,7 +1647,7 @@ body.overlay-active .overlay {
 }
 .personal-description-form{
   padding: 20px;
-  margin-top: 7rem;
+  margin-top: 5rem;
 }
 
 .personal-description-form .form-group {
@@ -1675,7 +1677,6 @@ body.overlay-active .overlay {
 }
 .past-jobs-form{
   padding: 20px;
-  margin-top: 4.5rem;
 }
 
 .past-jobs-form .form-group {
@@ -1720,7 +1721,6 @@ body.overlay-active .overlay {
 /*Education Sidenav*/
 .education-form{
   padding: 20px;
-  margin-top: 4.5rem;
 }
 
 .education-form .form-group {
@@ -1798,11 +1798,15 @@ body.overlay-active .overlay {
   cursor: pointer;
 }
 
+.education-form .year-container {
+  display: flex;
+  gap: 3rem; /* Adjust the gap between the dropdowns */
+}
 
 /*License and Certificates*/
 .LnE-form{
   padding: 20px;
-  margin-top: 4.5rem;
+  margin-top: 2.5rem;
 }
 
 #LnE-sidenav .sidenav-header p {
@@ -1866,7 +1870,7 @@ body.overlay-active .overlay {
 /*Skills Sidenav*/
 .skills-form{
   padding: 20px;
-  margin-top: 4.5rem;
+  margin-top: 2.5rem;
 }
 
 #skills_sidenav p {
@@ -1879,14 +1883,8 @@ body.overlay-active .overlay {
   font-family: "Encode Sans Semi Expanded", sans-serif;
 }
 
-.skills-form .form-group {
-  column-count: 1;
-  margin-bottom: 30px;
-}
-
 .skills-form .two-columns{
   column-count: 2;
-  column-gap: 2rem;
 }
 
 .skills-form .input-field{
@@ -1932,7 +1930,7 @@ body.overlay-active .overlay {
 /* Resume Sidenav */
 .resume-form {
   padding: 20px;
-  margin-top: 4.5rem;
+  margin-top: 2.5rem;
   
 }
 
@@ -1956,7 +1954,7 @@ body.overlay-active .overlay {
 }
 
 .resume-form .button:hover {
-  background-color: #45a049;
+  background-color: #EF9B50;
 }
 
 .resume-form .form-group {
@@ -1964,7 +1962,6 @@ body.overlay-active .overlay {
   flex-direction: column; /* Arrange children in a column */
   justify-content: center; /* Center children vertically */
   align-items: center; /* Center children horizontally */
-  width: 76%;
   border: 1px dashed #0B0101;
   padding: 2rem; /* Adjust as needed */
   margin: 20px;
@@ -2213,7 +2210,6 @@ body.overlay-active .overlay {
 }
 
 .form-group {
-  text-align: center; 
   margin-bottom: 1.5rem;
   font-weight: 500;
 }
@@ -2251,4 +2247,36 @@ body.overlay-active .overlay {
 
 .button:hover {
   background-color: #0069d9;
+}
+
+.info-container {
+  position: relative;
+  background-color: #FFFFFF;
+  border: 2px solid #c9c9c9;
+  border-radius: 10px;
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+
+.info-container p{
+  margin: 0;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px; /* Adjust size as needed */
+  cursor: pointer;
+  border-radius: 50px;
+  padding: 0.5rem;
+  transition: all 0.3s;
+}
+
+.edit-icon:hover{
+  background-color: #2c187525;
+}
+
+.edit-icon i {
+  color: #2C1875; /* Match this color to your text color or desired icon color */
 }

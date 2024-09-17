@@ -597,12 +597,14 @@ function populateCandidatesTable(data) {
                 <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
             </select>
         </td>
-        <td>
+            <td class="candidates-tooltip-container">
             <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
         </td>
-        <td>
+        <td class="candidates-tooltip-container">
             <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-        </td> 
+            <span class="tooltip-text">Delete Candidate</span>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -628,8 +630,18 @@ function populateEmployeesTable(data) {
                 <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i></td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
+                <span class="tooltip-text">Edit <br>Employee</span>
+            </div>
+        </td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
+                <span class="tooltip-text">Delete Employee</span>
+            </div>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -691,12 +703,28 @@ function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
         <td>
-        <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100"></td>
+            <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
+        </td>
         <td id="company-name">${partner.company_name}</td>
-        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i>
+                <span class="tooltip-text">Post a Job for Partner</span>
+            </div>
+        </td>
         <td id="date">${partner.date_added}</td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i>
+                <span class="tooltip-text">Edit Partner Company</span>
+            </div>
+        </td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i>
+                <span class="tooltip-text">Delete Partner Company</span>
+            </div>
+        </td>
     `;
     
     populateTable(data, 'table', rowTemplate);
@@ -714,11 +742,18 @@ function populateJobsTable(containerSelector, data) {
                 <option value="Closed" ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
             </select>
         </td>
-        <td id="edit"><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i></td>
+        <td id="edit">
+    <div class="tooltip-container">
+        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
+        <span class="tooltip-text">Edit Job Listing</span>
+    </div>
+</td>
+
     `;
 
     populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
 }
+
 
 function handleStatusChange(jobId) {
     const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
@@ -1570,3 +1605,133 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function showJobTitle() {
+    document.getElementById('add-job-title-popup').style.display = 'block';
+    document.getElementById('add-job-title-popup').classList.add('show');
+    initializePopupPagination('add-job-title-popup');
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('popup').classList.remove('show');
+    initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+}
+
+function hideJobTitle() {
+    document.getElementById('add-job-title-popup').style.display = 'none';
+    document.getElementById('add-job-title-popup').classList.remove('show');
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('popup').classList.add('show');
+
+    // Remove all skill tags from the container but keep the input field
+    const skillsContainer = document.querySelector('#add-job-title-popup .jobposting-skills-container');
+    const skills = skillsContainer.querySelectorAll('.jobposting-skill');
+    skills.forEach(skill => skillsContainer.removeChild(skill));
+
+    // Clear the skills set
+    skillsSet.clear();
+
+    // Clear the job title input field
+    document.getElementById('job-title-cert').value = '';
+
+    // Clear the Name of Job input field
+    document.getElementById('edit-jobposting-partner-company').value = '';
+
+    // Reset the Classification dropdown values
+    document.getElementById('classi').selectedIndex = 0; // Select the first option
+    document.getElementById('subclassi').selectedIndex = 0; // Select the first option
+
+    // Clear the Gender radio buttons
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    genderRadios.forEach(radio => radio.checked = false);
+
+    // Clear the Educational Attainment radio buttons
+    const educRadios = document.querySelectorAll('input[name="educ-level"]');
+    educRadios.forEach(radio => radio.checked = false);
+}
+
+function saveJobTitle(event) {
+    // Prevent the default behavior (e.g., form submission)
+    event.preventDefault();
+
+    const jobTitle = document.getElementById('job_title').value.trim();
+    const classification = document.getElementById('classification').value;
+    const subclassification = document.getElementById('subclassification').value;
+    const gender = document.getElementById('gender').value;
+    const educationalAttainment = document.getElementById('educational_attainment').value;
+    const certLicense = document.getElementById('job-title-cert').value.trim();
+    const yearsOfExperience = document.getElementById('job-title-exp').value.trim();
+
+    // Validation: Ensure all required fields are filled in
+    if (!jobTitle) {
+        alert('Job Title is required.');
+        return;
+    }
+    if (!classification) {
+        alert('Classification is required.');
+        return;
+    }
+    if (!subclassification) {
+        alert('Subclassification is required.');
+        return;
+    }
+    if (!gender) {
+        alert('Gender is required.');
+        return;
+    }
+    if (!educationalAttainment) {
+        alert('Educational Attainment is required.');
+        return;
+    }
+
+    // Log the input values to ensure they are captured correctly
+    console.log("Job Title:", jobTitle);
+    console.log("Classification:", classification);
+    console.log("Subclassification:", subclassification);
+    console.log("Gender:", gender);
+    console.log("Educational Attainment:", educationalAttainment);
+    console.log("Cert/License:", certLicense);
+    console.log("Years of Experience:", yearsOfExperience);
+
+    // Create an object to hold the data
+    const data = {
+        job_title: jobTitle,
+        classification: classification,
+        subclassification: subclassification,
+        gender: gender,
+        educational_attainment: educationalAttainment,
+        cert_license: certLicense,
+        years_of_experience: yearsOfExperience
+    };
+
+    // Send data via AJAX to PHP
+    fetch('save_job_title.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job title saved successfully!');
+            
+            // Clear all fields after successful save
+            document.getElementById('job_title').value = '';
+            document.getElementById('classification').value = '';
+            document.getElementById('subclassification').value = '';
+            document.getElementById('gender').value = '';
+            document.getElementById('educational_attainment').value = '';
+            document.getElementById('job-title-cert').value = '';
+            document.getElementById('job-title-exp').value = '';
+
+            // Optionally hide the popup after saving
+            hideJobTitle('add-job-title-popup');
+        } else {
+            alert('Error saving job title!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+

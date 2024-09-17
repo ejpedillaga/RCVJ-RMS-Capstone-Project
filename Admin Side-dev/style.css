@@ -986,7 +986,7 @@ table td:last-child{
     display: block;
     margin-bottom: 10px;
 }
-.addemployees-form-group input, .addemployees-form-group textarea {
+.addemployees-form-group input, .addemployees-form-group textarea, #addemployees-role  {
     width: 100%;
     height: 59px;
     border-radius: 10px;
@@ -1009,6 +1009,7 @@ table td:last-child{
     font-size: 20px;
     cursor: pointer;
 }
+
 
 /*DELETE EMPLOYEE DIALOG BOX*/
 .delete-employees-dialog-box {

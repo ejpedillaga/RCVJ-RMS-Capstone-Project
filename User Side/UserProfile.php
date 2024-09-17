@@ -993,11 +993,13 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Skills</h3>
                                 <p>Let employers know how valuable you can be to them.</p>
+                                <?php if (!empty($skills)): ?>
                                 <div class="info-container">
-                                <ul id="user_skills_list">
-                                    <!-- Skills will be populated here -->
-                                </ul>
+                                    <ul id="user_skills_list">
+                                        <!-- Skills will be populated here -->
+                                    </ul>
                                 </div>
+                                <?php endif; ?>
                                 <button onclick="openNav('skills_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">

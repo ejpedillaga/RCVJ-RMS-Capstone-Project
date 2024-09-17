@@ -37,9 +37,10 @@ try {
     }
 
     // Get the last inserted job ID
-    $job_id = $stmt->insert_id;
+    //$job_id = $stmt->insert_id;
     $stmt->close();
 
+    /*
     // Insert skills into skill_table and job_skills_table
     foreach ($skills as $skill) {
         // Check if the skill already exists
@@ -66,7 +67,8 @@ try {
         }
         $job_skill_stmt->close();
     }
-
+    */
+    
     echo json_encode(["message" => "Job posted successfully"]);
 
 } catch (Exception $e) {

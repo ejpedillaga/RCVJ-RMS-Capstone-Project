@@ -1766,6 +1766,13 @@ body.overlay-active .overlay {
   background-position: right 10px center;
 }
 
+.education-container {
+  border: 1px solid #00000038; 
+  padding: 10px;
+  border-radius: 5px; 
+  width: 95%;
+}
+
 .education-form #course_highlights{
   margin-top: 20px;
 }

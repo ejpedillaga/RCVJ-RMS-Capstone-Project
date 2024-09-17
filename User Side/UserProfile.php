@@ -555,9 +555,24 @@ if (isset($_SESSION['message'])) {
                 <div id="overlay" class="overlay"></div>
                     <!-- Education Sidenav -->
                     <div id="education_sidenav" class="sidenav">
-                        <div class="sidenav-header sidenav-content">Education</div>
+                        <div class="sidenav-header sidenav-content">Educational Attainment</div>
                         <div class="education-form sidenav-content">
                             <form action="" method="POST">
+
+                            <div class="form-group education-container">
+                                <div>
+                                    <label class="label" for="education">Level of Education:</label><br>
+                                    <input type="radio" id="highschool" name="education" value="Highschool">
+                                    <label for="highschool">Highschool Graduate</label><br>
+                                    
+                                    <input type="radio" id="undergraduate" name="education" value="Undergraduate">
+                                    <label for="undergraduate">Undergraduate</label><br>
+                                    
+                                    <input type="radio" id="college" name="education" value="College Graduate">
+                                    <label for="college">College Graduate</label><br>
+                                </div>
+                                </div>
+
                                 <div class="form-group">
                                     <div>
                                         <label class="label" for="school">School</label>

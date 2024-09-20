@@ -2340,26 +2340,32 @@ body.overlay-active .overlay {
   margin-bottom: 1rem;
 }
 
+.license-container {
+  overflow-y: auto;
+  max-height: 17rem;
+  margin-bottom: 1rem;
+}
+
 /* Custom Scrollbar for WebKit browsers (Chrome, Safari) */
-.past-jobs-container::-webkit-scrollbar {
+.past-jobs-container::-webkit-scrollbar,  .license-container::-webkit-scrollbar{
   width: 12px; /* Width of the scrollbar */
 }
 
-.past-jobs-container::-webkit-scrollbar-track {
+.past-jobs-container::-webkit-scrollbar-track, .license-container::-webkit-scrollbar-track{
   background: #f1f1f1; /* Track color */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb {
+.past-jobs-container::-webkit-scrollbar-thumb, .license-container::-webkit-scrollbar-thumb {
   background: #2C1875; /* Scrollbar color */
   border-radius: 10px; /* Rounded corners */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb:hover {
+.past-jobs-container::-webkit-scrollbar-thumb:hover , .license-container::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
 }
 
 /* Custom Scrollbar for Firefox */
-.past-jobs-container {
+.past-jobs-container, .license-container {
   scrollbar-width: thick; /* Thin scrollbar */
   scrollbar-color: #2C1875 #f1f1f1; /* Scrollbar color and track color */
 }

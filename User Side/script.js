@@ -317,3 +317,64 @@ function deleteJobExperience(jobExperienceId) {
       form.submit();
   }
 }
+
+function populateLicense(license) {
+  // Set the license ID in the hidden field
+  document.querySelector('input[name="license_id"]').value = license.id;
+
+  // Set the license name
+  document.getElementById('license').value = license.license_name;
+
+  // Set the issued date
+  document.getElementById('month_issued').value = license.month_issued;
+  document.getElementById('year_issued').value = license.year_issued;
+
+  // Set the expiration date
+  document.getElementById('month_expired').value = license.month_expired;
+  document.getElementById('year_expired').value = license.year_expired;
+}
+
+function resetLicenseForm() {
+  // Clear the hidden field
+  document.querySelector('input[name="license_id"]').value = '';
+
+  // Clear license name
+  document.getElementById('license_name').value = '';
+
+  // Reset the issued date
+  document.getElementById('month_issued').selectedIndex = 0; // Set to "Select Month"
+  document.getElementById('year_issued').selectedIndex = 0; // Set to "Select Year"
+
+  // Reset the expiration date
+  document.getElementById('month_expired').selectedIndex = 0; // Set to "Select Month"
+  document.getElementById('year_expired').selectedIndex = 0; // Set to "Select Year"
+}
+
+function deleteLicense(licenseId) {
+  if (confirm('Are you sure you want to delete this license?')) {
+      // Create a form to submit the deletion request
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ''; // Submit to the same page
+
+      // Create a hidden input for the license ID
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'license_id';
+      input.value = licenseId;
+
+      // Create a hidden input to identify the deletion action
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'hidden';
+      deleteInput.name = 'delete_license';
+      deleteInput.value = '1';
+
+      // Append inputs to the form
+      form.appendChild(input);
+      form.appendChild(deleteInput);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      form.submit();
+  }
+}

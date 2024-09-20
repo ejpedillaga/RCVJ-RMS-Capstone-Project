@@ -201,19 +201,31 @@ if (isset($_SESSION['user'])) {
         exit;
     }
 
-    // Fetch the job experience data to populate the job experience form
+    // Fetch all job experience data to populate the job experience form, sorted by the most recent date
     if (isset($userid)) {  // Ensure userid is available before fetching job experience data
-        $sql_job = "SELECT job_title, company_name, month_started, year_started, month_ended, year_ended, career_history 
-                    FROM job_experience_table WHERE userid = '$userid'";
+        $sql_job = "SELECT job_experience_id, job_title, company_name, month_started, year_started, month_ended, year_ended, career_history 
+                    FROM job_experience_table 
+                    WHERE userid = '$userid'
+                    ORDER BY year_ended DESC, 
+                            FIELD(month_ended, 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December') DESC";
         $result_job = $conn->query($sql_job);
 
+        // Initialize an array to store all job experiences
+        $job_experience_data = [];
+        
         if ($result_job->num_rows > 0) {
-            $job_experience_data = $result_job->fetch_assoc();
+            // Fetch all results and store them in the array
+            while ($row = $result_job->fetch_assoc()) {
+                $job_experience_data[] = $row;
+            }
         }
     }
 
     // Handle form submission for job experience data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_job_experience'])) {
+        // Fetch job experience ID if editing
+        $job_experience_id = isset($_POST['job_experience_id']) ? (int)$_POST['job_experience_id'] : null;
+
         // Fetch and sanitize job experience form data
         $job_title = $conn->real_escape_string($_POST['job-title']);
         $company_name = $conn->real_escape_string($_POST['company-name-field']);
@@ -223,36 +235,54 @@ if (isset($_SESSION['user'])) {
         $year_ended = !empty($_POST['year_ended']) ? (int) $_POST['year_ended'] : null;
         $career_history = $conn->real_escape_string($_POST['career_history']);
 
-        // Insert or update job experience data for the user
-        $check_sql = "SELECT * FROM job_experience_table WHERE userid = '$userid'";
-        $check_result = $conn->query($check_sql);
+        if ($job_experience_id) {
+            // Update existing job experience data
+            $sql_update_job = "UPDATE job_experience_table SET 
+                job_title = '$job_title', 
+                company_name = '$company_name', 
+                month_started = '$month_started', 
+                year_started = $year_started, 
+                month_ended = '$month_ended', 
+                year_ended = " . ($year_ended !== null ? $year_ended : "NULL") . ", 
+                career_history = '$career_history' 
+                WHERE job_experience_id = $job_experience_id AND userid = '$userid'";
 
-        if ($check_result->num_rows > 0) {
-            // If record exists, update
-            $sql_update_job = "UPDATE job_experience_table SET
-                job_title = '$job_title',
-                company_name = '$company_name',
-                month_started = '$month_started',
-                year_started = $year_started,
-                month_ended = '$month_ended',
-                year_ended = " . ($year_ended !== null ? $year_ended : "NULL") . ",
-                career_history = '$career_history'
-                WHERE userid = '$userid'";
-            if (!$conn->query($sql_update_job)) { // Optional: check if update was successful
+            if (!$conn->query($sql_update_job)) {
                 echo "Error updating job experience data: " . $conn->error;
+            } else {
+                $_SESSION['message'] = "Job experience data updated successfully!";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
             }
         } else {
-            // If no record, insert
+            // Insert new job experience data for the user
             $sql_insert_job = "INSERT INTO job_experience_table (userid, job_title, company_name, month_started, year_started, month_ended, year_ended, career_history) 
                 VALUES ('$userid', '$job_title', '$company_name', '$month_started', $year_started, '$month_ended', " . ($year_ended !== null ? $year_ended : "NULL") . ", '$career_history')";
+
             if (!$conn->query($sql_insert_job)) {
                 echo "Error inserting job experience data: " . $conn->error;
+            } else {
+                $_SESSION['message'] = "Job experience data saved successfully!";
+                header("Location: " . $_SERVER['PHP_SELF']);
+                exit;
             }
         }
+    }
 
-        $_SESSION['message'] = "Job experience data saved successfully!";
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit;
+    // Handle deletion of job experience data
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_job_experience'])) {
+        $job_experience_id = (int)$_POST['job_experience_id'];
+
+        // SQL query to delete the job experience
+        $sql_delete_job = "DELETE FROM job_experience_table WHERE job_experience_id = $job_experience_id AND userid = '$userid'";
+
+        if (!$conn->query($sql_delete_job)) {
+            echo "Error deleting job experience data: " . $conn->error;
+        } else {
+            $_SESSION['message'] = "Job experience data deleted successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        }
     }
 
     //license
@@ -628,83 +658,86 @@ if (isset($_SESSION['message'])) {
                     <div class="sidenav-header sidenav-content">Past Jobs</div>
                         <div class="past-jobs-form sidenav-content">
                             <form action="" method="POST">
+                                <!-- Hidden field for job experience ID -->
+                                <input type="hidden" name="job_experience_id" value="<?php echo isset($job_experience_id) ? $job_experience_id : ''; ?>">
+
                                 <div class="form-group sidenav-content">
                                     <div>
                                         <label class="label" for="job-title">Job Title</label>
-                                        <input type="text" id="job-title" name="job-title" class="input-field" value="<?php echo htmlspecialchars($job_experience_data['job_title']); ?>">
+                                        <input type="text" id="job-title" name="job-title" class="input-field" value="">
                                     </div>
                                 </div>
 
                                 <div class="form-group sidenav-content">
                                     <div>
                                         <label class="label" for="company-name-field">Company Name</label>
-                                        <input type="text" id="company-name-field" name="company-name-field" class="input-field" value="<?php echo htmlspecialchars($job_experience_data['company_name']); ?>">
+                                        <input type="text" id="company-name-field" name="company-name-field" class="input-field" value="">
                                     </div>
                                 </div>
 
                                 <label class="label" for="started_group">Started</label>
                                 <div id="started_group" class="form-group">
                                     <div>
-                                        <select id="month_started" name="month_started" class="select-field">
-                                            <option value="" disabled>Select Month</option>
-                                            <option value="January" <?php echo $job_experience_data['month_started'] === 'January' ? 'selected' : ''; ?>>January</option>
-                                            <option value="February" <?php echo $job_experience_data['month_started'] === 'February' ? 'selected' : ''; ?>>February</option>
-                                            <option value="March" <?php echo $job_experience_data['month_started'] === 'March' ? 'selected' : ''; ?>>March</option>
-                                            <option value="April" <?php echo $job_experience_data['month_started'] === 'April' ? 'selected' : ''; ?>>April</option>
-                                            <option value="May" <?php echo $job_experience_data['month_started'] === 'May' ? 'selected' : ''; ?>>May</option>
-                                            <option value="June" <?php echo $job_experience_data['month_started'] === 'June' ? 'selected' : ''; ?>>June</option>
-                                            <option value="July" <?php echo $job_experience_data['month_started'] === 'July' ? 'selected' : ''; ?>>July</option>
-                                            <option value="August" <?php echo $job_experience_data['month_started'] === 'August' ? 'selected' : ''; ?>>August</option>
-                                            <option value="September" <?php echo $job_experience_data['month_started'] === 'September' ? 'selected' : ''; ?>>September</option>
-                                            <option value="October" <?php echo $job_experience_data['month_started'] === 'October' ? 'selected' : ''; ?>>October</option>
-                                            <option value="November" <?php echo $job_experience_data['month_started'] === 'November' ? 'selected' : ''; ?>>November</option>
-                                            <option value="December" <?php echo $job_experience_data['month_started'] === 'December' ? 'selected' : ''; ?>>December</option>
-                                        </select>
+                                    <select id="month_started" name="month_started" class="select-field">
+                                        <option value="" disabled selected>Select Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
                                     </div>
                                     <div>
-                                        <select id="year_started" name="year_started" class="select-field">
-                                            <option value="" disabled>Select Year</option>
-                                            <?php for ($year = 2000; $year <= 2024; $year++): ?>
-                                                <option value="<?php echo $year; ?>" <?php echo $job_experience_data['year_started'] == $year ? 'selected' : ''; ?>><?php echo $year; ?></option>
-                                            <?php endfor; ?>
-                                        </select>
+                                    <select id="year_started" name="year_started" class="select-field">
+                                        <option value="" disabled selected>Select Year</option>
+                                        <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                            <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
                                     </div>
                                 </div>
 
                                 <label class="label" for="ended_group">Ended</label>
                                 <div id="ended_group" class="form-group">
                                     <div>
-                                        <select id="month_ended" name="month_ended" class="select-field">
-                                            <option value="" disabled>Select Month</option>
-                                            <option value="January" <?php echo $job_experience_data['month_ended'] === 'January' ? 'selected' : ''; ?>>January</option>
-                                            <option value="February" <?php echo $job_experience_data['month_ended'] === 'February' ? 'selected' : ''; ?>>February</option>
-                                            <option value="March" <?php echo $job_experience_data['month_ended'] === 'March' ? 'selected' : ''; ?>>March</option>
-                                            <option value="April" <?php echo $job_experience_data['month_ended'] === 'April' ? 'selected' : ''; ?>>April</option>
-                                            <option value="May" <?php echo $job_experience_data['month_ended'] === 'May' ? 'selected' : ''; ?>>May</option>
-                                            <option value="June" <?php echo $job_experience_data['month_ended'] === 'June' ? 'selected' : ''; ?>>June</option>
-                                            <option value="July" <?php echo $job_experience_data['month_ended'] === 'July' ? 'selected' : ''; ?>>July</option>
-                                            <option value="August" <?php echo $job_experience_data['month_ended'] === 'August' ? 'selected' : ''; ?>>August</option>
-                                            <option value="September" <?php echo $job_experience_data['month_ended'] === 'September' ? 'selected' : ''; ?>>September</option>
-                                            <option value="October" <?php echo $job_experience_data['month_ended'] === 'October' ? 'selected' : ''; ?>>October</option>
-                                            <option value="November" <?php echo $job_experience_data['month_ended'] === 'November' ? 'selected' : ''; ?>>November</option>
-                                            <option value="December" <?php echo $job_experience_data['month_ended'] === 'December' ? 'selected' : ''; ?>>December</option>
-                                        </select>
+                                    <select id="month_ended" name="month_ended" class="select-field">
+                                        <option value="" disabled selected>Select Month</option>
+                                        <option value="January">January</option>
+                                        <option value="February">February</option>
+                                        <option value="March">March</option>
+                                        <option value="April">April</option>
+                                        <option value="May">May</option>
+                                        <option value="June">June</option>
+                                        <option value="July">July</option>
+                                        <option value="August">August</option>
+                                        <option value="September">September</option>
+                                        <option value="October">October</option>
+                                        <option value="November">November</option>
+                                        <option value="December">December</option>
+                                    </select>
                                     </div>
                                     
                                     <div>
-                                        <select id="year_ended" name="year_ended" class="select-field">
-                                            <option value="" disabled>Select Year</option>
-                                            <?php for ($year = 2000; $year <= 2024; $year++): ?>
-                                                <option value="<?php echo $year; ?>" <?php echo $job_experience_data['year_ended'] == $year ? 'selected' : ''; ?>><?php echo $year; ?></option>
-                                            <?php endfor; ?>
-                                        </select>
+                                    <select id="year_ended" name="year_ended" class="select-field">
+                                        <option value="" disabled selected>Select Year</option>
+                                        <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                            <option value="<?php echo $year; ?>"><?php echo $year; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <div>
                                         <label class="label" for="career_history">Tell something about your career history</label>
-                                        <textarea id="career_history" name="career_history" class="textarea" rows="10" cols="80"><?php echo htmlspecialchars($job_experience_data['career_history']); ?></textarea>
+                                        <textarea id="career_history" name="career_history" class="textarea" rows="10" cols="80"></textarea>
                                     </div>
                                 </div>
 
@@ -730,12 +763,12 @@ if (isset($_SESSION['message'])) {
                                             <label for="highschool">Highschool Graduate</label>
                                         </div>
                                         <div class="radio-item">
-                                            <input type="radio" id="undergraduate" name="education" value="Undergraduate">
-                                            <label for="undergraduate">Undergraduate</label>
-                                        </div>
-                                        <div class="radio-item">
                                             <input type="radio" id="college" name="education" value="College Graduate">
                                             <label for="college">College Graduate</label>
+                                        </div>
+                                        <div class="radio-item">
+                                            <input type="radio" id="undergraduate" name="education" value="Undergraduate">
+                                            <label for="undergraduate">Undergraduate</label>
                                         </div>
                                     </div>
                                 </div>
@@ -985,8 +1018,10 @@ if (isset($_SESSION['message'])) {
                                 <p>Showcase your professional credentials. Add your relevant licences, certificates, memberships and accreditations here.</p>
                                 <?php if (!empty($license_data['license_name'])): ?>
                                     <div class="info-container">
-                                        <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container')">
-                                            <i class="fas fa-edit"></i>
+                                        <div class="icon-group">
+                                            <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container')">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
                                         </div>
                                         <h4><?php echo htmlspecialchars($license_data['license_name']); ?></h4>
                                         <p><?php echo htmlspecialchars($license_data['month_issued']); ?> <?php echo htmlspecialchars($license_data['year_issued']); ?> - <?php echo htmlspecialchars($license_data['month_expired']); ?> <?php echo htmlspecialchars($license_data['year_expired']); ?></p>
@@ -997,17 +1032,32 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Past Jobs</h3>
                                 <p>The more you let employers know about your experience, the more you can stand out.</p>
-                                <?php if (!empty($job_experience_data['job_title'])): ?>
-                                    <div class="info-container">
-                                        <div class="edit-icon" onclick="openNav('past-jobs-sidenav', 'profile-container')">
-                                            <i class="fas fa-edit"></i>
+                                
+                                <div class="past-jobs-container">
+                                <?php if (!empty($job_experience_data)): ?>
+                                    <?php foreach ($job_experience_data as $job): ?>
+                                        <div class="info-container">
+                                            <div class="icon-group">
+                                                <div class="edit-icon" onclick="openNav('past-jobs-sidenav', 'profile-container'); populateJobExperience(<?php echo htmlspecialchars(json_encode($job)); ?>)">
+                                                    <i class="fas fa-edit"></i>
+                                                </div>
+                                                <div class="delete-icon" onclick="deleteJobExperience(<?php echo $job['job_experience_id']; ?>)"> 
+                                                    <i class="fas fa-trash"></i>
+                                                </div>
+                                            </div>
+                                            <h4 id="pj-jt"><?php echo htmlspecialchars($job['job_title']); ?></h4>
+                                            <p id="pj-cn"><?php echo htmlspecialchars($job['company_name']); ?></p>
+                                            <p id="pj-year">
+                                                <?php echo htmlspecialchars($job['month_started']); ?> 
+                                                <?php echo htmlspecialchars($job['year_started']); ?> - 
+                                                <?php echo htmlspecialchars($job['month_ended']); ?> 
+                                                <?php echo htmlspecialchars($job['year_ended']); ?>
+                                            </p>
                                         </div>
-                                        <h4 id="pj-jt"><?php echo htmlspecialchars($job_experience_data['job_title']); ?></h2>
-                                        <p id="pj-cn"><?php echo htmlspecialchars($job_experience_data['company_name']); ?></p>
-                                        <p id="pj-year"><?php echo htmlspecialchars($job_experience_data['month_started']); ?> <?php echo htmlspecialchars($job_experience_data['year_started']); ?> - <?php echo htmlspecialchars($job_experience_data['month_ended']); ?> <?php echo htmlspecialchars($job_experience_data['year_ended']); ?></p>
-                                    </div>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
-                                <button onclick="openNav('past-jobs-sidenav', 'profile-container')">Add</button>
+                                </div>
+                                <button onclick="openNav('past-jobs-sidenav', 'profile-container'); resetJobExperienceForm()">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Skills</h3>
@@ -1026,8 +1076,10 @@ if (isset($_SESSION['message'])) {
                                 <p>Tell employers about your education.</p>
                                 <?php if (!empty($education_data['school'])): ?>
                                     <div class="info-container">
-                                        <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container')">
-                                            <i class="fas fa-edit"></i>
+                                        <div class="icon-group">
+                                            <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container', <?php echo $job_experience_id; ?>)">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
                                         </div>
                                         <h4 id="educ-school"><?php echo htmlspecialchars($education_data['school']); ?></h4>
                                         <p id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></p>
@@ -1122,7 +1174,6 @@ if (isset($_SESSION['message'])) {
                 // Call the function to populate the skills list
                 document.addEventListener('DOMContentLoaded', displayUserSkills);
             </script>
-
 
         </body>
     </html>

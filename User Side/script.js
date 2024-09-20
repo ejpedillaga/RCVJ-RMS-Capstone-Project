@@ -248,3 +248,72 @@ function submitForm(){
 function closeSubmitDialog(){
   dialog.close();
 }
+
+function populateJobExperience(job) {
+  // Set the job experience ID in the hidden field
+  document.querySelector('input[name="job_experience_id"]').value = job.job_experience_id;
+
+  // Set the job title and company name
+  document.getElementById('job-title').value = job.job_title;
+  document.getElementById('company-name-field').value = job.company_name;
+
+  // Set the started date
+  document.getElementById('month_started').value = job.month_started;
+  document.getElementById('year_started').value = job.year_started;
+
+  // Set the ended date
+  document.getElementById('month_ended').value = job.month_ended;
+  document.getElementById('year_ended').value = job.year_ended;
+
+  // Set the career history
+  document.getElementById('career_history').value = job.career_history;
+}
+
+function resetJobExperienceForm() {
+  // Clear the hidden field
+  document.querySelector('input[name="job_experience_id"]').value = '';
+
+  // Clear job title and company name
+  document.getElementById('job-title').value = '';
+  document.getElementById('company-name-field').value = '';
+
+  // Reset the started date
+  document.getElementById('month_started').selectedIndex = 0; // Set to "Select Month"
+  document.getElementById('year_started').selectedIndex = 0; // Set to "Select Year"
+
+  // Reset the ended date
+  document.getElementById('month_ended').selectedIndex = 0; // Set to "Select Month"
+  document.getElementById('year_ended').selectedIndex = 0; // Set to "Select Year"
+
+  // Clear the career history
+  document.getElementById('career_history').value = '';
+}
+
+function deleteJobExperience(jobExperienceId) {
+  if (confirm('Are you sure you want to delete this job experience?')) {
+      // Create a form to submit the deletion request
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ''; // Submit to the same page
+
+      // Create a hidden input for the job experience ID
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'job_experience_id';
+      input.value = jobExperienceId;
+
+      // Create a hidden input to identify the deletion action
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'hidden';
+      deleteInput.name = 'delete_job_experience';
+      deleteInput.value = '1';
+
+      // Append inputs to the form
+      form.appendChild(input);
+      form.appendChild(deleteInput);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      form.submit();
+  }
+}

@@ -339,7 +339,7 @@ function resetLicenseForm() {
   document.querySelector('input[name="license_id"]').value = '';
 
   // Clear license name
-  document.getElementById('license_name').value = '';
+  document.getElementById('license').value = '';
 
   // Reset the issued date
   document.getElementById('month_issued').selectedIndex = 0; // Set to "Select Month"

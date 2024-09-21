@@ -1766,40 +1766,6 @@ body.overlay-active .overlay {
   background-position: right 10px center;
 }
 
-.education-container {
-  width: 95%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  height: fit-content;
-  font-size: 14px;
-  color: #333;
-  margin-left: 15px;
-  box-shadow: 0rem .2rem .2rem #a8a7c5;
-  justify-content: center;
-}
-
-.radio-group {
-  display: flex;
-  flex-direction: column; 
-  align-items: center;
-  display: inline-block;
-}
-
-.radio-item {
-  display: flex;
-  align-items: center; 
-  margin-bottom: 10px; 
-  align-items: center;
-
-}
-
-.radio-item label {
-  margin-left: 10px; 
-  margin-top: 6px;
-  font-size: 13px;
-}
-
 .education-form #course_highlights{
   margin-top: 20px;
 }
@@ -2331,7 +2297,8 @@ body.overlay-active .overlay {
 }
 
 .info-container h4 {
-  margin-bottom: 0rem;
+  margin-bottom: 0.2rem;
+  width: 90%;
 }
 
 .past-jobs-container {

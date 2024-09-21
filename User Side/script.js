@@ -378,3 +378,61 @@ function deleteLicense(licenseId) {
       form.submit();
   }
 }
+
+function deleteEducation(userId) {
+  if (confirm('Are you sure you want to delete this education record?')) {
+    // Create a form to submit the deletion request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = ''; // Submit to the same page
+
+    // Create a hidden input for the user ID
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'user_id';
+    input.value = userId;
+
+    // Create a hidden input to identify the deletion action
+    const deleteInput = document.createElement('input');
+    deleteInput.type = 'hidden';
+    deleteInput.name = 'delete_education';
+    deleteInput.value = '1';
+
+    // Append inputs to the form
+    form.appendChild(input);
+    form.appendChild(deleteInput);
+
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+}
+
+function deleteVocational(userId) {
+  if (confirm('Are you sure you want to delete this vocational record?')) {
+    // Create a form to submit the deletion request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = ''; // Submit to the same page
+
+    // Create a hidden input for the user ID
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'user_id';
+    input.value = userId;
+
+    // Create a hidden input to identify the deletion action
+    const deleteInput = document.createElement('input');
+    deleteInput.type = 'hidden';
+    deleteInput.name = 'delete_vocational'; // Update this to match your PHP check
+    deleteInput.value = '1';
+
+    // Append inputs to the form
+    form.appendChild(input);
+    form.appendChild(deleteInput);
+
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+}

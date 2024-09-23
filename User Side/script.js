@@ -436,3 +436,15 @@ function deleteVocational(userId) {
     form.submit();
   }
 }
+
+function showInfo() {
+  document.getElementById('info').style.display = 'block';
+  document.getElementById('info').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function hideInfo() {
+  document.getElementById('info').style.display = 'none';
+  document.getElementById('info').classList.remove('show');
+  document.getElementById('overlay').classList.remove('show');
+}

@@ -5,21 +5,22 @@ $conn = connection();
 // Start session and check for logged-in user
 session_start();
 $user_name = 'Sign Up'; // Default username if not logged in
+$user_info = [];
 
 if (isset($_SESSION['user'])) {
-    // Fetch user's full name from the session
+    // Fetch user's email from the session
     $user_email = $_SESSION['user'];
     
     // Use the existing database connection
-    $sql = "SELECT fname, lname FROM applicant_table WHERE email = ?";
+    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        $user_name = $user['fname'] . ' ' . $user['lname'];
+        $user_info = $result->fetch_assoc();
+        $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
     }
     $stmt->close();
 }
@@ -54,11 +55,77 @@ $conn->close();
     <title>RCVJ, Inc.</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
+    <!-- Overlay --> 
+    <div class="overlay" id="overlay"></div>
+
+    <!--Candidate Info Popup-->
+    <div class="popup" id="info">
+        <!-- Back Button -->
+        <div class="addpartners-back-button" onclick="hideInfo()">
+            <i class="fas fa-chevron-left"></i> Back
+        </div>
+        <h3 style="color: #2C1875">Review your information:</h3>
+        <p>This information will be reviewed by the employer.</p>
+        <div class="candidate-container">
+            <div class="candidate-header">
+                <div>
+                    <h2><?php echo htmlspecialchars($user_name); ?></h2>
+                    <div class="locationemail">
+                        <i class="fa fa-map-pin" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['location']); ?></h4>
+                    </div>
+                    <div class="locationemail">
+                        <i class="fa fa-envelope" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['email']); ?></h4>
+                    </div>
+                    <div class="locationemail">
+                        <i class="fa fa-venus-mars" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['gender']); ?></h4>
+                    </div>
+                    <div class="locationemail">
+                        <i class="fa fa-phone" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['phone']); ?></h4>
+                    </div>
+                    <div class="locationemail">
+                        <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['birthday']); ?></h4>
+                    </div>
+                </div>
+                <div>
+                    <img src="images/user.svg" alt="">
+                </div>
+            </div>
+            <div id="personal-info">
+                <h3>Personal Information</h3>
+                <p id="personal-desc"><?php echo nl2br(htmlspecialchars($user_info['personal_description'])); ?></p>
+            </div>
+            <div id="past-jobs">
+                <h3>Past Jobs</h3>
+                <ul>
+                    <li>Job</li>
+                    <li>job</li>
+                </ul>
+            </div>
+            <div id="education">
+                <h3>Education</h3>
+                <ul>
+                    <li>Education</li>
+                    <li>Education</li>
+                </ul>
+            </div>
+            <div id="skills">
+                <h3>Skills</h3>
+                <ul>
+                    <li>Skills</li>
+                    <li>Education</li>
+                </ul>
+            </div>    
+        </div>
+        <div class="buttons-container">
+            <button class="button-apply">Submit</button>
+            <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
+        </div>
+    </div>
     <!--Desktop Nav-->
     <nav class="desktopnav" id="desktop-nav">
         <div class="logo">
@@ -169,7 +236,7 @@ $conn->close();
                     <p id="date-posted">Posted on: <?php echo htmlspecialchars(date('m/d/Y', strtotime($job['date_posted']))); ?></p>
                     <p id="available">Available Spots: <?php echo htmlspecialchars($job['job_candidates']); ?></p>
                     <div class="buttons-container">
-                        <button class="button-apply">Apply</button>
+                        <button class="button-apply" onclick="showInfo()">Apply</button>
                         <button class="button-cp" onclick="redirectTo('CompanyProfile.php?company_name=<?php echo urlencode($company_name); ?>')">Company Profile</button>
                     </div>
                 </div>
@@ -235,6 +302,6 @@ $conn->close();
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script defer src="script.js"></script>
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </body>
 </html>

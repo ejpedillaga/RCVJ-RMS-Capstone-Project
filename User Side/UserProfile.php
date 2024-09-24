@@ -1023,6 +1023,19 @@ if (isset($_SESSION['message'])) {
                                     </select>
                                 </div>
                             </div>
+                             <!--License Dropbox--> 
+                             <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div id="license_dropbox" class="form-group">
+                                <img src="images/resume-dropbox.png" alt="">
+                                <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
+                                Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a <br>file to upload your license/certificate.
+                                </label>
+                                <input type="file" id="licenseFileUpload" class="file-input" name="licenseFiles" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewLicenseFiles()" >
+                                <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
+                            </div>
+                            </form>
+                            
+                            <div class="preview" id="licensePreviewContainer"></div>
 
                             <div id="button-group" class="form-group">
                                 <button class="button" type="submit" name="save_license">Save</button>
@@ -1066,24 +1079,30 @@ if (isset($_SESSION['message'])) {
                 </div>
                 
                 <div id="overlay" class="overlay"></div>
-                <!--Resume Sidenav-->
-                <div id="resume_sidenav" class="sidenav">
+                 <!--Resume Sidenav-->
+                 <div id="resume_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
                       Add Resume<br>
                       <p>Your default resume can be viewed by employers when they search for candidates.</p>
                     </div>
-                
+                    <!--Resume Dropbox--> 
                     <div class="resume-form sidenav-content">
-                      <form action="">
-                        <div id="resume_dropbox" class="form-group">
-                        <img src="images/resume-dropbox.png" alt="">
-                          <p>Drag and drop here or simply browse for a file to upload resume.</p>  
-                          <input type="file" id="fileInput" class="file-input" multiple>
-                          <button type="button" class="button" onclick="document.getElementById('fileInput').click()">Browse</button>
+                      <form action="/upload" method="post" enctype="multipart/form-data">
+                      <div id="resume_dropbox" class="form-group">
+                      <img src="images/resume-dropbox.png" alt="">
+                      <label for="fileUpload" style="display: block; margin-top: 10px;">
+                        Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a file to upload your resume.
+                        </label>
+                        <input type="file" id="fileUpload" class="file-input" name="files" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewFiles()" >
+                        <button type="button" class="button" onclick="document.getElementById('fileUpload').click()">Browse</button>
                         </div>
-                        <div id="filePreview" class="file-preview"></div>
-                      </form>
+                    </form>
+                    <div class="preview" id="previewContainer"></div>
                     </div>
+                    <div id="button-group" class="form-group">
+                                <button class="button" type="submit" name="save_resume">Save</button>
+                            </div>
+                    
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 

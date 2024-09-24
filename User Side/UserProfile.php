@@ -16,18 +16,18 @@ $user_data = [
     'personal_description' => ''
 ];
 
-// **1. Add 'masters_started' and 'doctoral_started' to the education_data array**
 $education_data = [
     'school' => '',
     'course' => '',
     'sy_started' => '',
     'sy_ended' => '',
-    'masters' => '',
-    'masters_started' => '',  // Added
-    'masters_ended' => '',
-    'doctoral' => '',
-    'doctoral_started' => '', // Added
-    'doctoral_ended' => ''
+];
+
+$vocational_data = [
+    'school' => '',
+    'course' => '',
+    'year_started' => '',
+    'year_ended' => '',
 ];
 
 $job_experience_data = [
@@ -139,11 +139,9 @@ if (isset($_SESSION['user'])) {
         }
     }
 
-    // **2. Update the SQL query to include 'masters_started' and 'doctoral_started'**
     // Fetch the education data to populate the education form
     if (isset($userid)) {  // Ensure userid is available before fetching education data
-        $sql_edu = "SELECT school, course, sy_started, sy_ended, masters, masters_started, masters_ended, 
-                    doctoral, doctoral_started, doctoral_ended 
+        $sql_edu = "SELECT school, course, sy_started, sy_ended, educational_attainment
                     FROM education_table WHERE userid = '$userid'";
         $result_edu = $conn->query($sql_edu);
 
@@ -154,43 +152,30 @@ if (isset($_SESSION['user'])) {
 
     // Handle form submission for education data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_education'])) {
-        // **3. Fetch and sanitize education form data, including the new fields**
+        $educationalAttainment = $conn->real_escape_string($_POST['educational_attainment']);
         $school = $conn->real_escape_string($_POST['school']);
         $course = $conn->real_escape_string($_POST['course']);
         $sy_started = $conn->real_escape_string($_POST['sy_started']);
         $sy_ended = $conn->real_escape_string($_POST['sy_ended']);
-        $masters = $conn->real_escape_string($_POST['masters']);
-        $masters_started = $conn->real_escape_string($_POST['masters_started']); // Added
-        $masters_ended = $conn->real_escape_string($_POST['masters_ended']);
-        $doctoral = $conn->real_escape_string($_POST['doctoral']);
-        $doctoral_started = $conn->real_escape_string($_POST['doctoral_started']); // Added
-        $doctoral_ended = $conn->real_escape_string($_POST['doctoral_ended']);
 
         // Insert or update education data for the user
         $check_sql = "SELECT * FROM education_table WHERE userid = '$userid'";
         $check_result = $conn->query($check_sql);
 
         if ($check_result->num_rows > 0) {
-            // **4. Update statement includes the new fields**
             $sql_update_edu = "UPDATE education_table SET
+                educational_attainment = '$educationalAttainment',
                 school = '$school',
                 course = '$course',
                 sy_started = '$sy_started',
-                sy_ended = '$sy_ended',
-                masters = '$masters',
-                masters_started = '$masters_started',
-                masters_ended = '$masters_ended',
-                doctoral = '$doctoral',
-                doctoral_started = '$doctoral_started',
-                doctoral_ended = '$doctoral_ended'
+                sy_ended = '$sy_ended'
                 WHERE userid = '$userid'";
-            if (!$conn->query($sql_update_edu)) { // Optional: check if update was successful
+            if (!$conn->query($sql_update_edu)) {
                 echo "Error updating education data: " . $conn->error;
             }
         } else {
-            // **5. Insert statement includes the new fields**
-            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_started, sy_ended, masters, masters_started, masters_ended, doctoral, doctoral_started, doctoral_ended) 
-                VALUES ('$userid', '$school', '$course', '$sy_started', '$sy_ended', '$masters', '$masters_started', '$masters_ended', '$doctoral', '$doctoral_started', '$doctoral_ended')";
+            $sql_insert_edu = "INSERT INTO education_table (userid, school, course, sy_started, sy_ended, educational_attainment) 
+                VALUES ('$userid', '$school', '$course', '$sy_started', '$sy_ended', '$educationalAttainment')";
             if (!$conn->query($sql_insert_edu)) {
                 echo "Error inserting education data: " . $conn->error;
             }
@@ -199,6 +184,81 @@ if (isset($_SESSION['user'])) {
         $_SESSION['message'] = "Education data saved successfully!";
         header("Location: " . $_SERVER['PHP_SELF']);
         exit;
+    }
+
+    // Handle education deletion
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_education'])) {
+        $userId = $conn->real_escape_string($_POST['user_id']);
+
+        // Delete the education record from the database
+        $sql_delete_edu = "DELETE FROM education_table WHERE userid = '$userId'";
+        if ($conn->query($sql_delete_edu)) {
+            $_SESSION['message'] = "Education record deleted successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error deleting education record: " . $conn->error;
+        }
+    }
+
+    // Fetch the vocational data to populate the vocational form
+    if (isset($userid)) {  
+        $sql_voc = "SELECT school, course, year_started, year_ended
+                    FROM vocational_table WHERE userid = '$userid'";
+        $result_voc = $conn->query($sql_voc);
+
+        if ($result_voc->num_rows > 0) {
+            $vocational_data = $result_voc->fetch_assoc();
+        }
+    }
+
+    // Handle form submission for vocational data
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_vocational'])) {
+        $school = $conn->real_escape_string($_POST['school']);
+        $course = $conn->real_escape_string($_POST['course']);
+        $year_started = $conn->real_escape_string($_POST['year_started']);
+        $year_ended = $conn->real_escape_string($_POST['year_ended']);
+
+        // Insert or update vocational data for the user
+        $check_sql = "SELECT * FROM vocational_table WHERE userid = '$userid'";
+        $check_result = $conn->query($check_sql);
+
+        if ($check_result->num_rows > 0) {
+            $sql_update_voc = "UPDATE vocational_table SET
+                school = '$school',
+                course = '$course',
+                year_started = '$year_started',
+                year_ended = '$year_ended'
+                WHERE userid = '$userid'";
+            if (!$conn->query($sql_update_voc)) {
+                echo "Error updating vocational data: " . $conn->error;
+            }
+        } else {
+            $sql_insert_voc = "INSERT INTO vocational_table (userid, school, course, year_started, year_ended) 
+                VALUES ('$userid', '$school', '$course', '$year_started', '$year_ended')";
+            if (!$conn->query($sql_insert_voc)) {
+                echo "Error inserting vocational data: " . $conn->error;
+            }
+        }
+
+        $_SESSION['message'] = "Vocational data saved successfully!";
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    // Handle vocational deletion
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_vocational'])) {
+        $userId = $conn->real_escape_string($_POST['user_id']);
+
+        // Delete the vocational record from the database
+        $sql_delete_voc = "DELETE FROM vocational_table WHERE userid = '$userId'";
+        if ($conn->query($sql_delete_voc)) {
+            $_SESSION['message'] = "Vocational record deleted successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error deleting vocational record: " . $conn->error;
+        }
     }
 
     // Fetch all job experience data to populate the job experience form, sorted by the most recent date
@@ -784,75 +844,109 @@ if (isset($_SESSION['message'])) {
                     <div id="education_sidenav" class="sidenav">
                         <div class="sidenav-header sidenav-content">Educational Attainment</div>
                         <div class="education-form sidenav-content">
-                            <form action="" method="POST">
+                        <form action="" method="POST">
 
-                            <div class="form-group education-container">
-                                    <label class="label">Level of Education:</label>
-                                    <div class="radio-group">
-                                        <div class="radio-item">
-                                            <input type="radio" id="highschool" name="education" value="Highschool">
-                                            <label for="highschool">Highschool Graduate</label>
-                                        </div>
-                                        <div class="radio-item">
-                                            <input type="radio" id="college" name="education" value="College Graduate">
-                                            <label for="college">College Graduate</label>
-                                        </div>
-                                        <div class="radio-item">
-                                            <input type="radio" id="undergraduate" name="education" value="Undergraduate">
-                                            <label for="undergraduate">Undergraduate</label>
-                                        </div>
-                                    </div>
+                            <div class="form-group">
+                                <label class="label" for="educational_attainment">Educational Attainment</label>
+                                <select name="educational_attainment" id="educational_attainment" class="select-field" required>
+                                    <option value="" disabled <?php if (empty($education_data['educational_attainment'])) echo 'selected'; ?>>Select an educational attainment</option>
+                                    <option value="Highschool Graduate" <?php if (!empty($education_data['educational_attainment']) && $education_data['educational_attainment'] == 'Highschool Graduate') echo 'selected'; ?>>Highschool Graduate</option>
+                                    <option value="College Graduate" <?php if (!empty($education_data['educational_attainment']) && $education_data['educational_attainment'] == 'College Graduate') echo 'selected'; ?>>College Graduate</option>
+                                    <option value="Undergraduate" <?php if (!empty($education_data['educational_attainment']) && $education_data['educational_attainment'] == 'Undergraduate') echo 'selected'; ?>>Undergraduate</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <div>
+                                    <label class="label" for="school">School</label>
+                                    <input type="text" id="school" name="school" class="input-field" value="<?php echo htmlspecialchars($education_data['school']); ?>" required>
                                 </div>
+                            </div>
 
-                                <div class="form-group">
+                            <div class="form-group">
+                                <div>
+                                    <label class="label" for="course">Grade Level / Course</label>
+                                    <input type="text" id="course" name="course" class="input-field" value="<?php echo htmlspecialchars($education_data['course']); ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="year-container">
                                     <div>
-                                        <label class="label" for="school">School</label>
-                                        <input type="text" id="school" name="school" class="input-field" value="<?php echo htmlspecialchars($education_data['school']); ?>" required>
+                                        <label class="label" for="sy_started">Year Started</label>
+                                        <select id="sy_started" name="sy_started" class="select-field" required>
+                                            <option value="" disabled <?php if (empty($education_data['sy_started'])) echo 'selected'; ?>>Select Year</option>
+                                            <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                                <option value="<?php echo $year; ?>" <?php if ($education_data['sy_started'] == $year) echo 'selected'; ?>><?php echo $year; ?></option>
+                                            <?php endfor; ?>
+                                        </select>
                                     </div>
-                                </div>
-
-                                <div class="form-group">
                                     <div>
-                                        <label class="label" for="course">Course</label>
-                                        <input type="text" id="course" name="course" class="input-field" value="<?php echo htmlspecialchars($education_data['course']); ?>" required>
+                                        <label class="label" for="sy_ended">Year Ended</label>
+                                        <select id="sy_ended" name="sy_ended" class="select-field" required>
+                                            <option value="" disabled <?php if (empty($education_data['sy_ended'])) echo 'selected'; ?>>Select Year</option>
+                                            <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                                <option value="<?php echo $year; ?>" <?php if ($education_data['sy_ended'] == $year) echo 'selected'; ?>><?php echo $year; ?></option>
+                                            <?php endfor; ?>
+                                        </select>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div class="form-group">
-                                    <div class="year-container">
-                                        <div>
-                                            <label class="label" for="sy_started">Year Started</label>
-                                            <select id="sy_started" name="sy_started" class="select-field" required>
-                                                <option value="" disabled selected>Year Started</option>
-                                                <?php
-                                                for ($year = date('Y'); $year >= 2000; $year--) {
-                                                    $selected = ($year == $education_data['sy_started']) ? 'selected' : '';
-                                                    echo "<option value=\"$year\" $selected>$year</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label class="label" for="sy_ended">Year Ended</label>
-                                            <select id="sy_ended" name="sy_ended" class="select-field" required>
-                                                <option value="" disabled selected>Year Ended</option>
-                                                <?php
-                                                for ($year = date('Y'); $year >= 2000; $year--) {
-                                                    $selected = ($year == $education_data['sy_ended']) ? 'selected' : '';
-                                                    echo "<option value=\"$year\" $selected>$year</option>";
-                                                }
-                                                ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="button-group" class="form-group sidenav-content">
-                                    <button class="button" name="save_education" type="submit">Save</button>
-                                </div>
+                            <div id="button-group" class="form-group sidenav-content">
+                                <button class="button" name="save_education" type="submit">Save</button>
+                            </div>
                             </form>
                     </div>
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('education_sidenav', 'profile-container')">&times;</a>
+                </div>
+
+                <!-- Vocational Sidenav -->
+                <div id="vocational_sidenav" class="sidenav">
+                    <div class="sidenav-header sidenav-content">Vocational Training</div>
+                    <div class="education-form sidenav-content">
+                    <form action="" method="POST">
+                        <div class="form-group">
+                            <label class="label" for="course">Vocational Course</label>
+                            <input type="text" id="course" name="course" class="input-field" value="<?php echo htmlspecialchars($vocational_data['course']); ?>" required>
+                        </div>
+
+                        <div class="form-group">
+                            <div>
+                                <label class="label" for="school">Vocational Institute</label>
+                                <input type="text" id="school" name="school" class="input-field" value="<?php echo htmlspecialchars($vocational_data['school']); ?>" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="year-container">
+                                <div>
+                                    <label class="label" for="vy_started">Year Started</label>
+                                    <select id="vy_started" name="year_started" class="select-field" required>
+                                        <option value="" disabled <?php if (empty($vocational_data['year_started'])) echo 'selected'; ?>>Select Year</option>
+                                        <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                            <option value="<?php echo $year; ?>" <?php if ($vocational_data['year_started'] == $year) echo 'selected'; ?>><?php echo $year; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="label" for="vy_ended">Year Ended</label>
+                                    <select id="vy_ended" name="year_ended" class="select-field" required>
+                                        <option value="" disabled <?php if (empty($vocational_data['year_ended'])) echo 'selected'; ?>>Select Year</option>
+                                        <?php for ($year = 2000; $year <= 2024; $year++): ?>
+                                            <option value="<?php echo $year; ?>" <?php if ($vocational_data['year_ended'] == $year) echo 'selected'; ?>><?php echo $year; ?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="button-group" class="form-group sidenav-content">
+                            <button class="button" name="save_vocational" type="submit">Save</button>
+                        </div>
+                    </form>
+                    </div>
+                    <a href="javascript:void(0)" class="closebtn" onclick="closeNav('vocational_sidenav', 'profile-container')">&times;</a>
                 </div>
 
                 <!--License and Education Sidenav-->
@@ -1122,19 +1216,46 @@ if (isset($_SESSION['message'])) {
                             <div class="section">
                                 <h3>Education</h3>
                                 <p>Tell employers about your education.</p>
+                                <h4>Educational Attainment</h4>
+                                <p>Provide details of your highest level of education completed.</p>
                                 <?php if (!empty($education_data['school'])): ?>
                                     <div class="info-container">
                                         <div class="icon-group">
-                                            <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container', <?php echo $job_experience_id; ?>)">
+                                            <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container')">
                                                 <i class="fas fa-edit"></i>
                                             </div>
+                                            <div class="delete-icon" onclick="deleteEducation('<?php echo htmlspecialchars($userid); ?>')"> 
+                                                <i class="fas fa-trash"></i>
+                                            </div>
                                         </div>
-                                        <h4 id="educ-school"><?php echo htmlspecialchars($education_data['school']); ?></h4>
-                                        <p id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></p>
+                                        <h4 id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></h4>
+                                        <p id="educ-school"><?php echo htmlspecialchars($education_data['school']); ?></p>
+                                        <p id="educ-attainment"><?php echo htmlspecialchars($education_data['educational_attainment']); ?></p>
                                         <p id="educ-year"><?php echo htmlspecialchars($education_data['sy_started']); ?> - <?php echo htmlspecialchars($education_data['sy_ended']); ?></p>
                                     </div>
+                                    <?php else: ?>
+                                        <button onclick="openNav('education_sidenav', 'profile-container')">Add</button>
+                                    <?php endif; ?>
+                                
+                                <h4 style="margin-top: 1rem;">Vocational</h4>
+                                <p>Provide details of a vocational course you completed.</p>
+                                <?php if (!empty($vocational_data['school'])): ?>
+                                    <div class="info-container">
+                                        <div class="icon-group">
+                                            <div class="edit-icon" onclick="openNav('vocational_sidenav', 'profile-container')">
+                                                <i class="fas fa-edit"></i>
+                                            </div>
+                                            <div class="delete-icon" onclick="deleteVocational('<?php echo htmlspecialchars($userid); ?>')"> 
+                                                <i class="fas fa-trash"></i>
+                                            </div>
+                                        </div>
+                                        <h4 id="educ-course"><?php echo htmlspecialchars($vocational_data['course']); ?></h4>
+                                        <p id="educ-school"><?php echo htmlspecialchars($vocational_data['school']); ?></p>
+                                        <p id="educ-year"><?php echo htmlspecialchars($vocational_data['year_started']); ?> - <?php echo htmlspecialchars($vocational_data['year_ended']); ?></p>
+                                    </div>
+                                <?php else: ?>
+                                <button onclick="openNav('vocational_sidenav', 'profile-container')">Add</button>
                                 <?php endif; ?>
-                                <button onclick="openNav('education_sidenav', 'profile-container')">Add</button>
                             </div>
                             <div class="section">
                                 <h3>Resume</h3>

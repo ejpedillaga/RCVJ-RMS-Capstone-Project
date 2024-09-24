@@ -1872,6 +1872,87 @@ body.overlay-active .overlay {
   margin-top: 4rem;
 }
 
+.LnE-form #license_dropbox .button{
+  text-align: center;
+  margin: auto;
+}
+
+.LnE-form .button:hover {
+  background-color: #EF9B50;
+}
+
+.LnE-form .file-input {
+  display: none;
+}
+
+.file-upload-container {
+  display: flex;
+  align-items: center;
+}
+
+
+.LnE-form #license_dropbox {
+  display: flex; /* Make this a flex container */
+  flex-direction: column; /* Arrange children in a column */
+  justify-content: center; /* Center children vertically */
+  align-items: center; /* Center children horizontally */
+  border: 1px dashed #0B0101;
+  padding: 2rem; /* Adjust as needed */
+  margin: 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s; /* Added transition for smooth color change */
+  margin-left: 2px;
+}
+
+.license-form .preview {
+  margin-top: 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.license-form .preview .file-name {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.license-preview-element {
+  width: 95%;
+  border: 1px solid #ccc; 
+  padding: 10px; 
+  margin-bottom: 10px; 
+  border-radius: 5px; 
+  margin-left: 5px;
+  background-color: #aaaaaa3e;
+  box-shadow: 0rem .1rem .1rem #a8a7c5;;
+}
+
+
+.license-preview-element i.fa-file-alt{
+  padding-left: 10px;
+}
+
+.license-preview-element .license-close-button {
+  background-color: #cccccc00; 
+  border: none;
+  padding: 2px 6px;
+  font-size: 16px; 
+  cursor: pointer;
+}
+
+.license-preview-element .license-close-button:hover {
+  background-color: #aaa; 
+}
+
+#license_dropbox {
+  border: 2px dashed #007BFF;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+#license_dropbox.highlight {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
 
 /*Skills Sidenav*/
 .skills-form{
@@ -1994,6 +2075,40 @@ body.overlay-active .overlay {
   margin: 5px 0;
   font-size: 14px;
 }
+
+.preview-element {
+  width: 95%;
+  border: 1px solid #ccc; /* Add a 1px solid border with a light gray color */
+  padding: 10px; /* Add some padding to the preview element */
+  margin-bottom: 10px; /* Add some margin between preview elements */
+  border-radius: 5px; /* Add a slight border radius for a rounded corner effect */
+  margin-left: 18px;
+  background-color: #aaaaaa3e;
+  box-shadow: 0rem .1rem .1rem #a8a7c5;;
+  
+}
+
+.preview-element i.fa-file-alt{
+  padding-left: 10px;
+}
+
+.preview-element .close-button {
+  background-color: #cccccc00; /* Change the background color to your liking */
+  border: none;
+  padding: 2px 6px;
+  font-size: 16px; /* Change the font size to your liking */
+  cursor: pointer;
+}
+
+.preview-element .close-button:hover {
+  background-color: #aaa; /* Change the background color on hover to your liking */
+}
+
+#resume_dropbox.dragover {
+  border-color: #aaa;
+  background-color: #f0f0f0;
+}
+
 
 /*Resume Builder*/
 .resume-builder-section{

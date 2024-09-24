@@ -1023,6 +1023,7 @@ if (isset($_SESSION['message'])) {
                                     </select>
                                 </div>
                             </div>
+                          
                              <!--License Dropbox--> 
                              <form action="/upload" method="post" enctype="multipart/form-data">
                             <div id="license_dropbox" class="form-group">
@@ -1036,6 +1037,7 @@ if (isset($_SESSION['message'])) {
                             </form>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
+
 
                             <div id="button-group" class="form-group">
                                 <button class="button" type="submit" name="save_license">Save</button>

@@ -188,6 +188,7 @@ function openPopup(popupId) {
     document.getElementById(popupId).classList.add('show');
     document.getElementById('overlay').classList.add('show');
     fetchOptions(popupId);
+    populateJobTitles();
 }
 
 
@@ -197,13 +198,13 @@ function closePopup(popupId) {
     document.getElementById('overlay').classList.remove('show');
     
     // Optionally clear skills and other form data
-    const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
+    /*const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
     const skills = skillsContainer.querySelectorAll('.jobposting-skill');
     skills.forEach(skill => skillsContainer.removeChild(skill));
     
     // Clear the skills set
     skillsSet.clear();
-    
+    */
     // Optionally, clear the input field
     //document.querySelector(`#${popupId} #${popupId}-skills-input`).value = '';
 }
@@ -212,7 +213,7 @@ function closePopup(popupId) {
 function openJobPostingPopup() {
     openPopup('popup');
     initializePopupPagination('popup');
-    initializeSkillsInput('popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+    populateJobTitles();
 }
 
 
@@ -1041,25 +1042,26 @@ function saveAndPostJob() {
     // Collect data from the popup
     const companySelect = document.getElementById('jobposting-partner-company');
     const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
-
-    const jobTitle = document.getElementById('jobposting-job-title').value;
+    const jobTitleSelect = document.getElementById('jobposting-job-title');
+    const jobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex].text;
+    
     const location = document.getElementById('jobposting-location').value;
     const candidates = document.getElementById('jobposting-openings').value;
     const description = document.getElementById('jobposting-description').value.trim();
 
 
     // Collect skills
-    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+    //const skillsArray = Array.from(skillsSet); // Convert the Set to an array
 
     console.log('Company Name:', companyName);
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Candidates:', candidates);
     console.log('Description:', description);
-    console.log('Skills Array:', skillsArray);
+    //console.log('Skills Array:', skillsArray);
 
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates /*|| skillsArray.length === 0*/) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1078,7 +1080,7 @@ function saveAndPostJob() {
     formData.append('location', location);
     formData.append('candidates', candidates);
     formData.append('description', description);
-    formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
+    //formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
 
     
 
@@ -1605,3 +1607,163 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function showJobTitle() {
+    document.getElementById('add-job-title-popup').style.display = 'block';
+    document.getElementById('add-job-title-popup').classList.add('show');
+    initializePopupPagination('add-job-title-popup');
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('popup').classList.remove('show');
+    initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+}
+
+function hideJobTitle() {
+    document.getElementById('add-job-title-popup').style.display = 'none';
+    document.getElementById('add-job-title-popup').classList.remove('show');
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('popup').classList.add('show');
+
+    // Remove all skill tags from the container but keep the input field
+    const skillsContainer = document.querySelector('#add-job-title-popup .jobposting-skills-container');
+    const skills = skillsContainer.querySelectorAll('.jobposting-skill');
+    skills.forEach(skill => skillsContainer.removeChild(skill));
+
+    // Clear the skills set
+    skillsSet.clear();
+
+    // Clear the job title input field
+    document.getElementById('job-title-cert').value = '';
+
+    // Clear the Name of Job input field
+    document.getElementById('edit-jobposting-partner-company').value = '';
+
+    // Reset the Classification dropdown values
+    document.getElementById('classification').selectedIndex = 0; // Select the first option
+    document.getElementById('subclassification').selectedIndex = 0; // Select the first option
+
+    // Clear the Gender radio buttons
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    genderRadios.forEach(radio => radio.checked = false);
+
+    // Clear the Educational Attainment radio buttons
+    const educRadios = document.querySelectorAll('input[name="educ-level"]');
+    educRadios.forEach(radio => radio.checked = false);
+}
+
+function saveJobTitle() {
+
+    const jobTitle = document.getElementById('job_title').value.trim();
+    const classification = document.getElementById('classification').value;
+    const subclassification = document.getElementById('subclassification').value;
+    const gender = document.getElementById('gender').value;
+    const educationalAttainment = document.getElementById('educational_attainment').value;
+    const certLicense = document.getElementById('job-title-cert').value.trim();
+    const yearsOfExperience = document.getElementById('job-title-exp').value.trim();
+
+    // Validation: Ensure all required fields are filled in
+    if (!jobTitle) {
+        alert('Job Title is required.');
+        return;
+    }
+    if (!classification) {
+        alert('Classification is required.');
+        return;
+    }
+    if (!subclassification) {
+        alert('Subclassification is required.');
+        return;
+    }
+    if (!gender) {
+        alert('Gender is required.');
+        return;
+    }
+    if (!educationalAttainment) {
+        alert('Educational Attainment is required.');
+        return;
+    }
+
+    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+
+    // Log the input values to ensure they are captured correctly
+    console.log("Job Title:", jobTitle);
+    console.log("Classification:", classification);
+    console.log("Subclassification:", subclassification);
+    console.log("Gender:", gender);
+    console.log("Educational Attainment:", educationalAttainment);
+    console.log("Cert/License:", certLicense);
+    console.log("Years of Experience:", yearsOfExperience);
+    console.log('Skills Array:', skillsArray);
+
+    // Create an object to hold the data
+    const data = {
+        job_title: jobTitle,
+        classification: classification,
+        subclassification: subclassification,
+        gender: gender,
+        educational_attainment: educationalAttainment,
+        cert_license: certLicense,
+        years_of_experience: yearsOfExperience,
+        skills: skillsArray
+    };
+
+    const jsonData = JSON.stringify(data); // Convert data to JSON string
+    console.log(jsonData); // Debug: Print JSON string to console
+
+    // Send data via AJAX to PHP
+    fetch('save_job_title.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData, // Send JSON data
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job title saved successfully!');
+            
+            // Clear all fields after successful save
+            document.getElementById('job_title').value = '';
+            document.getElementById('classification').value = '';
+            document.getElementById('subclassification').value = '';
+            document.getElementById('gender').value = '';
+            document.getElementById('educational_attainment').value = '';
+            document.getElementById('job-title-cert').value = '';
+            document.getElementById('job-title-exp').value = '';
+
+            // Optionally hide the popup after saving
+            hideJobTitle('add-job-title-popup');
+            populateJobTitles();
+        } else {
+            alert('Error saving job title!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+}
+
+function populateJobTitles() {
+    fetch('get_job_titles.php')
+        .then(response => response.json())
+        .then(data => {
+            const jobTitleSelect = document.getElementById('jobposting-job-title');
+            jobTitleSelect.innerHTML = '<option value="" disabled selected>Choose a job title</option>'; // Clear and set default option
+            
+            data.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.job_title_id;  // You can use job_title_id as the value
+                option.textContent = job.job_title; // Display the job title
+                jobTitleSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching job titles:', error);
+        });
+}
+
+// Call this function when the page loads or when needed to populate the dropdown
+document.addEventListener('DOMContentLoaded', populateJobTitles);
+
+

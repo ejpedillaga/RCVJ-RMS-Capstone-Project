@@ -75,7 +75,7 @@ tabContents.forEach(content => {
     content.classList.remove('active');
 });
 
-document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
+document.querySelector(.tab[onclick="openTab('${tabName}')"]).classList.add('active');
 document.getElementById(tabName).classList.add('active');
 checkTabContent(); // Call to update empty message visibility
 }
@@ -238,7 +238,7 @@ handleDragAndDrop();
     previewElement.appendChild(fileNameElement);
 
     const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
+    fileSizeElement.textContent = (${formatFileSize(fileSize)});
     previewElement.appendChild(fileSizeElement);
 
     // Add a preview image or icon depending on the file type
@@ -283,11 +283,11 @@ handleDragAndDrop();
 // Helper function to format the file size
 function formatFileSize(size) {
   if (size < 1024) {
-    return `${size} bytes`;
+    return ${size} bytes;
   } else if (size < 1024 * 1024) {
-    return `${(size / 1024).toFixed(2)} KB`;
+    return ${(size / 1024).toFixed(2)} KB;
   } else {
-    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    return ${(size / (1024 * 1024)).toFixed(2)} MB;
   }
 }
 
@@ -338,7 +338,7 @@ function previewLicenseFiles() {
     previewElement.appendChild(fileNameElement);
 
     const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
+    fileSizeElement.textContent = (${formatFileSize(fileSize)});
     previewElement.appendChild(fileSizeElement);
 
     // Add a preview image or icon depending on the file type
@@ -383,11 +383,11 @@ function previewLicenseFiles() {
 // Helper function to format the file size
 function formatFileSize(size) {
   if (size < 1024) {
-    return `${size} bytes`;
+    return ${size} bytes;
   } else if (size < 1024 * 1024) {
-    return `${(size / 1024).toFixed(2)} KB`;
+    return ${(size / 1024).toFixed(2)} KB;
   } else {
-    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    return ${(size / (1024 * 1024)).toFixed(2)} MB;
   }
 }
 

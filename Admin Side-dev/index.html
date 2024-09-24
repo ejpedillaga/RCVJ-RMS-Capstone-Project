@@ -115,10 +115,7 @@
                         <div class="form-step form-step-active">
                             <div class="jobposting-box">
                                 <label for="jobposting-partner-company">Partner Company <span style="color: red;">*</span></label>
-                                <select id="jobposting-partner-company" class="jobposting-select">
-                                    <!--
-                                    <option>WalterMart Supermarket - Dasmariñas</option>
-                                    -->                              
+                                <select id="jobposting-partner-company" class="jobposting-select">                   
                                 </select>
                             </div>
                             
@@ -134,7 +131,13 @@
                         <div class="form-step">
                             <div class="jobposting-box">
                                 <label for="jobposting-job-title">Job Title <span style="color: red;">*</span></label>
-                                <input type="text" id="jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br>
+                                <div class="job-title-group">
+                                    <select id="jobposting-job-title" class="jobposting-select" placeholder="Enter job title">
+                                        <option value="" disabled selected>Select a job title</option>
+                                    </select>
+                                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                    <i class="fa fa-plus-square" aria-hidden="true" onclick="showJobTitle()"></i>
+                                </div><br>
                                 <label for="jobposting-location">Location <span style="color: red;">*</span></label>
                                 <input type="text" id="jobposting-location" class="jobposting-input" placeholder="Enter job location"><br>
                                 <label for="jobposting-openings">Available openings <span style="color: red;">*</span></label>
@@ -159,14 +162,14 @@
                             </div>
                             <div class="btns-group">
                                 <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
-                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
                             </div>
                             <div class="jobposting-buttons">
                                 <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
                             </div>
                         </div>
-                        
+
+                        <!--
                         <div class="form-step">
                             <div class="jobposting-box">
                                 <div class="jobposting-container">
@@ -205,7 +208,7 @@
                                 <button class="jobposting-button jobposting-button-save" onclick="saveAndPostJob()">Save and Post</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="closePopup('popup')">Cancel</button>
                             </div>
-                        </div>       
+                        </div>    -->   
                     </div>
                 </div>
 
@@ -219,9 +222,6 @@
                             <div class="jobposting-box">
                                 <label for="jobposting-partner-company">Partner Company <span style="color: red;">*</span></label>
                                 <input type="text" id="edit-jobposting-partner-company" class="jobposting-select" readonly>
-                                    <!--
-                                    <option>WalterMart Supermarket - Dasmariñas</option>
-                                    -->                              
                                 </select>
                             </div>
                             
@@ -313,6 +313,113 @@
                     </div>
                 </div>
 
+                <!--Add Job Title popup-->
+                <div class="popup" id="add-job-title-popup">
+                    <h2>Job Title</h2>
+                    <p><span style="color: red;">*</span> <strong>indicates a required field.</strong></p>
+                    <div class="form-container">
+                        <!-- Steps -->
+                        <div class="form-step form-step-active">
+                            <div class="jobposting-box">
+                                <label for="jobposting-partner-company">Name of Job<span style="color: red;">*</span></label>
+                                <input type="text" id="job_title" class="jobposting-select" placeholder="Enter job title" required>      
+                                </input><br>
+
+                                <label>Classification <span style="color: red;">*</span></label>
+                                <div class="class-group">
+                                    <select name="classi" id="classification" class="jobposting-select" placeholder="Classification" required>
+                                        <option value="" disabled selected>Classification</option>
+                                        <option value="Class1">Class 1</option>
+                                        <option value="Class2">Class 2</option>
+                                        <option value="Class3">Class 3</option>
+                                    </select>
+    
+                                    <select name="subclassi" id="subclassification" class="jobposting-select" placeholder="Sub-classification"  required>
+                                        <option value="" disabled selected>Sub-classification</option>
+                                        <option value="Sub1">Sub 1</option>
+                                        <option value="Sub2">Sub 2</option>
+                                        <option value="Sub3">Sub 3</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                            </div>
+
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="saveJobTitle()">Save</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="hideJobTitle('add-job-title-popup')">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="form-step">
+                            <div class="jobposting-box">
+                                <h3 style="margin-bottom: 1rem;">Requirements</h3>
+                                <label>Gender <span style="color: red;">*</span></label>
+                                <select name="gender" id="gender" class="jobposting-select" required style="margin-bottom: 1rem;">
+                                    <option value="" disabled selected>Select a gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Not Specified">Not Specified</option>
+                                </select>
+
+                                <label>Educational Attainment <span style="color: red;">*</span></label>
+                                <select name="educational_attainment" id="educational_attainment" class="jobposting-select" required style="margin-bottom: 1rem;">
+                                    <option value="" disabled selected>Select an educational attainment</option>
+                                    <option value="Highschool Graduate">Highschool Graduate</option>
+                                    <option value="College Graduate">College Graduate</option>
+                                    <option value="Undergraduate">Undergraduate</option>
+                                </select>
+
+                                <label>Certification / License</label>
+                                <div class="job-title-group" style="margin-bottom: 1rem;">
+                                    <input type="text" id="job-title-cert" class="jobposting-input" placeholder="Enter certification / license needed">
+                                    <div class="cb-cert">
+                                        <input type="checkbox" id="req-cert" name="requiredcb" value="true">
+                                        <label for="requiredcb">Not required</label> 
+                                    </div>    
+                                </div>
+
+                                <label>Years of Experience</label>
+                                <div class="job-title-group">
+                                    <input type="number" id="job-title-exp" class="jobposting-select" min="1" max="50" placeholder="Enter years of experience needed">
+                                    <div class="cb-cert">
+                                        <input type="checkbox" id="req-exp" name="requiredcb" value="true">
+                                        <label for="requiredcb">Not required</label> 
+                                    </div>    
+                                </div>
+                            </div>
+                            
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                                <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
+                            </div>
+                            
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="saveJobTitle()">Save</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="hideJobTitle('add-job-title-popup')">Cancel</button>
+                            </div>
+                        </div>
+
+                        <div class="form-step">
+                            <div class="jobposting-box">
+                                <label for="jobposting-skills">Skills <span style="color: red;">*</span></label>
+                                <div id="add-jobposting-skills-container" class="jobposting-skills-container">
+                                    <input type="text" id="jobposting-skills-input" placeholder="Enter a skill and press Enter">
+                                </div>
+                            </div>
+                            <div class="btns-group">
+                                <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
+                            </div>
+                            <div class="jobposting-buttons">
+                                <button class="jobposting-button jobposting-button-save" onclick="saveJobTitle()">Save</button>
+                                <button class="jobposting-button jobposting-button-cancel" onclick="hideJobTitle('add-job-title-popup')">Cancel</button>
+                            </div>
+                        </div>
+                        
+                </div>
+
                 <!-- Dialog Box Delete Employees-->
                 <div class="delete-employees-dialog-box" id="dialogBox-delete">
                     <div class="addpartners-back-button" onclick="hideDialogDelete()">
@@ -326,30 +433,63 @@
     </div>
     <script>
         document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent the form from submitting
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the form from submitting
 
-        var skillInput = document.getElementById('jobposting-qualifications-input');
-        var skillValue = skillInput.value.trim();
+            var skillInput = document.getElementById('jobposting-qualifications-input');
+            var skillValue = skillInput.value.trim();
 
-        if (skillValue !== '') {
-            var ul = document.getElementById('added_qualifications_list');
-            var li = document.createElement('li');
-            li.innerHTML = `
-                <span>${skillValue}</span>
-                <button class="close-btn">&times;</button>
-            `;
-            ul.appendChild(li);
-            skillInput.value = ''; // Clear the input after adding
+            if (skillValue !== '') {
+                var ul = document.getElementById('added_qualifications_list');
+                var li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${skillValue}</span>
+                    <button class="close-btn">&times;</button>
+                `;
+                ul.appendChild(li);
+                skillInput.value = ''; // Clear the input after adding
 
-            // Add event listener to the close button
-            li.querySelector('.close-btn').addEventListener('click', function() {
-                li.remove();
-            });
+                // Add event listener to the close button
+                li.querySelector('.close-btn').addEventListener('click', function() {
+                    li.remove();
+                });
+            }
         }
-    }
-});
-    </script>
+        });
+        const reqCertCheckbox = document.getElementById('req-cert');
+        const jobTitleCertInput = document.getElementById('job-title-cert');
+
+        reqCertCheckbox.addEventListener('change', () => {
+        if (reqCertCheckbox.checked) {
+            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleCertInput.style.opacity = '0';
+            jobTitleCertInput.style.display = 'none';
+            jobTitleCertInput.required = false; 
+        } else {
+            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleCertInput.style.opacity = '1';
+            jobTitleCertInput.style.display = 'block'; // Show the input field
+            jobTitleCertInput.required = true;
+        }
+        });
+
+        const reqExpCheckbox = document.getElementById('req-exp');
+        const jobTitleExpInput = document.getElementById('job-title-exp');
+
+        reqExpCheckbox.addEventListener('change', () => {
+        if (reqExpCheckbox.checked) {
+            jobTitleExpInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleExpInput.style.opacity = '0';
+            jobTitleExpInput.style.display = 'none';
+            jobTitleExpInput.required = false; 
+        } else {
+            jobTitleExpInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleExpInput.style.opacity = '1';
+            jobTitleExpInput.style.display = 'block'; // Show the input field
+            jobTitleExpInput.required = true;
+        }
+        });
+        </script>
 
 </body>
 </html>

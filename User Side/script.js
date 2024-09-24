@@ -149,50 +149,203 @@ document.getElementById('education_form').addEventListener('submit', function(ev
 });
 
 
-/*Resume Dropbox*/
-document.addEventListener('DOMContentLoaded', function () {
-  var dropbox = document.getElementById('resume_dropbox');
-  var fileInput = document.getElementById('fileInput');
-  var filePreview = document.getElementById('filePreview'); // New element for file preview
-
-  dropbox.addEventListener('dragover', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.add('dragover'); // Added class to change color
-  });
-
-  dropbox.addEventListener('dragleave', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.remove('dragover'); // Removed class to revert color
-  });
-
-  dropbox.addEventListener('drop', function (e) {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.remove('dragover'); // Removed class to revert color
-
-    var files = e.dataTransfer.files;
-    fileInput.files = files;
-    handleFiles(files); // Call handleFiles to preview files
-  });
-
-  fileInput.addEventListener('change', function () {
-    handleFiles(fileInput.files); // Call handleFiles to preview files
-  });
-
-  // New function to handle file previews
-  function handleFiles(files) {
-    filePreview.innerHTML = ''; // Clear previous previews
-    for (var i = 0; i < files.length; i++) {
-      var file = files[i];
-      var fileNameElement = document.createElement('div');
-      fileNameElement.classList.add('file-name');
-      fileNameElement.textContent = file.name;
-      filePreview.appendChild(fileNameElement);
+/******************Resume Dropbox*******************/
+function previewFiles() {
+  function handleDragAndDrop() {
+    const dropbox = document.getElementById('resume_dropbox');
+    dropbox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.add('dragover');
+    });
+  
+    dropbox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.remove('dragover');
+  
+      const files = e.dataTransfer.files;
+      const fileInput = document.getElementById('fileUpload');
+      fileInput.files = files;
+  
+      previewFiles(); 
+    });
+  }
+  handleDragAndDrop();
+  
+    const fileInput = document.getElementById('fileUpload');
+    const files = fileInput.files;
+    const previewContainer = document.getElementById('previewContainer');
+  
+    previewContainer.innerHTML = ''; // Clear the preview container
+  
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = file.name;
+      const fileSize = file.size;
+  
+      // Create a preview element for each file
+      const previewElement = document.createElement('div');
+      previewElement.className = 'preview-element';
+  
+      // Display the file name and size
+      const fileNameElement = document.createElement('span');
+      fileNameElement.textContent = fileName;
+      previewElement.appendChild(fileNameElement);
+  
+      const fileSizeElement = document.createElement('span');
+      fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
+      previewElement.appendChild(fileSizeElement);
+  
+      // Add a preview image or icon depending on the file type
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = fileName;
+        previewElement.appendChild(img);
+      } else {
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-file-alt';
+        previewElement.appendChild(icon);
+      }
+  
+      // Add an "X" button
+      const closeButton = document.createElement('button');
+      closeButton.className = 'close-button';
+      closeButton.innerHTML = '&times;'; // Use HTML entity instead of the character
+      closeButton.style.float = 'right';
+      closeButton.style.cursor = 'pointer';
+      closeButton.onclick = function() {
+        // Remove the file from the file input
+        const fileIndex = Array.prototype.indexOf.call(fileInput.files, file);
+        if (fileIndex !== -1) {
+          fileInput.files = new DataTransfer().files; // Clear the file input
+          for (let j = 0; j < files.length; j++) {
+            if (j !== fileIndex) {
+              fileInput.files = new DataTransfer().files; // Clear the file input
+              fileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
+            }
+          }
+        }
+        // Remove the preview element
+        previewElement.remove();
+      };
+      previewElement.appendChild(closeButton);
+  
+      previewContainer.appendChild(previewElement);
     }
   }
-});
+  
+  // Helper function to format the file size
+  function formatFileSize(size) {
+    if (size < 1024) {
+      return `${size} bytes`;
+    } else if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(2)} KB`;
+    } else {
+      return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    }
+  }
+  
+  
+  /*******************License Dropbox*********************/
+  function previewLicenseFiles() {
+  
+    function handleDragAndDrop() {
+      const dropbox = document.getElementById('license_dropbox');
+      dropbox.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropbox.classList.add('dragover');
+      });
+    
+      dropbox.addEventListener('drop', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropbox.classList.remove('dragover');
+    
+        const files = e.dataTransfer.files;
+        const licenseFileInput = document.getElementById('licenseFileUpload');
+        licenseFileInput.files = files;
+    
+        previewLicenseFiles(); 
+      });
+    }
+  
+    handleDragAndDrop();
+    const licenseFileInput = document.getElementById('licenseFileUpload');
+    const files = licenseFileInput.files;
+    const licensePreviewContainer = document.getElementById('licensePreviewContainer');
+  
+    licensePreviewContainer.innerHTML = ''; // Clear the preview container
+  
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = file.name;
+      const fileSize = file.size;
+  
+      // Create a preview element for each file
+      const previewElement = document.createElement('div');
+      previewElement.className = 'license-preview-element';
+  
+      // Display the file name and size
+      const fileNameElement = document.createElement('span');
+      fileNameElement.textContent = fileName;
+      previewElement.appendChild(fileNameElement);
+  
+      const fileSizeElement = document.createElement('span');
+      fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
+      previewElement.appendChild(fileSizeElement);
+  
+      // Add a preview image or icon depending on the file type
+      if (file.type.startsWith('image/')) {
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(file);
+        img.alt = fileName;
+        previewElement.appendChild(img);
+      } else {
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-file-alt';
+        previewElement.appendChild(icon);
+      }
+  
+      // Add an "X" button
+      const closeButton = document.createElement('button');
+      closeButton.className = 'license-close-button';
+      closeButton.innerHTML = '&times;'; // Use HTML entity instead of the character
+      closeButton.style.float = 'right';
+      closeButton.style.cursor = 'pointer';
+      closeButton.onclick = function() {
+        // Remove the file from the file input
+        const fileIndex = Array.prototype.indexOf.call(licenseFileInput.files, file);
+        if (fileIndex !== -1) {
+          licenseFileInput.files = new DataTransfer().files; // Clear the file input
+          for (let j = 0; j < files.length; j++) {
+            if (j !== fileIndex) {
+              licenseFileInput.files = new DataTransfer().files; // Clear the file input
+              licenseFileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
+            }
+          }
+        }
+        // Remove the preview element
+        previewElement.remove();
+      };
+      previewElement.appendChild(closeButton);
+  
+      licensePreviewContainer.appendChild(previewElement);
+    }
+  }
+  
+  // Helper function to format the file size
+  function formatFileSize(size) {
+    if (size < 1024) {
+      return `${size} bytes`;
+    } else if (size < 1024 * 1024) {
+      return `${(size / 1024).toFixed(2)} KB`;
+    } else {
+      return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    }
+  }  
 
 /*Resume Dialog Popup*/
 const dialog = document.getElementById("submit_dialog");

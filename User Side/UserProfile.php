@@ -1036,7 +1036,6 @@ if (isset($_SESSION['message'])) {
                             </form>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
-                            <div id="button-group" class="form-group">
 
                             <div id="button-group" class="form-group">
                                 <button class="button" type="submit" name="save_license">Save</button>
@@ -1080,13 +1079,12 @@ if (isset($_SESSION['message'])) {
                 </div>
                 
                 <div id="overlay" class="overlay"></div>
-                <!--Resume Sidenav-->
-                <div id="resume_sidenav" class="sidenav">
+                 <!--Resume Sidenav-->
+                 <div id="resume_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
                       Add Resume<br>
                       <p>Your default resume can be viewed by employers when they search for candidates.</p>
                     </div>
-                
                     <!--Resume Dropbox--> 
                     <div class="resume-form sidenav-content">
                       <form action="/upload" method="post" enctype="multipart/form-data">
@@ -1104,6 +1102,7 @@ if (isset($_SESSION['message'])) {
                     <div id="button-group" class="form-group">
                                 <button class="button" type="submit" name="save_resume">Save</button>
                             </div>
+                    
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 
@@ -1365,4 +1364,4 @@ if (isset($_SESSION['message'])) {
             </script>
 
         </body>
-    </html>
+    </html> 

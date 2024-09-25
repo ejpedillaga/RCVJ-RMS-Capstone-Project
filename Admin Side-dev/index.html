@@ -135,7 +135,7 @@
                                     <select id="jobposting-job-title" class="jobposting-select" placeholder="Enter job title">
                                         <option value="" disabled selected>Select a job title</option>
                                     </select>
-                                    <i class="fa fa-pencil-square" aria-hidden="true"></i>
+                                    <i class="fa fa-pencil-square" aria-hidden="true" onclick="showEditJobTitlePopup()"></i>
                                     <i class="fa fa-plus-square" aria-hidden="true" onclick="showJobTitle()"></i>
                                 </div><br>
                                 <label for="jobposting-location">Location <span style="color: red;">*</span></label>
@@ -348,7 +348,7 @@
                             </div>
 
                             <div class="jobposting-buttons">
-                                <button class="jobposting-button jobposting-button-save" onclick="saveJobTitle()">Save</button>
+                                <button id="saveAndPostBtn1" class="jobposting-button jobposting-button-save">Save</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="hideJobTitle('add-job-title-popup')">Cancel</button>
                             </div>
                         </div>

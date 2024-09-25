@@ -55,7 +55,7 @@ $user_location = 'Unknown Location';
 // Check if user is logged in
 if (isset($_SESSION['user'])) {
     $user_email = $_SESSION['user'];
-
+    $userid = $_SESSION['userid'];
     $servername = "localhost";
     $username = "root";
     $password = "12345";
@@ -520,6 +520,64 @@ if (isset($_SESSION['user'])) {
         exit;
     }
     
+    // Initialize variable to track if a resume exists
+    $resume_exists = false;
+
+    // Check if the form is submitted for saving the resume
+    if (isset($_POST['save_resume'])) {
+        // Check if a file was uploaded
+        if (isset($_FILES['files']) && $_FILES['files']['error'] == 0) {
+            $fileData = file_get_contents($_FILES['files']['tmp_name']); // Get file content
+
+            // Prepare SQL statement
+            $stmt = $conn->prepare("INSERT INTO resume_table (userid, resume, uploaded_at) VALUES (?, ?, NOW())");
+            // Change the parameter binding: "i" for integer userid and "s" for string resume data
+            $stmt->bind_param("is", $userid, $fileData); // Use "s" for string/BLOB
+
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Resume uploaded successfully!";
+            } else {
+                $_SESSION['message'] = "Failed to upload resume: " . $stmt->error;
+            }
+
+            $stmt->close();
+        } else {
+            $_SESSION['message'] = "No file was uploaded or there was an error!";
+        }
+    }
+
+     // Check for existing resume in the database
+    $stmt = $conn->prepare("SELECT resume FROM resume_table WHERE userid = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // If a resume exists, set the flag and fetch the data
+    if ($result->num_rows > 0) {
+        $resume_exists = true;
+        $row = $result->fetch_assoc();
+        $resume_data = $row['resume'];
+    }
+
+    if (isset($_POST['delete_resume'])) {
+        // Prepare SQL statement to delete the existing resume
+        $stmt = $conn->prepare("DELETE FROM resume_table WHERE userid = ?");
+        $stmt->bind_param("i", $userid); // Bind the user ID
+    
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Resume deleted successfully!";
+        } else {
+            $_SESSION['message'] = "Failed to delete resume: " . $stmt->error;
+        }
+    
+        $stmt->close();
+    
+        // Refresh the page to reflect the changes
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    $stmt->close();
     $conn->close();
 }
 
@@ -1029,7 +1087,7 @@ if (isset($_SESSION['message'])) {
                             <div id="license_dropbox" class="form-group">
                                 <img src="images/resume-dropbox.png" alt="">
                                 <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
-                                Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a <br>file to upload your license/certificate.
+                                Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for an <br>image/file to upload.
                                 </label>
                                 <input type="file" id="licenseFileUpload" class="file-input" name="licenseFiles" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewLicenseFiles()" >
                                 <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
@@ -1037,6 +1095,7 @@ if (isset($_SESSION['message'])) {
                             </form>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
+                            <p>Note: Upload a clear picture of your license/certificate for better.</p>
 
 
                             <div id="button-group" class="form-group">
@@ -1082,29 +1141,29 @@ if (isset($_SESSION['message'])) {
                 
                 <div id="overlay" class="overlay"></div>
                  <!--Resume Sidenav-->
-                 <div id="resume_sidenav" class="sidenav">
+                <div id="resume_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
                       Add Resume<br>
                       <p>Your default resume can be viewed by employers when they search for candidates.</p>
                     </div>
                     <!--Resume Dropbox--> 
                     <div class="resume-form sidenav-content">
-                      <form action="/upload" method="post" enctype="multipart/form-data">
-                      <div id="resume_dropbox" class="form-group">
-                      <img src="images/resume-dropbox.png" alt="">
-                      <label for="fileUpload" style="display: block; margin-top: 10px;">
-                        Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a file to upload your resume.
-                        </label>
-                        <input type="file" id="fileUpload" class="file-input" name="files" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewFiles()" >
-                        <button type="button" class="button" onclick="document.getElementById('fileUpload').click()">Browse</button>
+                      <form action="" method="post" enctype="multipart/form-data">
+                        <div id="resume_dropbox" class="form-group">
+                            <img src="images/resume-dropbox.png" alt="">
+                            <label for="fileUpload" style="display: block; margin-top: 10px;">
+                            Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a file to upload your resume.
+                            </label>
+                            <input type="file" id="fileUpload" class="file-input" name="files" accept=".pdf" onchange="previewFiles()" >
+                            <button type="button" class="button" onclick="document.getElementById('fileUpload').click()">Browse</button>
+                            </div>
+                            <div class="preview" id="previewContainer"></div>
+                        </div>
+                        <div id="button-group" class="form-group">
+                            <button class="button" type="submit" name="save_resume">Save</button>
                         </div>
                     </form>
-                    <div class="preview" id="previewContainer"></div>
-                    </div>
-                    <div id="button-group" class="form-group">
-                                <button class="button" type="submit" name="save_resume">Save</button>
-                            </div>
-                    
+    
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 
@@ -1280,8 +1339,24 @@ if (isset($_SESSION['message'])) {
                             </div>
                             <div class="section">
                                 <h3>Resume</h3>
-                                <p>Upload a resume for easy applying and access no matter where you are.</p>
-                                <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
+                                <p>Upload a resume to provide more details about yourself.</p>
+                                <div class="info-container">
+                                    <?php if ($resume_exists): ?>
+                                        <div class="icon-group">
+                                            <div class="delete-icon" onclick="deleteResume(<?php echo $userid; ?>)"> 
+                                                <i class="fas fa-trash"></i>
+                                            </div>
+                                        </div>
+                                        <p>Your uploaded resume.</p> <br>
+                                        <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
+                                                width="600" height="400" style="border: none;"></iframe>
+                                    <?php else: ?>
+                                        <p>You have no uploaded resume.</p>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if (!$resume_exists): // Only show the button if no resume exists ?>
+                                    <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>

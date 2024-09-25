@@ -75,7 +75,7 @@ tabContents.forEach(content => {
     content.classList.remove('active');
 });
 
-document.querySelector(.tab[onclick="openTab('${tabName}')"]).classList.add('active');
+document.querySelector(`.tab[onclick="openTab('${tabName}')"]`).classList.add('active');
 document.getElementById(tabName).classList.add('active');
 checkTabContent(); // Call to update empty message visibility
 }
@@ -86,6 +86,8 @@ function openNav(sidenavId, containerId) {
 document.getElementById(sidenavId).classList.add('active');
 document.getElementById(containerId).style.opacity = "0.1";
 document.body.classList.add('no-scroll', 'overlay-active');
+previewLicenseFiles();
+previewFiles();
 }
 
 function closeNav(sidenavId, containerId) {
@@ -195,27 +197,36 @@ event.preventDefault();
 
 /******************Resume Dropbox*******************/
 function previewFiles() {
-function handleDragAndDrop() {
-  const dropbox = document.getElementById('resume_dropbox');
-  dropbox.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.add('dragover');
-  });
+  function handleDragAndDrop() {
+    const dropbox = document.getElementById('resume_dropbox');
+    dropbox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.add('dragover');
+    });
 
-  dropbox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.remove('dragover');
+    dropbox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.remove('dragover');
 
-    const files = e.dataTransfer.files;
-    const fileInput = document.getElementById('fileUpload');
-    fileInput.files = files;
+      const files = e.dataTransfer.files;
+      const validFiles = Array.from(files).filter(file => file.type === 'application/pdf');
 
-    previewFiles(); 
-  });
-}
-handleDragAndDrop();
+      if (validFiles.length > 0) {
+        const fileInput = document.getElementById('fileUpload');
+        const dataTransfer = new DataTransfer();
+        
+        validFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+
+        previewFiles(); 
+      } else {
+        alert('Only PDF files are allowed!');
+      }
+    });
+  }
+  handleDragAndDrop();
 
   const fileInput = document.getElementById('fileUpload');
   const files = fileInput.files;
@@ -238,20 +249,13 @@ handleDragAndDrop();
     previewElement.appendChild(fileNameElement);
 
     const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = (${formatFileSize(fileSize)});
+    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
     previewElement.appendChild(fileSizeElement);
 
-    // Add a preview image or icon depending on the file type
-    if (file.type.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.alt = fileName;
-      previewElement.appendChild(img);
-    } else {
-      const icon = document.createElement('i');
-      icon.className = 'fas fa-file-alt';
-      previewElement.appendChild(icon);
-    }
+    // Display PDF icon
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-file-pdf'; // You can use a PDF icon here
+    previewElement.appendChild(icon);
 
     // Add an "X" button
     const closeButton = document.createElement('button');
@@ -263,13 +267,13 @@ handleDragAndDrop();
       // Remove the file from the file input
       const fileIndex = Array.prototype.indexOf.call(fileInput.files, file);
       if (fileIndex !== -1) {
-        fileInput.files = new DataTransfer().files; // Clear the file input
+        const dataTransfer = new DataTransfer();
         for (let j = 0; j < files.length; j++) {
           if (j !== fileIndex) {
-            fileInput.files = new DataTransfer().files; // Clear the file input
-            fileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
+            dataTransfer.items.add(files[j]);
           }
         }
+        fileInput.files = dataTransfer.files; // Update the file input
       }
       // Remove the preview element
       previewElement.remove();
@@ -283,11 +287,11 @@ handleDragAndDrop();
 // Helper function to format the file size
 function formatFileSize(size) {
   if (size < 1024) {
-    return ${size} bytes;
+    return `${size} bytes`;
   } else if (size < 1024 * 1024) {
-    return ${(size / 1024).toFixed(2)} KB;
+    return `${(size / 1024).toFixed(2)} KB`;
   } else {
-    return ${(size / (1024 * 1024)).toFixed(2)} MB;
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   }
 }
 
@@ -338,7 +342,7 @@ function previewLicenseFiles() {
     previewElement.appendChild(fileNameElement);
 
     const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = (${formatFileSize(fileSize)});
+    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
     previewElement.appendChild(fileSizeElement);
 
     // Add a preview image or icon depending on the file type
@@ -380,14 +384,14 @@ function previewLicenseFiles() {
   }
 }
 
-// Helper function to format the file size
-function formatFileSize(size) {
+ // Helper function to format the file size
+ function formatFileSize(size) {
   if (size < 1024) {
-    return ${size} bytes;
+    return `${size} bytes`;
   } else if (size < 1024 * 1024) {
-    return ${(size / 1024).toFixed(2)} KB;
+    return `${(size / 1024).toFixed(2)} KB`;
   } else {
-    return ${(size / (1024 * 1024)).toFixed(2)} MB;
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   }
 }
 
@@ -588,7 +592,36 @@ if (confirm('Are you sure you want to delete this vocational record?')) {
   // Append the form to the body and submit it
   document.body.appendChild(form);
   form.submit();
+  }
 }
+
+function deleteResume(userId) {
+  if (confirm('Are you sure you want to delete your resume?')) {
+      // Create a form to submit the deletion request
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ''; // Submit to the same page
+
+      // Create a hidden input for the user ID
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'user_id';
+      input.value = userId;
+
+      // Create a hidden input to identify the deletion action
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'hidden';
+      deleteInput.name = 'delete_resume'; // This identifies the action in PHP
+      deleteInput.value = '1';
+
+      // Append inputs to the form
+      form.appendChild(input);
+      form.appendChild(deleteInput);
+
+      // Append the form to the body and submit it
+      document.body.appendChild(form);
+      form.submit();
+  }
 }
 
 function showInfo() {

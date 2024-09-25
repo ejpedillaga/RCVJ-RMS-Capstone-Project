@@ -166,7 +166,7 @@ $conn->close();
             <!-- Education Information -->
             <!-- Education Information -->
             <div id="education">
-                <h3>Education Attainment</h3>
+                <h3>Educational Attainment</h3>
                 <ul>
                     <?php if (!empty($education_list)): ?>
                         <?php foreach ($education_list as $education): ?>

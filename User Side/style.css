@@ -1923,7 +1923,9 @@ body.overlay-active .overlay {
   border-radius: 5px; 
   margin-left: 5px;
   background-color: #aaaaaa3e;
-  box-shadow: 0rem .1rem .1rem #a8a7c5;;
+  box-shadow: 0rem .1rem .1rem #a8a7c5;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -2379,6 +2381,11 @@ body.overlay-active .overlay {
   margin-bottom: 1rem;
   font-family: "Inter", sans-serif;
 }
+
+.info-container img{
+  border: 1px solid #000000;
+}
+
 .info-container ul{
   display: flex;
   flex-wrap: wrap;
@@ -2489,7 +2496,7 @@ body.overlay-active .overlay {
   font-size: 36px;
 }
 
-.popup .candidate-header p, ul {
+.popup .candidate-header p, .popup .candidate-header ul {
   padding-left: 3rem;
 }
 

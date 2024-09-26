@@ -46,7 +46,8 @@ $license_data = [
     'month_issued' => '',
     'year_issued' => '',
     'month_expired' => '',
-    'year_expired' => ''
+    'year_expired' => '',
+    'attachment' => ''
 ];
 
 $user_name = 'User';
@@ -55,7 +56,7 @@ $user_location = 'Unknown Location';
 // Check if user is logged in
 if (isset($_SESSION['user'])) {
     $user_email = $_SESSION['user'];
-    $userid = $_SESSION['userid'];
+
     $servername = "localhost";
     $username = "root";
     $password = "12345";
@@ -348,7 +349,7 @@ if (isset($_SESSION['user'])) {
     // License
     if (isset($userid)) {
         // Fetch all license data for the user, ordered by expiration date
-        $sql_license = "SELECT id, license_name, month_issued, year_issued, month_expired, year_expired 
+        $sql_license = "SELECT id, license_name, month_issued, year_issued, month_expired, year_expired, attachment 
                         FROM certification_license_table 
                         WHERE userid = '$userid' 
                         ORDER BY year_expired DESC, 
@@ -360,51 +361,54 @@ if (isset($_SESSION['user'])) {
 
         if ($result_license->num_rows > 0) {
             while ($row = $result_license->fetch_assoc()) {
+                // If you want to include the attachment in the license data
+                $row['attachment'] = base64_encode($row['attachment']); // Encode the BLOB for display
                 $license_data[] = $row;
             }
         }
     }
 
-    // Handle form submission for license data
+   // Handle form submission for license data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_license'])) {
-        // Fetch license ID if editing
-        $license_id = isset($_POST['license_id']) ? (int)$_POST['license_id'] : null;
-
         // Fetch and sanitize license form data
-        $license_name = $conn->real_escape_string($_POST['license_name']);
-        $month_issued = $conn->real_escape_string($_POST['month_issued']);
-        $year_issued = (int) $_POST['year_issued'];
-        $month_expired = $conn->real_escape_string($_POST['month_expired']);
-        $year_expired = !empty($_POST['year_expired']) ? (int) $_POST['year_expired'] : null;
+        $license_name = trim($_POST['license_name']); 
+        $month_issued = $conn->real_escape_string(trim($_POST['month_issued'])); 
+        $year_issued = (int)$_POST['year_issued'];
+        $month_expired = $conn->real_escape_string(trim($_POST['month_expired']));
+        $year_expired = !empty($_POST['year_expired']) ? (int)$_POST['year_expired'] : null;
 
-        if ($license_id) {
-            // Update existing license data
-            $sql_update_license = "UPDATE certification_license_table SET 
-                license_name = '$license_name', 
-                month_issued = '$month_issued', 
-                year_issued = $year_issued, 
-                month_expired = '$month_expired', 
-                year_expired = " . ($year_expired !== null ? $year_expired : "NULL") . " 
-                WHERE id = $license_id AND userid = '$userid'";
+        // Handle file upload
+        if (isset($_FILES['license_attachment']) && $_FILES['license_attachment']['error'] == 0) {
+            // Get file contents
+            $attachment = file_get_contents($_FILES['license_attachment']['tmp_name']);
 
-            if (!$conn->query($sql_update_license)) {
-                echo "Error updating license data: " . $conn->error;
+            if ($license_id) {
+                // Update existing license data with attachment
+                $sql_update_license = "UPDATE certification_license_table SET license_name = ?, month_issued = ?, year_issued = ?, month_expired = ?, year_expired = ?, attachment = ? WHERE id = ? AND userid = ?";
+                $stmt = $conn->prepare($sql_update_license);
+                $stmt->bind_param("ssissbsi", $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment, $license_id, $userid);
+                $stmt->send_long_data(5, $attachment); // Send the BLOB data
             } else {
-                $_SESSION['message'] = "License data updated successfully!";
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
+                // Insert new license data for the user with attachment
+                $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql_insert_license);
+                $stmt->bind_param("isssssb", $userid, $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment);
+                $stmt->send_long_data(6, $attachment); // Send the BLOB data
             }
-        } else {
-            // Insert new license data for the user
-            $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired) 
-                VALUES ('$userid', '$license_name', '$month_issued', $year_issued, '$month_expired', " . ($year_expired !== null ? $year_expired : "NULL") . ")";
 
-            if (!$conn->query($sql_insert_license)) {
-                echo "Error inserting license data: " . $conn->error;
-            } else {
+            if ($stmt->execute()) {
                 $_SESSION['message'] = "License data saved successfully!";
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit;
+            } else {
+                echo "Error saving license data: " . $stmt->error;
+            }
+        } else {
+            // Detailed error output
+            if (isset($_FILES['license_attachment']['error'])) {
+                echo "File upload error: " . $_FILES['license_attachment']['error'];
+            } else {
+                echo "Error uploading file.";
             }
         }
     }
@@ -1015,7 +1019,7 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <div class="LnE-form sidenav-content">
-                        <form action="" method="POST">
+                        <form action="" method="POST" enctype="multipart/form-data">
                             <!-- Hidden field for license ID if editing -->
                             <input type="hidden" name="license_id" value="<?php echo isset($license_data['id']) ? $license_data['id'] : ''; ?>">
 
@@ -1082,17 +1086,15 @@ if (isset($_SESSION['message'])) {
                                 </div>
                             </div>
                           
-                             <!--License Dropbox--> 
-                             <form action="/upload" method="post" enctype="multipart/form-data">
+                            <!--License Dropbox--> 
                             <div id="license_dropbox" class="form-group">
                                 <img src="images/resume-dropbox.png" alt="">
                                 <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
                                 Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for an <br>image/file to upload.
                                 </label>
-                                <input type="file" id="licenseFileUpload" class="file-input" name="licenseFiles" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewLicenseFiles()" >
+                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()" required>
                                 <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
                             </div>
-                            </form>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
                             <p>Note: Upload a clear picture of your license/certificate for better.</p>
@@ -1144,7 +1146,8 @@ if (isset($_SESSION['message'])) {
                 <div id="resume_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
                       Add Resume<br>
-                      <p>Your default resume can be viewed by employers when they search for candidates.</p>
+                      <p>Your default resume can be viewed by employers.</p>
+                      <p style="color: red;">Note: Upload a PDF file only.</p>
                     </div>
                     <!--Resume Dropbox--> 
                     <div class="resume-form sidenav-content">
@@ -1213,16 +1216,14 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <!--Content-->
-
                     <div class="profile-body">
-
                         <div class="sections">
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
                                 <?php if (!empty($user_data['personal_description'])): ?>
                                     <div class="info-container">
-                                        <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
+                                        <p style="text-align: justify;"><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
                                     </div>
                                 <?php endif; ?>
                                 <button onclick="openNav('personal-description-sidenav', 'profile-container')">Edit</button>
@@ -1236,15 +1237,17 @@ if (isset($_SESSION['message'])) {
                                         <?php foreach ($license_data as $license): ?>
                                             <div class="info-container">
                                                 <div class="icon-group">
-                                                    <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container'); populateLicense(<?php echo htmlspecialchars(json_encode($license)); ?>)">
-                                                        <i class="fas fa-edit"></i>
-                                                    </div>
                                                     <div class="delete-icon" onclick="deleteLicense(<?php echo $license['id']; ?>)">
                                                         <i class="fas fa-trash"></i>
                                                     </div>
                                                 </div>
                                                 <h4><?php echo htmlspecialchars($license['license_name']); ?></h4>
                                                 <p><?php echo htmlspecialchars($license['month_issued']); ?> <?php echo htmlspecialchars($license['year_issued']); ?> - <?php echo htmlspecialchars($license['month_expired']); ?> <?php echo htmlspecialchars($license['year_expired']); ?></p>
+                                                <p style="margin: 1rem 0rem;">Your attached image:</p>
+                                                
+                                                <?php if (!empty($license['attachment'])): ?>
+                                                    <img src="data:image/jpeg;base64,<?php echo htmlspecialchars($license['attachment']); ?>" alt="License Attachment" style="max-width: 300px; height: auto;" />
+                                                <?php endif; ?>
                                             </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

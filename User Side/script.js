@@ -94,6 +94,15 @@ function closeNav(sidenavId, containerId) {
 document.getElementById(sidenavId).classList.remove('active');
 document.getElementById(containerId).style.opacity = "1";
 document.body.classList.remove('no-scroll', 'overlay-active');
+// Reset the file input and clear the preview
+    const licenseFileInput = document.getElementById('licenseFileUpload');
+    const licensePreviewContainer = document.getElementById('licensePreviewContainer');
+
+    // Clear the file input
+    licenseFileInput.value = ''; 
+
+    // Clear the preview container
+    licensePreviewContainer.innerHTML = ''; 
 }
 
 /*Add Skills*/
@@ -313,10 +322,19 @@ function previewLicenseFiles() {
       dropbox.classList.remove('dragover');
   
       const files = e.dataTransfer.files;
-      const licenseFileInput = document.getElementById('licenseFileUpload');
-      licenseFileInput.files = files;
-  
-      previewLicenseFiles(); 
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed MIME types
+      const validFiles = Array.from(files).filter(file => allowedTypes.includes(file.type));
+
+      if (validFiles.length > 0) {
+        const licenseFileInput = document.getElementById('licenseFileUpload');
+        const dataTransfer = new DataTransfer();
+
+        validFiles.forEach(file => dataTransfer.items.add(file));
+        licenseFileInput.files = dataTransfer.files; // Set the valid files to the input
+        previewLicenseFiles(); 
+      } else {
+        alert("Please upload only PNG or JPG/JPEG files."); // Alert for invalid file types
+      }
     });
   }
 
@@ -336,14 +354,10 @@ function previewLicenseFiles() {
     const previewElement = document.createElement('div');
     previewElement.className = 'license-preview-element';
 
-    // Display the file name and size
-    const fileNameElement = document.createElement('span');
-    fileNameElement.textContent = fileName;
-    previewElement.appendChild(fileNameElement);
-
-    const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
-    previewElement.appendChild(fileSizeElement);
+    // Display the file name and size in one line
+    const fileInfoElement = document.createElement('span');
+    fileInfoElement.textContent = `${fileName} (${formatFileSize(fileSize)})`;
+    previewElement.appendChild(fileInfoElement);
 
     // Add a preview image or icon depending on the file type
     if (file.type.startsWith('image/')) {
@@ -357,24 +371,28 @@ function previewLicenseFiles() {
       previewElement.appendChild(icon);
     }
 
-    // Add an "X" button
-    const closeButton = document.createElement('button');
-    closeButton.className = 'license-close-button';
-    closeButton.innerHTML = '&times;'; // Use HTML entity instead of the character
-    closeButton.style.float = 'right';
-    closeButton.style.cursor = 'pointer';
-    closeButton.onclick = function() {
-      // Remove the file from the file input
-      const fileIndex = Array.prototype.indexOf.call(licenseFileInput.files, file);
-      if (fileIndex !== -1) {
-        licenseFileInput.files = new DataTransfer().files; // Clear the file input
-        for (let j = 0; j < files.length; j++) {
-          if (j !== fileIndex) {
-            licenseFileInput.files = new DataTransfer().files; // Clear the file input
-            licenseFileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
-          }
-        }
-      }
+   // Add a "Remove" button
+   const closeButton = document.createElement('button');
+   closeButton.className = 'license-close-button';
+   closeButton.innerText = 'Remove'; // Set button text to "Remove"
+   closeButton.style.float = 'right';
+   closeButton.style.cursor = 'pointer';
+   closeButton.style.backgroundColor = '#2C1875'; // Set background color
+   closeButton.style.border = 'none'; // Optional: remove border
+   closeButton.style.color = 'white'; // Optional: set text color to white
+   closeButton.style.padding = '5px 10px'; // Optional: add padding for aesthetics
+   closeButton.onclick = function() {
+     // Remove the file from the file input
+     const fileIndex = Array.prototype.indexOf.call(licenseFileInput.files, file);
+     if (fileIndex !== -1) {
+       const dataTransfer = new DataTransfer();
+       for (let j = 0; j < files.length; j++) {
+         if (j !== fileIndex) {
+           dataTransfer.items.add(files[j]); // Add the remaining files back to the DataTransfer object
+         }
+       }
+       licenseFileInput.files = dataTransfer.files; // Update the input files
+     }
       // Remove the preview element
       previewElement.remove();
     };
@@ -384,8 +402,8 @@ function previewLicenseFiles() {
   }
 }
 
- // Helper function to format the file size
- function formatFileSize(size) {
+// Helper function to format the file size
+function formatFileSize(size) {
   if (size < 1024) {
     return `${size} bytes`;
   } else if (size < 1024 * 1024) {
@@ -394,6 +412,7 @@ function previewLicenseFiles() {
     return `${(size / (1024 * 1024)).toFixed(2)} MB`;
   }
 }
+
 
 
 /*Resume Dialog Popup*/

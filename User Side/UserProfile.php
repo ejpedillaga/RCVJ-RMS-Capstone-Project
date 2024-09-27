@@ -12,8 +12,9 @@ $user_data = [
     'birthday' => '',
     'classi' => '',
     'subclassi' => '',
-    'userid' => '',  // Add userid to the user_data array
-    'personal_description' => ''
+    'userid' => '', 
+    'personal_description' => '',
+    'profile_image' => ''
 ];
 
 $education_data = [
@@ -67,9 +68,8 @@ if (isset($_SESSION['user'])) {
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-
     // Fetch the user's data to populate the form (from applicant_table)
-    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi, personal_description 
+    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi, personal_description, profile_image
             FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
 
@@ -78,6 +78,10 @@ if (isset($_SESSION['user'])) {
         $user_name = $user_data['fname'] . ' ' . $user_data['lname'];
         $user_location = $user_data['location'];
         $userid = $user_data['userid'];  // Ensure we have the userid for further operations
+
+        // Convert image data to base64 for display
+        $profile_image = base64_encode($user_data['profile_image']);
+        $image_src = "data:image/png;base64," . $profile_image; // Adjust MIME type if necessary
     } else {
         echo "Error: User not found in the applicant_table.";
     }
@@ -100,44 +104,53 @@ if (isset($_SESSION['user'])) {
             echo "Error updating personal description: " . $conn->error;
         }
     }
-
-    // Handle profile form submission
+    
+    // Handle form submission for profile data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
         // Fetch and sanitize profile form data
-        $fname = $conn->real_escape_string($_POST['fname']);
-        $lname = $conn->real_escape_string($_POST['lname']);
-        $location = $conn->real_escape_string($_POST['location']);
-        $gender = $conn->real_escape_string($_POST['gender']);
-        $phone = $conn->real_escape_string($_POST['phone']);
-        $birthday = $conn->real_escape_string($_POST['birthday']);
-        $classi = $conn->real_escape_string($_POST['classi']);
-        $subclassi = $conn->real_escape_string($_POST['subclassi']);
+        $userid = trim($_POST['userid']); // Get userid from the form
+        $email = $conn->real_escape_string(trim($_POST['email'])); // Read-only
+        $fname = $conn->real_escape_string(trim($_POST['fname']));
+        $lname = $conn->real_escape_string(trim($_POST['lname']));
+        $gender = $conn->real_escape_string(trim($_POST['gender']));
+        $birthday = $conn->real_escape_string(trim($_POST['birthday']));
+        $location = $conn->real_escape_string(trim($_POST['location']));
+        $phone = $conn->real_escape_string(trim($_POST['phone']));
+        $classi = $conn->real_escape_string(trim($_POST['classi']));
+        $subclassi = $conn->real_escape_string(trim($_POST['subclassi']));
 
-        // Debugging: Check if data is being posted
-        if (!empty($fname) && !empty($lname)) {
-            // Update the user's data in the applicant_table
-            $sql_update = "UPDATE applicant_table SET 
-                fname = '$fname', 
-                lname = '$lname', 
-                location = '$location', 
-                gender = '$gender', 
-                phone = '$phone', 
-                birthday = '$birthday', 
-                classi = '$classi', 
-                subclassi = '$subclassi'
-                WHERE userid = '$userid'";
-
-            if ($conn->query($sql_update) === TRUE) {
-                $_SESSION['message'] = "Profile updated successfully!";
-                // Debugging: Show success message
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
-            } else {
-                echo "Error updating profile: " . $conn->error;
-            }
-        } else {
-            echo "Please fill in all required fields.";
+        // Handle file upload for profile image
+        $profile_image = null;
+        if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
+            // Get file contents
+            $profile_image = file_get_contents($_FILES['profile_image']['tmp_name']);
         }
+
+        // Prepare the SQL update statement
+        if ($profile_image !== null) {
+            // Prepare with profile image
+            $sql_update_profile = "UPDATE applicant_table SET fname = ?, lname = ?, gender = ?, birthday = ?, location = ?, phone = ?, classi = ?, subclassi = ?, profile_image = ? WHERE userid = ?";
+            $stmt = $conn->prepare($sql_update_profile);
+            $stmt->bind_param("ssssssssbi", $fname, $lname, $gender, $birthday, $location, $phone, $classi, $subclassi, $profile_image, $userid);
+            $stmt->send_long_data(8, $profile_image); // Correct index for profile_image
+        } else {
+            // Prepare without profile image
+            $sql_update_profile = "UPDATE applicant_table SET fname = ?, lname = ?, gender = ?, birthday = ?, location = ?, phone = ?, classi = ?, subclassi = ? WHERE userid = ?";
+            $stmt = $conn->prepare($sql_update_profile);
+            $stmt->bind_param("sssssssss", $fname, $lname, $gender, $birthday, $location, $phone, $classi, $subclassi, $userid);
+        }
+
+        // Execute the statement and check for success
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Profile updated successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error updating profile: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
     }
 
     // Fetch the education data to populate the education form
@@ -712,7 +725,16 @@ if (isset($_SESSION['message'])) {
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
-                    <form action="" method="POST">
+                    <form action="" method="POST" enctype="multipart/form-data"> 
+                    <input type="hidden" name="userid" value="<?php echo htmlspecialchars($user_data['userid']); ?>">
+                        <!-- Upload Logo -->
+                        <div class="upload-image-group">
+                            <div class="upload-image" onclick="document.getElementById('logo-upload').click()">
+                                <input type="file" id="logo-upload" name="profile_image" accept="image/*" onchange="previewLogo(event)" style="display: none;">
+                                <img id="logo-preview" src="<?php echo isset($image_src) ? $image_src : ''; ?>" alt="Upload Logo" style="width: 100%; <?php echo isset($image_src) ? 'display: block;' : 'display: none;'; ?>">
+                                <div id="upload-placeholder" style="<?php echo isset($image_src) ? 'display: none;' : 'display: block;'; ?>">Upload Logo</div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div>
                                 <label class="label" for="first-name">First Name</label>
@@ -1177,7 +1199,11 @@ if (isset($_SESSION['message'])) {
 
                         <div class="profile-card">
                             <div class="content">
-                                <img id="profile-picture" src="images/profileicon.svg" alt="">
+                                <?php if (!empty($user_data['profile_image'])): ?>
+                                    <img id="profile-picture" class="profile-photo" src="data:image/jpeg;base64,<?php echo base64_encode($user_data['profile_image']); ?>" alt="">
+                                <?php else: ?>
+                                    <img id="profile-picture" src="images/profileicon.svg" alt="">
+                                <?php endif; ?>
                                 <div>
                                     <h1><?php echo htmlspecialchars($user_name); ?></h1>
                                     <div class="profile-contacts">

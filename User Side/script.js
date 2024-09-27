@@ -654,3 +654,20 @@ document.getElementById('info').style.display = 'none';
 document.getElementById('info').classList.remove('show');
 document.getElementById('overlay').classList.remove('show');
 }
+
+function previewLogo(event) {
+  const input = event.target;
+  const file = input.files[0];
+  if (file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+          const preview = document.getElementById('logo-preview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          document.getElementById('upload-placeholder').style.display = 'none';
+      };
+      
+      reader.readAsDataURL(file);
+  }
+}

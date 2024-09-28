@@ -671,3 +671,12 @@ function previewLogo(event) {
       reader.readAsDataURL(file);
   }
 }
+
+function validateForm() {
+  const attachmentInput = document.getElementById('licenseFileUpload');
+  if (attachmentInput.files.length === 0) {
+      alert('Please upload a license/certificate attachment.');
+      return false; // Prevent form submission
+  }
+  return true; // Allow form submission
+}

@@ -1041,7 +1041,7 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <div class="LnE-form sidenav-content">
-                        <form action="" method="POST" enctype="multipart/form-data">
+                        <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                             <!-- Hidden field for license ID if editing -->
                             <input type="hidden" name="license_id" value="<?php echo isset($license_data['id']) ? $license_data['id'] : ''; ?>">
 
@@ -1114,12 +1114,12 @@ if (isset($_SESSION['message'])) {
                                 <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
                                 Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for an <br>image/file to upload.
                                 </label>
-                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()" required>
+                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()">
                                 <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
                             </div>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
-                            <p>Note: Upload a clear picture of your license/certificate for better.</p>
+                            <p>Note: Upload a clear picture of your license/certificate for better evaluation.</p>
 
 
                             <div id="button-group" class="form-group">

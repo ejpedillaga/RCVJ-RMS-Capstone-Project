@@ -382,49 +382,49 @@ if (isset($_SESSION['user'])) {
     }
 
    // Handle form submission for license data
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_license'])) {
-        // Fetch and sanitize license form data
-        $license_name = trim($_POST['license_name']); 
-        $month_issued = $conn->real_escape_string(trim($_POST['month_issued'])); 
-        $year_issued = (int)$_POST['year_issued'];
-        $month_expired = $conn->real_escape_string(trim($_POST['month_expired']));
-        $year_expired = !empty($_POST['year_expired']) ? (int)$_POST['year_expired'] : null;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_license'])) {
+    // Fetch and sanitize license form data
+    $license_name = trim($_POST['license_name']); 
+    $month_issued = $conn->real_escape_string(trim($_POST['month_issued'])); 
+    $year_issued = (int)$_POST['year_issued'];
+    $month_expired = $conn->real_escape_string(trim($_POST['month_expired']));
+    $year_expired = !empty($_POST['year_expired']) ? (int)$_POST['year_expired'] : null;
 
-        // Handle file upload
-        if (isset($_FILES['license_attachment']) && $_FILES['license_attachment']['error'] == 0) {
-            // Get file contents
-            $attachment = file_get_contents($_FILES['license_attachment']['tmp_name']);
+    // Handle file upload
+    if (isset($_FILES['license_attachment']) && $_FILES['license_attachment']['error'] == 0) {
+        // Get file contents
+        $attachment = file_get_contents($_FILES['license_attachment']['tmp_name']);
 
-            if ($license_id) {
-                // Update existing license data with attachment
-                $sql_update_license = "UPDATE certification_license_table SET license_name = ?, month_issued = ?, year_issued = ?, month_expired = ?, year_expired = ?, attachment = ? WHERE id = ? AND userid = ?";
-                $stmt = $conn->prepare($sql_update_license);
-                $stmt->bind_param("ssissbsi", $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment, $license_id, $userid);
-                $stmt->send_long_data(5, $attachment); // Send the BLOB data
-            } else {
-                // Insert new license data for the user with attachment
-                $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)";
-                $stmt = $conn->prepare($sql_insert_license);
-                $stmt->bind_param("isssssb", $userid, $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment);
-                $stmt->send_long_data(6, $attachment); // Send the BLOB data
-            }
-
-            if ($stmt->execute()) {
-                $_SESSION['message'] = "License data saved successfully!";
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
-            } else {
-                echo "Error saving license data: " . $stmt->error;
-            }
+        if ($license_id) {
+            // Update existing license data with attachment
+            $sql_update_license = "UPDATE certification_license_table SET license_name = ?, month_issued = ?, year_issued = ?, month_expired = ?, year_expired = ?, attachment = ? WHERE id = ? AND userid = ?";
+            $stmt = $conn->prepare($sql_update_license);
+            $stmt->bind_param("ssissbsi", $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment, $license_id, $userid);
+            $stmt->send_long_data(5, $attachment); // Send the BLOB data
         } else {
-            // Detailed error output
-            if (isset($_FILES['license_attachment']['error'])) {
-                echo "File upload error: " . $_FILES['license_attachment']['error'];
-            } else {
-                echo "Error uploading file.";
-            }
+            // Insert new license data for the user with attachment
+            $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql_insert_license);
+            $stmt->bind_param("isssssb", $userid, $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment);
+            $stmt->send_long_data(6, $attachment); // Send the BLOB data
+        }
+
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "License data saved successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error saving license data: " . $stmt->error;
+        }
+    } else {
+        // Detailed error output
+        if (isset($_FILES['license_attachment']['error'])) {
+            echo "File upload error: " . $_FILES['license_attachment']['error'];
+        } else {
+            echo "Error uploading file.";
         }
     }
+}
 
     // Handle deletion of license data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_license'])) {
@@ -1041,7 +1041,7 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <div class="LnE-form sidenav-content">
-                        <form action="" method="POST" enctype="multipart/form-data">
+                        <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                             <!-- Hidden field for license ID if editing -->
                             <input type="hidden" name="license_id" value="<?php echo isset($license_data['id']) ? $license_data['id'] : ''; ?>">
 
@@ -1114,12 +1114,12 @@ if (isset($_SESSION['message'])) {
                                 <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
                                 Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for an <br>image/file to upload.
                                 </label>
-                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()" required>
+                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()">
                                 <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
                             </div>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
-                            <p>Note: Upload a clear picture of your license/certificate for better.</p>
+                            <p>Note: Upload a clear picture of your license/certificate for better evaluation.</p>
 
 
                             <div id="button-group" class="form-group">

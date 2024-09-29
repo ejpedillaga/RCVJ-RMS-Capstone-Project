@@ -1377,7 +1377,7 @@ img#profile-picture{
 
 .profile-edit{
   padding-bottom: 13rem;
-  margin-left: 10rem;
+  margin-left: 2rem;
 }
 
 .profile-edit:hover{
@@ -2568,7 +2568,7 @@ body.overlay-active .overlay {
   justify-content: space-between;
   align-items: center;
 }
-.popup .candidate-container h2, h3, h4{
+.popup .candidate-container h2, .popup .candidate-container h3, .popup .candidate-container h4{
   margin: 0.5rem 0rem;
 }
 

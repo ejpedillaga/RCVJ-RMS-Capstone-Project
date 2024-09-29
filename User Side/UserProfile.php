@@ -594,6 +594,22 @@ if (isset($_SESSION['user'])) {
         exit;
     }
 
+    // Fetch skills from the skill_table
+    $skillQuery = "SELECT skill_name FROM skill_table";
+    $skillResult = $conn->query($skillQuery);
+
+    // Create an array to hold skill names
+    $availableSkills = [];
+
+    if ($skillResult->num_rows > 0) {
+        while($row = $skillResult->fetch_assoc()) {
+            $availableSkills[] = $row['skill_name'];
+        }
+    }
+
+    // Convert the PHP array to JSON
+    $availableSkills_json = json_encode($availableSkills);
+
     $stmt->close();
     $conn->close();
 }
@@ -712,7 +728,7 @@ if (isset($_SESSION['message'])) {
                         <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
                         <div class="nav-acc">
                             <img src="images/user.svg" alt="">
-                            <button id="profile">User Name</button>
+                            <button id="profile"><?php echo htmlspecialchars($user_name); ?></button>
                         </div>
                     </div>
                 </div>
@@ -1141,12 +1157,14 @@ if (isset($_SESSION['message'])) {
                     <div class="skills-form sidenav-content">
                         <form id="skills_form" method="POST">
                             <label for="add_skills_group" class="sidenav-content">Add skill/s</label>
-                            <div id="add_skills_group" class="form-group two-columns sidenav-content">
-                                <div>
-                                    <input type="text" id="skills" name="skills[]" class="input-field">
-                                </div>
-                                <div>
-                                    <button id="add_skill_btn" class="button" type="button">Add</button>
+
+                            <div id="add_skills_group" class="skills-input-box">
+                                <div class="skills-row">
+                                    <input type="text" id="skills" name="skills[]" class="input-field" placeholder="Enter skills" autocomplete="off">   
+                                    <button id="add_skill_btn" class="button" type="button">Add</button>                  
+                                </div>     
+                                <div class="result-box">
+                                        <!--Skills are fetched here-->
                                 </div>
                             </div>
 
@@ -1467,6 +1485,40 @@ if (isset($_SESSION['message'])) {
 
                 // Call the function to populate the skills list
                 document.addEventListener('DOMContentLoaded', displayUserSkills);
+
+                let availableKeywords = <?php echo $availableSkills_json; ?>;
+
+                const resultsBox = document.querySelector(".result-box");
+                const inputBox = document.getElementById("skills");
+
+                inputBox.onkeyup = function(){
+                    let result = [];
+                    let input = inputBox.value;
+                    if(input.length){
+                        result = availableKeywords.filter((keyword)=>{
+                            return keyword.toLowerCase().includes(input.toLowerCase());
+                        });
+                        console.log(result);
+                    }
+                    display(result);
+
+                    if(!result.length){
+                        resultsBox.innerHTML = '';
+                    }
+                }
+
+                function display(result){
+                    const content = result.map((list)=>{
+                        return "<li onclick=selectInput(this)>" + list + "</li>";
+                    });
+                    
+                    resultsBox.innerHTML = "<ul>" + content.join('') + "</ul>";
+                }
+
+                function selectInput(list){
+                    inputBox.value = list.innerHTML;
+                    resultsBox.innerHTML = '';
+                }
             </script>
 
         </body>

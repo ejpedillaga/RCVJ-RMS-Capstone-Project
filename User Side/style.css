@@ -71,6 +71,7 @@ nav {
 .desktopnav a:hover, nav a.active { 
     color: #2C1875;
     font-weight: 500;
+    text-decoration: none;
 }
 
 .desktopnav a::before {
@@ -1376,7 +1377,7 @@ img#profile-picture{
 
 .profile-edit{
   padding-bottom: 13rem;
-  margin-left: 10rem;
+  margin-left: 2rem;
 }
 
 .profile-edit:hover{
@@ -1963,6 +1964,40 @@ body.overlay-active .overlay {
   margin-top: 2.5rem;
 }
 
+.skills-input-box{
+  width: 80%;
+  background: #FFF;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.skills-row {
+  display: flex;
+  align-items: center;
+}
+
+.result-box{
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.result-box ul{
+  border: 1px solid #999;
+  padding: 10px 5px;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.result-box ul li{
+  list-style: none;
+  border-radius: 3px;
+  padding: 15px 10px;
+  cursor: pointer;
+}
+
+.result-box ul li:hover {
+  background: #e9f3ff;
+}
+
 #skills_sidenav p {
   font-size: 18px;
   font-weight: normal;
@@ -1978,7 +2013,7 @@ body.overlay-active .overlay {
 }
 
 .skills-form .input-field{
-  width: 95%;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -1989,7 +2024,6 @@ body.overlay-active .overlay {
 
 #add_skills_group .button{
   margin-top: 0;
-  margin-right: 35rem;
 }
 
 #added_skills_list {
@@ -2385,6 +2419,7 @@ body.overlay-active .overlay {
 
 .info-container img{
   border: 1px solid #000000;
+  border-radius: 20px;
 }
 
 .info-container ul{
@@ -2443,20 +2478,20 @@ body.overlay-active .overlay {
 }
 
 /* Custom Scrollbar for WebKit browsers (Chrome, Safari) */
-.past-jobs-container::-webkit-scrollbar,  .license-container::-webkit-scrollbar{
-  width: 12px; /* Width of the scrollbar */
+.past-jobs-container::-webkit-scrollbar,  .license-container::-webkit-scrollbar, .result-box::-webkit-scrollbar{
+  width: 10px; /* Width of the scrollbar */
 }
 
-.past-jobs-container::-webkit-scrollbar-track, .license-container::-webkit-scrollbar-track{
+.past-jobs-container::-webkit-scrollbar-track, .license-container::-webkit-scrollbar-track, .result-box::-webkit-scrollbar-track{
   background: #f1f1f1; /* Track color */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb, .license-container::-webkit-scrollbar-thumb {
+.past-jobs-container::-webkit-scrollbar-thumb, .license-container::-webkit-scrollbar-thumb, .result-box::-webkit-scrollbar-thumb {
   background: #2C1875; /* Scrollbar color */
   border-radius: 10px; /* Rounded corners */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb:hover , .license-container::-webkit-scrollbar-thumb:hover {
+.past-jobs-container::-webkit-scrollbar-thumb:hover , .license-container::-webkit-scrollbar-thumb:hover, .result-box::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
 }
 
@@ -2533,7 +2568,7 @@ body.overlay-active .overlay {
   justify-content: space-between;
   align-items: center;
 }
-.popup .candidate-container h2, h3, h4{
+.popup .candidate-container h2, .popup .candidate-container h3, .popup .candidate-container h4{
   margin: 0.5rem 0rem;
 }
 

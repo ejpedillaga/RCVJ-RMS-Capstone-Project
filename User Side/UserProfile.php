@@ -678,7 +678,11 @@ if (isset($_SESSION['message'])) {
                         </div>
                     </div>
                 </div>
-                    <img src="images/user.svg" alt="">
+                <?php if (!empty($user_data['profile_image'])): ?>
+                    <img src="data:image/jpeg;base64,<?php echo base64_encode($user_data['profile_image']); ?>" alt="" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="" class="small-profile-photo">
+                <?php endif; ?>
                     <button><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
             </nav>

@@ -2,33 +2,43 @@
 session_start();
 
 if (isset($_SESSION['user'])) {
-    // Fetch user's full name from the session
+    // Fetch user's email from the session
     $user_email = $_SESSION['user'];
 
+    // Database connection details
     $servername = "localhost";
     $username = "root";
     $password = "12345";
     $dbname = "admin_database";
 
+    // Create a connection
     $conn = new mysqli($servername, $username, $password, $dbname);
 
+    // Check the connection
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
+    // Fetch the full name and profile image from the applicant_table
+    $sql = "SELECT fname, lname, profile_image FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         $user_name = $user['fname'] . ' ' . $user['lname'];
+
+        // Fetch the profile image
+        $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     } else {
         $user_name = 'User';
+        $profile_image = null; // Default to null if no profile image is found
     }
 
+    // Close the connection
     $conn->close();
 } else {
     $user_name = 'Sign Up';
+    $profile_image = null; // Default to null if user is not logged in
 }
 ?>
 
@@ -81,10 +91,14 @@ if (isset($_SESSION['user'])) {
                             </div>
                         </div>
                     </div>
-                </div>
-                    <img src="images/user.svg" alt="">
-                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
-                </div>
+                    </div>
+                        <?php if ($profile_image): ?>
+                            <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                        <?php else: ?>
+                            <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                        <?php endif; ?>
+                        <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                    </div>
             </nav>
 
             <!---Burger Nav-->

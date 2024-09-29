@@ -9,13 +9,14 @@ $user_info = [];
 $education_list = [];
 $vocational_list = [];
 $job_experience_list = [];
+$profile_image = null; // Initialize profile image
 
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
     $user_email = $_SESSION['user'];
     
     // Use the existing database connection to fetch user information
-    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description FROM applicant_table WHERE email = ?";
+    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
@@ -25,6 +26,7 @@ if (isset($_SESSION['user'])) {
         $user_info = $result->fetch_assoc();
         $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
         $userid = $user_info['userid']; // Fetch the user's ID for later use in queries
+        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null; // Fetch profile image
 
         // Fetch education details using the fetched userid
         $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
@@ -141,7 +143,11 @@ $conn->close();
                     </div>
                 </div>
                 <div>
-                    <img src="images/user.svg" alt="">
+                    <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
+                    <?php else: ?>
+                        <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
+                    <?php endif; ?>
                 </div>
             </div>
             <div id="personal-info">
@@ -247,7 +253,11 @@ $conn->close();
                     </div>
                 </div>
             </div>
-            <img src="images/user.svg" alt="">
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
             <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
         </div>
     </nav>

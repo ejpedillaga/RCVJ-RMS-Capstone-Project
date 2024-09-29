@@ -2625,6 +2625,24 @@ body.overlay-active .overlay {
   display: flex;
 }
 
+.small-profile-photo {
+  width: 50px;
+  height: 50px;
+  background-color: #D4D6FF;
+  border: 0.15rem #2C1875 solid;
+  object-fit: cover; /* Ensures the image maintains aspect ratio */
+  border-radius: 50%; /* Makes the image circular if desired */
+}
+
+.large-profile-photo {
+  width: 125px; /* Adjust size as needed */
+  height: 125px; /* Adjust size as needed */
+  background-color: #D4D6FF;
+  border: 0.3rem #2C1875 solid;
+  object-fit: cover; /* Maintains aspect ratio */
+  border-radius: 50%; /* Makes the image circular */
+}
+
 .upload-image img {
   width: 100%;
   height: 100%;

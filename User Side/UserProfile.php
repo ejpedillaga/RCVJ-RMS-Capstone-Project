@@ -1132,6 +1132,7 @@ if (isset($_SESSION['message'])) {
                                 </div>
                                 <div class="profile-edit">
                                     <img src="images/image 31.svg" onclick="openNav('editProfile-sidenav', 'profile-container')" alt="">
+                                    <span class="tooltiptext">Edit Profile</span>
                                 </div>
                             </div>
                         </div>
@@ -1179,9 +1180,12 @@ if (isset($_SESSION['message'])) {
                                                 <div class="icon-group">
                                                     <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container'); populateLicense(<?php echo htmlspecialchars(json_encode($license)); ?>)">
                                                         <i class="fas fa-edit"></i>
+                                                        <span class="tooltiptext">Edit</span>
+
                                                     </div>
                                                     <div class="delete-icon" onclick="deleteLicense(<?php echo $license['id']; ?>)">
                                                         <i class="fas fa-trash"></i>
+                                                        <span class="tooltiptext">Delete</span>
                                                     </div>
                                                 </div>
                                                 <h4><?php echo htmlspecialchars($license['license_name']); ?></h4>
@@ -1203,9 +1207,11 @@ if (isset($_SESSION['message'])) {
                                             <div class="icon-group">
                                                 <div class="edit-icon" onclick="openNav('past-jobs-sidenav', 'profile-container'); populateJobExperience(<?php echo htmlspecialchars(json_encode($job)); ?>)">
                                                     <i class="fas fa-edit"></i>
+                                                    <span class="tooltiptext">Edit</span>
                                                 </div>
                                                 <div class="delete-icon" onclick="deleteJobExperience(<?php echo $job['job_experience_id']; ?>)"> 
                                                     <i class="fas fa-trash"></i>
+                                                    <span class="tooltiptext">Delete</span>
                                                 </div>
                                             </div>
                                             <h4 id="pj-jt"><?php echo htmlspecialchars($job['job_title']); ?></h4>
@@ -1244,9 +1250,11 @@ if (isset($_SESSION['message'])) {
                                         <div class="icon-group">
                                             <div class="edit-icon" onclick="openNav('education_sidenav', 'profile-container')">
                                                 <i class="fas fa-edit"></i>
+                                                <span class="tooltiptext">Edit</span>
                                             </div>
                                             <div class="delete-icon" onclick="deleteEducation('<?php echo htmlspecialchars($userid); ?>')"> 
                                                 <i class="fas fa-trash"></i>
+                                                <span class="tooltiptext">Delete</span>
                                             </div>
                                         </div>
                                         <h4 id="educ-course"><?php echo htmlspecialchars($education_data['course']); ?></h4>
@@ -1265,9 +1273,11 @@ if (isset($_SESSION['message'])) {
                                         <div class="icon-group">
                                             <div class="edit-icon" onclick="openNav('vocational_sidenav', 'profile-container')">
                                                 <i class="fas fa-edit"></i>
+                                                <span class="tooltiptext">Edit</span>
                                             </div>
                                             <div class="delete-icon" onclick="deleteVocational('<?php echo htmlspecialchars($userid); ?>')"> 
                                                 <i class="fas fa-trash"></i>
+                                                <span class="tooltiptext">Delete</span>
                                             </div>
                                         </div>
                                         <h4 id="educ-course"><?php echo htmlspecialchars($vocational_data['course']); ?></h4>

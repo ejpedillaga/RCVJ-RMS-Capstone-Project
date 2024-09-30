@@ -511,16 +511,10 @@ table td:last-child{
 .jobposting-container {
     overflow: auto;
 }
-.jobposting-box {
-    border-radius: 10px;
-    padding: 50px;
-    background-color: var(--light-violet);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-}
 
 .jobposting-box label{
     font-weight: bold;
+    
 }
 
 .jobposting-input, .jobposting-select {
@@ -533,9 +527,13 @@ table td:last-child{
     box-sizing: border-box;
 }
 
+.override-width{
+    width: 49%;
+}
+
 .jobposting-textarea {
     width: 100%;
-    height: 454px;
+    height: 250px;
     border-radius: 10px;
     border: 1px solid #ccc;
     padding: 10px;
@@ -545,7 +543,7 @@ table td:last-child{
 
 .jobposting-skills-container {
     display: flex;
-    flex-wrap: wrap; /* Allows tags to wrap to the next line */
+    flex-wrap: wrap; 
     border: 1px solid #ccc;
     padding: 5px;
     border-radius: 10px;
@@ -553,7 +551,7 @@ table td:last-child{
 }
 
 .jobposting-skills-container input {
-    flex: 1; /* Allow input to take up remaining space */
+    flex: 1; 
     border: none;
     outline: none;
     font-size: 16px;
@@ -570,8 +568,120 @@ table td:last-child{
     color: white;
     border-radius: 3px;
     font-size: 14px;
-    white-space: nowrap; /* Prevent text from wrapping */
+    white-space: nowrap; 
 }
+
+.jobposting-box {
+    background-color: #d1d5fa; 
+    padding: 28px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100%;
+}
+
+.jobposting-container {
+    display: flex;
+    justify-content: space-between; 
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap; 
+}
+
+.jobposting-qualifications-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+}
+
+.jobposting-qualifications-container input {    
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.jobposting-qualifications label{
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 20px;
+}
+
+.form-group label  {
+    margin-bottom: 10px;
+}
+
+#added_qualifications_list {
+    width: 100%;
+    display: flex;
+    flex-direction: column; 
+    gap: 10px; 
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    overflow-y: auto; 
+    max-height: 200px; 
+}
+
+#added_qualifications_list li {
+    background-color: #f57c42; 
+    color: white;
+    font-size: 14px;
+    padding: 10px 15px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+#added_qualifications_list li button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/*Scrollbar*/
+#added_qualifications_list li button:hover {
+    color: #333; 
+}
+
+
+#added_qualifications_list::-webkit-scrollbar {
+    width: 12px;
+}
+
+#added_qualifications_list::-webkit-scrollbar-track {
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+#added_qualifications_list::-webkit-scrollbar-thumb {
+    background: #f57c42;
+    border-radius: 10px;
+    border: 3px solid #f0f0f0;
+}
+
+#added_qualifications_list::-webkit-scrollbar-thumb:hover {
+    background: #3a2d8d; 
+}
+
+
 
 .jobposting-skill .close {
     margin-left: 10px;
@@ -603,7 +713,7 @@ table td:last-child{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
-    width: 70%;
+    width: 50%;
     background-color: #fff;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -624,6 +734,11 @@ table td:last-child{
 
 .popup h2 {
     font-size: 36px;
+    margin-bottom: 0;
+}
+
+.popup h2 {
+    margin-top: 0;
 }
 
 
@@ -637,7 +752,7 @@ table td:last-child{
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    z-index: 99;
     transition: opacity 0.3s ease-in-out;
     opacity: 0;
 }
@@ -875,7 +990,7 @@ table td:last-child{
     display: block;
     margin-bottom: 10px;
 }
-.addemployees-form-group input, .addemployees-form-group textarea {
+.addemployees-form-group input, .addemployees-form-group textarea, #addemployees-role  {
     width: 100%;
     height: 59px;
     border-radius: 10px;
@@ -898,6 +1013,7 @@ table td:last-child{
     font-size: 20px;
     cursor: pointer;
 }
+
 
 /*DELETE EMPLOYEE DIALOG BOX*/
 .delete-employees-dialog-box {
@@ -1333,6 +1449,10 @@ table td:last-child{
     align-items: center;
 }
 
+.form-step label{
+    margin-bottom: 1rem;
+}
+
 .form-step-active {
     display: block;
 }
@@ -1359,4 +1479,198 @@ table td:last-child{
     color: #1a0d53;
 }
 
+.popup .candidate-container{
+    padding: 0rem 8rem;
+}
+.popup .candidate-header{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 2rem;
+}
+.popup .candidate-container h2, h3{
+    margin: 0;
+}
 
+.popup .candidate-header .locationemail{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/*Tooltips*/
+/*Candidates*/
+.tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-text {
+    visibility: hidden;
+    width: 120px; 
+    background-color: #2c1875d9;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 2px;
+    position: absolute;
+    z-index: 1;
+    bottom: 150%; 
+    left: 50%;
+    margin-left: -60px; 
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 15px; 
+}
+
+.tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 100%; 
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
+.tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*Partners Tooltips*/
+.partners-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.partners-tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*Employees Tooltip*/
+.employees-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.employees-tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/*Candidates Tooltip*/
+.candidates-tooltip-container {
+    position: relative;
+    display: table-cell
+}
+
+.candidates-tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    margin-bottom: -35px;
+}
+
+/*Employees Tooltip*/
+.employees-tooltip-container {
+    position: relative;
+    display: inline-block;
+}
+
+.employees-tooltip-container:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    margin-bottom:25px;
+}
+
+.job-title-group, .class-group{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.job-title-group i{
+    font-size: 2.5rem;
+    color: #2C1875;
+}
+
+/* Style the radio buttons */
+input[type="radio"] {
+    /* Hide the default radio button */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  
+    /* Add a custom circle */
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #2C1875; /* Border color */
+    background-color: white; /* Background color */
+    cursor: pointer;
+    position: relative; /* For positioning the checkmark */
+  }
+  
+  /* Style the checkmark */
+  input[type="radio"]:checked::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #2C1875; /* Checkmark color */
+  }
+
+  .rb-box{
+    display: flex; /* Enable flexbox layout */
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cb-cert{
+    width: 35%;
+    display: flex;
+    align-items: center;
+  }
+
+  .cb-cert label{
+    margin-bottom: 0rem;
+  }
+
+  .cb-cert input[type="checkbox"] {
+    -webkit-appearance: none; /* Remove default browser styling */
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc; /* Add a border */
+    border-radius: 4px; /* Round the corners */
+    background-color: #fff; /* Set the background color */
+    cursor: pointer; /* Change the cursor to a pointer */
+    position: relative; /* Position the checkbox */
+    margin-right: 0.5rem;
+    border-color: #2C1875;
+  }
+  
+  .cb-cert input[type="checkbox"]:checked {
+    background-color: #2C1875;
+    border-color: #2C1875;
+  }
+  
+  .cb-cert input[type="checkbox"]:checked::before {
+    content: '\f00c'; /* Add a checkmark icon */
+    font-family: FontAwesome; /* Use FontAwesome font */
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+  }
+  
+  #add-job-title-popup .jobposting-box{
+    background-color: #ef9a5069;
+  }

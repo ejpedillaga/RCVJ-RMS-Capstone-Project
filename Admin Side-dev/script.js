@@ -1,4 +1,6 @@
 let skillsSet = new Set();
+let globalJobTitleId = null;
+let globalButtonSelector = true; //t for add title, f for edit title
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize ClassicEditor for job posting description
     ClassicEditor
@@ -67,6 +69,18 @@ function toggle(element) {
     openOption.classList.toggle('closed');
     closedOption.classList.toggle('open');
     closedOption.classList.toggle('closed');
+}
+
+function showInfo() {
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('info').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+}
+
+function hideInfo() {
+    document.getElementById('info').style.display = 'none';
+    document.getElementById('info').classList.remove('show');
+    document.getElementById('overlay').classList.remove('show');
 }
 
 /*Dialog Box*/
@@ -176,6 +190,7 @@ function openPopup(popupId) {
     document.getElementById(popupId).classList.add('show');
     document.getElementById('overlay').classList.add('show');
     fetchOptions(popupId);
+    populateJobTitles();
 }
 
 
@@ -185,13 +200,13 @@ function closePopup(popupId) {
     document.getElementById('overlay').classList.remove('show');
     
     // Optionally clear skills and other form data
-    const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
+    /*const skillsContainer = document.querySelector(`#${popupId} .jobposting-skills-container`);
     const skills = skillsContainer.querySelectorAll('.jobposting-skill');
     skills.forEach(skill => skillsContainer.removeChild(skill));
     
     // Clear the skills set
     skillsSet.clear();
-    
+    */
     // Optionally, clear the input field
     //document.querySelector(`#${popupId} #${popupId}-skills-input`).value = '';
 }
@@ -200,7 +215,7 @@ function closePopup(popupId) {
 function openJobPostingPopup() {
     openPopup('popup');
     initializePopupPagination('popup');
-    initializeSkillsInput('popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+    populateJobTitles();
 }
 
 
@@ -254,153 +269,6 @@ function previewEditLogo(event) {
         reader.readAsDataURL(file);
     }
 }
-/* First attempt to populate tables
-//Check what page is currently viewed
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the current page URL or some identifier
-    const currentPage = window.location.pathname;
-
-    if (currentPage.includes('candidates.html')) {
-        initCandidatesPage();
-    } else if (currentPage.includes('rejected.html')) {
-        initRejectedPage();
-    }
-    // Add more conditions for other pages if needed
-});
-
-function initCandidatesPage() {
-    fetch('fetch_candidates.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching candidates:', error));
-
-    function populateTable(candidates) {
-        const tableBody = document.querySelector('table');
-        candidates.forEach(candidate => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${candidate.full_name}</td>
-                <td><strong>${candidate.job_title}</strong></td>
-                <td>${candidate.company_name}</td>
-                <td>${candidate.date_applied}</td>
-                <td>
-                    <select class="status-dropdown">
-                        <option ${candidate.status === 'Interview' ? 'selected' : ''}>Interview</option>
-                        <option ${candidate.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                        <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
-                        <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
-                    </select>
-                </td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initRejectedPage() {
-    fetch('fetch_rejecteds.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching rejecteds:', error));
-
-    function populateTable(rejecteds) {
-        const tableBody = document.querySelector('table');
-        rejecteds.forEach(rejected => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${rejected.full_name}</td>
-                <td><strong>${rejected.remarks}</strong></td>
-                <td>${rejected.date_rejected}</td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initRejectedPage() {
-    fetch('fetch_rejecteds.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data); // Log the data to verify
-            populateTable(data);
-        })
-        .catch(error => console.error('Error fetching rejecteds:', error));
-
-    function populateTable(rejecteds) {
-        const tableBody = document.querySelector('table');
-        rejecteds.forEach(rejected => {
-            const row = document.createElement('tr');
-            row.classList.add('tr1');
-
-            row.innerHTML = `
-                <td class="fullname">${rejected.full_name}</td>
-                <td><strong>${rejected.remarks}</strong></td>
-                <td>${rejected.date_rejected}</td>
-                <td>
-                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                </td>
-            `;
-            tableBody.appendChild(row);
-        });
-    }
-
-    function showDialog() {
-        document.getElementById('dialogBox').style.display = 'block';
-        document.getElementById('overlay').style.display = 'block';
-    }
-
-    function closeDialog() {
-        document.getElementById('dialogBox').style.display = 'none';
-        document.getElementById('overlay').style.display = 'none';
-    }
-
-    document.getElementById('overlay').addEventListener('click', closeDialog);
-}
-
-function initIndexPage() {
-    // Add your initialization code for index.html
-}
-*/
 
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
@@ -732,9 +600,14 @@ function populateCandidatesTable(data) {
                 <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
             </select>
         </td>
-        <td>
+            <td class="candidates-tooltip-container">
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
+        </td>
+        <td class="candidates-tooltip-container">
             <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-        </td> 
+            <span class="tooltip-text">Delete Candidate</span>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -760,8 +633,18 @@ function populateEmployeesTable(data) {
                 <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
             </select>
         </td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i></td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
+                <span class="tooltip-text">Edit <br>Employee</span>
+            </div>
+        </td>
+        <td>
+            <div class="employees-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
+                <span class="tooltip-text">Delete Employee</span>
+            </div>
+        </td>
     `;
     populateTable(data, 'table', rowTemplate);
 }
@@ -823,12 +706,28 @@ function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
         <td>
-        <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100"></td>
+            <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
+        </td>
         <td id="company-name">${partner.company_name}</td>
-        <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openThirdPopup('${partner.company_name}')"></i>
+                <span class="tooltip-text">Post a Job for Partner</span>
+            </div>
+        </td>
         <td id="date">${partner.date_added}</td>
-        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i></td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i>
+                <span class="tooltip-text">Edit Partner Company</span>
+            </div>
+        </td>
+        <td>
+            <div class="partners-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeletePartner(${partner.id})"></i>
+                <span class="tooltip-text">Delete Partner Company</span>
+            </div>
+        </td>
     `;
     
     populateTable(data, 'table', rowTemplate);
@@ -846,11 +745,18 @@ function populateJobsTable(containerSelector, data) {
                 <option value="Closed" ${job.job_status === 'Closed' ? 'selected' : ''}>Closed</option>
             </select>
         </td>
-        <td id="edit"><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i></td>
+        <td id="edit">
+    <div class="tooltip-container">
+        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
+        <span class="tooltip-text">Edit Job Listing</span>
+    </div>
+</td>
+
     `;
 
     populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
 }
+
 
 function handleStatusChange(jobId) {
     const dropdown = document.getElementById(`job-status-dropdown-${jobId}`);
@@ -1138,25 +1044,26 @@ function saveAndPostJob() {
     // Collect data from the popup
     const companySelect = document.getElementById('jobposting-partner-company');
     const companyName = companySelect.options[companySelect.selectedIndex].text; // Get the text
-
-    const jobTitle = document.getElementById('jobposting-job-title').value;
+    const jobTitleSelect = document.getElementById('jobposting-job-title');
+    const jobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex].text;
+    
     const location = document.getElementById('jobposting-location').value;
     const candidates = document.getElementById('jobposting-openings').value;
     const description = document.getElementById('jobposting-description').value.trim();
 
 
     // Collect skills
-    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+    //const skillsArray = Array.from(skillsSet); // Convert the Set to an array
 
     console.log('Company Name:', companyName);
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Candidates:', candidates);
     console.log('Description:', description);
-    console.log('Skills Array:', skillsArray);
+    //console.log('Skills Array:', skillsArray);
 
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates /*|| skillsArray.length === 0*/) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1175,7 +1082,7 @@ function saveAndPostJob() {
     formData.append('location', location);
     formData.append('candidates', candidates);
     formData.append('description', description);
-    formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
+    //formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
 
     
 
@@ -1702,3 +1609,323 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function showJobTitle() {
+    const btn1 = document.getElementById('saveAndPostBtn1');
+    const btn2 = document.getElementById('saveAndPostBtn2');;
+    const btn3 = document.getElementById('saveAndPostBtn3');;
+
+    if (globalButtonSelector == false) {
+        // Remove the event listener for saveJobTitle
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
+        // Add the event listener for editJobTitle
+        btn1.setAttribute('onclick', 'editJobTitle()')
+        btn2.setAttribute('onclick', 'editJobTitle()')
+        btn3.setAttribute('onclick', 'editJobTitle()')
+    } else {
+        // Remove the event listener for editJobTitle
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
+        // Add the event listener for saveJobTitle
+        btn1.setAttribute('onclick', 'saveJobTitle()');
+        btn2.setAttribute('onclick', 'saveJobTitle()');
+        btn3.setAttribute('onclick', 'saveJobTitle()');
+    }
+
+    console.log(globalButtonSelector);
+
+    document.getElementById('add-job-title-popup').style.display = 'block';
+    document.getElementById('add-job-title-popup').classList.add('show');
+    initializePopupPagination('add-job-title-popup');
+    document.getElementById('popup').style.display = 'none';
+    document.getElementById('popup').classList.remove('show');
+    initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+}
+
+function hideJobTitle() {
+    document.getElementById('add-job-title-popup').style.display = 'none';
+    document.getElementById('add-job-title-popup').classList.remove('show');
+    document.getElementById('popup').style.display = 'block';
+    document.getElementById('popup').classList.add('show');
+    const jobTitle = document.getElementById('job_title');
+    jobTitle.removeAttribute('readonly');
+    globalButtonSelector = true;
+
+
+    // Remove all skill tags from the container but keep the input field
+    const skillsContainer = document.querySelector('#add-job-title-popup .jobposting-skills-container');
+    const skills = skillsContainer.querySelectorAll('.jobposting-skill');
+    skills.forEach(skill => skillsContainer.removeChild(skill));
+
+
+    //Clear job title input field
+    jobTitle.value = '';
+
+
+    // Clear the skills set
+    skillsSet.clear();
+
+    // Clear the job title input field
+    document.getElementById('job-title-cert').value = '';
+
+    // Clear the Name of Job input field
+    document.getElementById('edit-jobposting-partner-company').value = '';
+
+    // Reset the Classification dropdown values
+    document.getElementById('classification').selectedIndex = 0; // Select the first option
+    document.getElementById('subclassification').selectedIndex = 0; // Select the first option
+
+    // Clear the Gender radio buttons
+    const genderRadios = document.querySelectorAll('input[name="gender"]');
+    genderRadios.forEach(radio => radio.checked = false);
+
+    // Clear the Educational Attainment radio buttons
+    const educRadios = document.querySelectorAll('input[name="educ-level"]');
+    educRadios.forEach(radio => radio.checked = false);
+}
+
+function saveJobTitle() {
+
+    const jobTitle = document.getElementById('job_title').value.trim();
+    const classification = document.getElementById('classification').value;
+    const subclassification = document.getElementById('subclassification').value;
+    const gender = document.getElementById('gender').value;
+    const educationalAttainment = document.getElementById('educational_attainment').value;
+    const certLicense = document.getElementById('job-title-cert').value.trim();
+    const minYearsOfExperience = document.getElementById('min-job-title-exp').value.trim();
+    const maxYearsOfExperience = document.getElementById('max-job-title-exp').value.trim();
+    const yearsOfExperience = `${minYearsOfExperience}-${maxYearsOfExperience}`;
+
+    // Validation: Ensure all required fields are filled in
+    if (!jobTitle) {
+        alert('Job Title is required.');
+        return;
+    }
+    if (!classification) {
+        alert('Classification is required.');
+        return;
+    }
+    if (!subclassification) {
+        alert('Subclassification is required.');
+        return;
+    }
+    if (!gender) {
+        alert('Gender is required.');
+        return;
+    }
+    if (!educationalAttainment) {
+        alert('Educational Attainment is required.');
+        return;
+    }
+
+    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+
+    // Log the input values to ensure they are captured correctly
+    console.log("Job Title:", jobTitle);
+    console.log("Classification:", classification);
+    console.log("Subclassification:", subclassification);
+    console.log("Gender:", gender);
+    console.log("Educational Attainment:", educationalAttainment);
+    console.log("Cert/License:", certLicense);
+    console.log("Years of Experience:", yearsOfExperience);
+    console.log('Skills Array:', skillsArray);
+
+    // Create an object to hold the data
+    const data = {
+        job_title: jobTitle,
+        classification: classification,
+        subclassification: subclassification,
+        gender: gender,
+        educational_attainment: educationalAttainment,
+        cert_license: certLicense,
+        years_of_experience: yearsOfExperience,
+        skills: skillsArray
+    };
+
+    const jsonData = JSON.stringify(data); // Convert data to JSON string
+    console.log(jsonData); // Debug: Print JSON string to console
+
+    // Send data via AJAX to PHP
+    fetch('save_job_title.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData, // Send JSON data
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job title saved successfully!');
+            
+            // Clear all fields after successful save
+            document.getElementById('job_title').value = '';
+            document.getElementById('classification').value = '';
+            document.getElementById('subclassification').value = '';
+            document.getElementById('gender').value = '';
+            document.getElementById('educational_attainment').value = '';
+            document.getElementById('job-title-cert').value = '';
+            document.getElementById('min-job-title-exp').value = '';
+            document.getElementById('max-job-title-exp').value = '';
+
+            // Optionally hide the popup after saving
+            hideJobTitle('add-job-title-popup');
+            populateJobTitles();
+        } else {
+            alert('Error saving job title!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+
+}
+
+function showEditJobTitlePopup(){
+    const jobTitleSelect = document.getElementById('jobposting-job-title')
+    currentJobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex].text; // Get the text
+
+    console.log(currentJobTitle);
+    if(currentJobTitle == "Choose a job title"){
+        alert("Please select a job title to edit");
+    }else{
+        globalButtonSelector=false;
+        showJobTitle();
+
+        fetch(`getJobTitleData.php?selected_job_title=${currentJobTitle}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const jobTitleData = data.data;
+                console.log(jobTitleData);
+
+                // Populate the form fields with the retrieved data
+                globalJobTitleId = jobTitleData.id;
+                document.getElementById('job_title').value = jobTitleData.job_title;
+                // Set readonly attribute to indicate job_title is not editable
+                document.getElementById('job_title').setAttribute('readonly', 'true');
+                document.getElementById('classification').value = jobTitleData.classification;
+                document.getElementById('subclassification').value = jobTitleData.subclassification;
+                document.getElementById('gender').value = jobTitleData.gender;
+                document.getElementById('educational_attainment').value = jobTitleData.educational_attainment;
+
+                //If cert licenses is null (i.e., not required), not required checkbox should be ticked
+                if(jobTitleData.certLicense == null){
+                    //TODO
+                    document.getElementById('req-cert').value=false;
+                }else{
+                    document.getElementById('cert_license').value = jobTitleData.cert_license;
+
+                }
+
+                // Populate years of experience
+                document.getElementById('min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience) || 0;
+                document.getElementById('max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience) || 0;
+
+
+
+                // Initialize skills input
+                initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+
+                // Clear any existing skills in the container
+                const skillsContainer = document.querySelector('#add-jobposting-skills-container');
+                const skillsInput = document.querySelector('#jobposting-skills-input');
+
+                // Add fetched skills to the container
+                jobTitleData.skills.forEach(skill => addSkill(skillsContainer, skill, skillsInput));
+
+            } else {
+                alert(data.message || 'Error fetching job title data.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+
+function editJobTitle() {
+    const jobTitle = document.getElementById('job_title').value;
+    const classification = document.getElementById('classification').value;
+    const subclassification = document.getElementById('subclassification').value;
+    const gender = document.getElementById('gender').value;
+    const educationalAttainment = document.getElementById('educational_attainment').value;
+    const certLicense = document.getElementById('job-title-cert').value.trim();
+    const minYearsOfExperience = document.getElementById('min-job-title-exp').value.trim();
+    const maxYearsOfExperience = document.getElementById('max-job-title-exp').value.trim();
+    const yearsOfExperience = `${minYearsOfExperience}-${maxYearsOfExperience}`;
+
+    // Validation checks
+    if (!jobTitle || !classification || !subclassification || !gender || !educationalAttainment) {
+        alert('All required fields must be filled.');
+        return;
+    }
+
+    // Convert the Set to an array if you're handling skills (optional)
+    const skillsArray = Array.from(skillsSet);
+
+    // Create an object to hold the data
+    const data = {
+        job_title_id: globalJobTitleId, // Use globalJobTitleId for the update
+        classification: classification,
+        subclassification: subclassification,
+        gender: gender,
+        educational_attainment: educationalAttainment,
+        cert_license: certLicense,
+        years_of_experience: yearsOfExperience,
+    };
+
+    const jsonData = JSON.stringify(data); // Convert data to JSON string
+
+    // Send data via AJAX to PHP
+    fetch('editJobTitle.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData, // Send JSON data
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job title edited and saved successfully!');
+            hideJobTitle('add-job-title-popup'); // Optionally hide the popup
+            populateJobTitles(); // Refresh the job titles list
+        } else {
+            console.error('Error:', result.error);
+            alert('An error occurred while updating the job title: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+
+function populateJobTitles() {
+    fetch('get_job_titles.php')
+        .then(response => response.json())
+        .then(data => {
+            const jobTitleSelect = document.getElementById('jobposting-job-title');
+            jobTitleSelect.innerHTML = '<option value="" disabled selected>Choose a job title</option>'; // Clear and set default option
+            
+            data.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.job_title_id;  // You can use job_title_id as the value
+                option.textContent = job.job_title; // Display the job title
+                jobTitleSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching job titles:', error);
+        });
+}
+
+// Call this function when the page loads or when needed to populate the dropdown
+document.addEventListener('DOMContentLoaded', populateJobTitles);
+
+

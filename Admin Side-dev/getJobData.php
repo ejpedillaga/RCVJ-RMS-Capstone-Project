@@ -8,9 +8,10 @@ $jobId = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($jobId > 0) {
     $sql = "SELECT 
-            j.id, 
+            j.id AS job_id, 
+            jt.id AS job_title_id,  -- Correct column name
+            jt.job_title, 
             j.company_name,
-            j.job_title, 
             j.job_location, 
             j.job_candidates, 
             j.job_description, 
@@ -18,15 +19,21 @@ if ($jobId > 0) {
         FROM 
             job_table j
         LEFT JOIN 
-            job_skills_table js ON j.id = js.job_id
+            job_title_table jt ON j.job_title_id = jt.id  -- Correct join using `id`
+        LEFT JOIN 
+            job_skills_table js ON jt.id = js.job_title_id
         LEFT JOIN 
             skill_table s ON js.skill_id = s.skill_id
         WHERE 
-            j.id = $jobId
+            j.id = ?
         GROUP BY 
             j.id";
 
-    $result = $conn->query($sql);
+    // Prepare and execute the statement
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $jobId); // Bind the job ID
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $jobData = $result->fetch_assoc();
@@ -39,9 +46,11 @@ if ($jobId > 0) {
     } else {
         echo json_encode(["error" => "No job found"]);
     }
+
+    $stmt->close();
 } else {
     echo json_encode(["error" => "Invalid job ID"]);
 }
 
 $conn->close();
-
+?>

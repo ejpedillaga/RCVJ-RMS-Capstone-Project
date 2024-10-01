@@ -89,6 +89,140 @@ nav {
   width: 100%;
 }
 
+/**Tooltips**/
+
+.profile-edit {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-edit .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgb(242, 237, 237);
+  color: #1e0f5c;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 120%;
+}
+
+.profile-edit:hover .tooltiptext {
+  visibility: visible;
+}
+
+.profile-edit .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent rgb(255, 254, 254) transparent transparent;
+}
+
+.delete-icon .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 2;
+
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -15px;
+}
+
+.delete-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.delete-icon .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+#ic2 .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 999;
+  
+
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -35px;
+}
+
+#ic2:hover .tooltiptext {
+  visibility: visible;
+}
+
+#ic2 .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.edit-icon .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  
+  position: absolute;
+  bottom: 100%;
+  left: 30%;
+  margin-left: -38px;
+  z-index: 999;
+}
+
+.edit-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.edit-icon .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+
 /*nav nav-acc button*/
 .nav-acc {
     display: flex;

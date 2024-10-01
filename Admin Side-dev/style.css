@@ -567,6 +567,10 @@ table td:last-child{
     box-sizing: border-box;
 }
 
+.override-width{
+    width: 49%;
+}
+
 .jobposting-textarea {
     width: 100%;
     height: 250px;

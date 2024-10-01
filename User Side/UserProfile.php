@@ -12,8 +12,9 @@ $user_data = [
     'birthday' => '',
     'classi' => '',
     'subclassi' => '',
-    'userid' => '',  // Add userid to the user_data array
-    'personal_description' => ''
+    'userid' => '', 
+    'personal_description' => '',
+    'profile_image' => ''
 ];
 
 $education_data = [
@@ -46,7 +47,8 @@ $license_data = [
     'month_issued' => '',
     'year_issued' => '',
     'month_expired' => '',
-    'year_expired' => ''
+    'year_expired' => '',
+    'attachment' => ''
 ];
 
 $user_name = 'User';
@@ -66,9 +68,8 @@ if (isset($_SESSION['user'])) {
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-
     // Fetch the user's data to populate the form (from applicant_table)
-    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi, personal_description 
+    $sql = "SELECT userid, fname, lname, location, gender, phone, email, birthday, classi, subclassi, personal_description, profile_image
             FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
 
@@ -77,6 +78,10 @@ if (isset($_SESSION['user'])) {
         $user_name = $user_data['fname'] . ' ' . $user_data['lname'];
         $user_location = $user_data['location'];
         $userid = $user_data['userid'];  // Ensure we have the userid for further operations
+
+        // Convert image data to base64 for display
+        $profile_image = base64_encode($user_data['profile_image']);
+        $image_src = "data:image/png;base64," . $profile_image; // Adjust MIME type if necessary
     } else {
         echo "Error: User not found in the applicant_table.";
     }
@@ -99,44 +104,53 @@ if (isset($_SESSION['user'])) {
             echo "Error updating personal description: " . $conn->error;
         }
     }
-
-    // Handle profile form submission
+    
+    // Handle form submission for profile data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_profile'])) {
         // Fetch and sanitize profile form data
-        $fname = $conn->real_escape_string($_POST['fname']);
-        $lname = $conn->real_escape_string($_POST['lname']);
-        $location = $conn->real_escape_string($_POST['location']);
-        $gender = $conn->real_escape_string($_POST['gender']);
-        $phone = $conn->real_escape_string($_POST['phone']);
-        $birthday = $conn->real_escape_string($_POST['birthday']);
-        $classi = $conn->real_escape_string($_POST['classi']);
-        $subclassi = $conn->real_escape_string($_POST['subclassi']);
+        $userid = trim($_POST['userid']); // Get userid from the form
+        $email = $conn->real_escape_string(trim($_POST['email'])); // Read-only
+        $fname = $conn->real_escape_string(trim($_POST['fname']));
+        $lname = $conn->real_escape_string(trim($_POST['lname']));
+        $gender = $conn->real_escape_string(trim($_POST['gender']));
+        $birthday = $conn->real_escape_string(trim($_POST['birthday']));
+        $location = $conn->real_escape_string(trim($_POST['location']));
+        $phone = $conn->real_escape_string(trim($_POST['phone']));
+        $classi = $conn->real_escape_string(trim($_POST['classi']));
+        $subclassi = $conn->real_escape_string(trim($_POST['subclassi']));
 
-        // Debugging: Check if data is being posted
-        if (!empty($fname) && !empty($lname)) {
-            // Update the user's data in the applicant_table
-            $sql_update = "UPDATE applicant_table SET 
-                fname = '$fname', 
-                lname = '$lname', 
-                location = '$location', 
-                gender = '$gender', 
-                phone = '$phone', 
-                birthday = '$birthday', 
-                classi = '$classi', 
-                subclassi = '$subclassi'
-                WHERE userid = '$userid'";
-
-            if ($conn->query($sql_update) === TRUE) {
-                $_SESSION['message'] = "Profile updated successfully!";
-                // Debugging: Show success message
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
-            } else {
-                echo "Error updating profile: " . $conn->error;
-            }
-        } else {
-            echo "Please fill in all required fields.";
+        // Handle file upload for profile image
+        $profile_image = null;
+        if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] == 0) {
+            // Get file contents
+            $profile_image = file_get_contents($_FILES['profile_image']['tmp_name']);
         }
+
+        // Prepare the SQL update statement
+        if ($profile_image !== null) {
+            // Prepare with profile image
+            $sql_update_profile = "UPDATE applicant_table SET fname = ?, lname = ?, gender = ?, birthday = ?, location = ?, phone = ?, classi = ?, subclassi = ?, profile_image = ? WHERE userid = ?";
+            $stmt = $conn->prepare($sql_update_profile);
+            $stmt->bind_param("ssssssssbi", $fname, $lname, $gender, $birthday, $location, $phone, $classi, $subclassi, $profile_image, $userid);
+            $stmt->send_long_data(8, $profile_image); // Correct index for profile_image
+        } else {
+            // Prepare without profile image
+            $sql_update_profile = "UPDATE applicant_table SET fname = ?, lname = ?, gender = ?, birthday = ?, location = ?, phone = ?, classi = ?, subclassi = ? WHERE userid = ?";
+            $stmt = $conn->prepare($sql_update_profile);
+            $stmt->bind_param("sssssssss", $fname, $lname, $gender, $birthday, $location, $phone, $classi, $subclassi, $userid);
+        }
+
+        // Execute the statement and check for success
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Profile updated successfully!";
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        } else {
+            echo "Error updating profile: " . $stmt->error;
+        }
+
+        // Close the statement
+        $stmt->close();
     }
 
     // Fetch the education data to populate the education form
@@ -348,7 +362,7 @@ if (isset($_SESSION['user'])) {
     // License
     if (isset($userid)) {
         // Fetch all license data for the user, ordered by expiration date
-        $sql_license = "SELECT id, license_name, month_issued, year_issued, month_expired, year_expired 
+        $sql_license = "SELECT id, license_name, month_issued, year_issued, month_expired, year_expired, attachment 
                         FROM certification_license_table 
                         WHERE userid = '$userid' 
                         ORDER BY year_expired DESC, 
@@ -360,51 +374,54 @@ if (isset($_SESSION['user'])) {
 
         if ($result_license->num_rows > 0) {
             while ($row = $result_license->fetch_assoc()) {
+                // If you want to include the attachment in the license data
+                $row['attachment'] = base64_encode($row['attachment']); // Encode the BLOB for display
                 $license_data[] = $row;
             }
         }
     }
 
-    // Handle form submission for license data
+   // Handle form submission for license data
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['save_license'])) {
-        // Fetch license ID if editing
-        $license_id = isset($_POST['license_id']) ? (int)$_POST['license_id'] : null;
-
         // Fetch and sanitize license form data
-        $license_name = $conn->real_escape_string($_POST['license_name']);
-        $month_issued = $conn->real_escape_string($_POST['month_issued']);
-        $year_issued = (int) $_POST['year_issued'];
-        $month_expired = $conn->real_escape_string($_POST['month_expired']);
-        $year_expired = !empty($_POST['year_expired']) ? (int) $_POST['year_expired'] : null;
+        $license_name = trim($_POST['license_name']); 
+        $month_issued = $conn->real_escape_string(trim($_POST['month_issued'])); 
+        $year_issued = (int)$_POST['year_issued'];
+        $month_expired = $conn->real_escape_string(trim($_POST['month_expired']));
+        $year_expired = !empty($_POST['year_expired']) ? (int)$_POST['year_expired'] : null;
 
-        if ($license_id) {
-            // Update existing license data
-            $sql_update_license = "UPDATE certification_license_table SET 
-                license_name = '$license_name', 
-                month_issued = '$month_issued', 
-                year_issued = $year_issued, 
-                month_expired = '$month_expired', 
-                year_expired = " . ($year_expired !== null ? $year_expired : "NULL") . " 
-                WHERE id = $license_id AND userid = '$userid'";
+        // Handle file upload
+        if (isset($_FILES['license_attachment']) && $_FILES['license_attachment']['error'] == 0) {
+            // Get file contents
+            $attachment = file_get_contents($_FILES['license_attachment']['tmp_name']);
 
-            if (!$conn->query($sql_update_license)) {
-                echo "Error updating license data: " . $conn->error;
+            if ($license_id) {
+                // Update existing license data with attachment
+                $sql_update_license = "UPDATE certification_license_table SET license_name = ?, month_issued = ?, year_issued = ?, month_expired = ?, year_expired = ?, attachment = ? WHERE id = ? AND userid = ?";
+                $stmt = $conn->prepare($sql_update_license);
+                $stmt->bind_param("ssissbsi", $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment, $license_id, $userid);
+                $stmt->send_long_data(5, $attachment); // Send the BLOB data
             } else {
-                $_SESSION['message'] = "License data updated successfully!";
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
+                // Insert new license data for the user with attachment
+                $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired, attachment) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql_insert_license);
+                $stmt->bind_param("isssssb", $userid, $license_name, $month_issued, $year_issued, $month_expired, $year_expired, $attachment);
+                $stmt->send_long_data(6, $attachment); // Send the BLOB data
             }
-        } else {
-            // Insert new license data for the user
-            $sql_insert_license = "INSERT INTO certification_license_table (userid, license_name, month_issued, year_issued, month_expired, year_expired) 
-                VALUES ('$userid', '$license_name', '$month_issued', $year_issued, '$month_expired', " . ($year_expired !== null ? $year_expired : "NULL") . ")";
 
-            if (!$conn->query($sql_insert_license)) {
-                echo "Error inserting license data: " . $conn->error;
-            } else {
+            if ($stmt->execute()) {
                 $_SESSION['message'] = "License data saved successfully!";
                 header("Location: " . $_SERVER['PHP_SELF']);
                 exit;
+            } else {
+                echo "Error saving license data: " . $stmt->error;
+            }
+        } else {
+            // Detailed error output
+            if (isset($_FILES['license_attachment']['error'])) {
+                echo "File upload error: " . $_FILES['license_attachment']['error'];
+            } else {
+                echo "Error uploading file.";
             }
         }
     }
@@ -520,6 +537,80 @@ if (isset($_SESSION['user'])) {
         exit;
     }
     
+    // Initialize variable to track if a resume exists
+    $resume_exists = false;
+
+    // Check if the form is submitted for saving the resume
+    if (isset($_POST['save_resume'])) {
+        // Check if a file was uploaded
+        if (isset($_FILES['files']) && $_FILES['files']['error'] == 0) {
+            $fileData = file_get_contents($_FILES['files']['tmp_name']); // Get file content
+
+            // Prepare SQL statement
+            $stmt = $conn->prepare("INSERT INTO resume_table (userid, resume, uploaded_at) VALUES (?, ?, NOW())");
+            // Change the parameter binding: "i" for integer userid and "s" for string resume data
+            $stmt->bind_param("is", $userid, $fileData); // Use "s" for string/BLOB
+
+            if ($stmt->execute()) {
+                $_SESSION['message'] = "Resume uploaded successfully!";
+            } else {
+                $_SESSION['message'] = "Failed to upload resume: " . $stmt->error;
+            }
+
+            $stmt->close();
+        } else {
+            $_SESSION['message'] = "No file was uploaded or there was an error!";
+        }
+    }
+
+     // Check for existing resume in the database
+    $stmt = $conn->prepare("SELECT resume FROM resume_table WHERE userid = ?");
+    $stmt->bind_param("i", $userid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // If a resume exists, set the flag and fetch the data
+    if ($result->num_rows > 0) {
+        $resume_exists = true;
+        $row = $result->fetch_assoc();
+        $resume_data = $row['resume'];
+    }
+
+    if (isset($_POST['delete_resume'])) {
+        // Prepare SQL statement to delete the existing resume
+        $stmt = $conn->prepare("DELETE FROM resume_table WHERE userid = ?");
+        $stmt->bind_param("i", $userid); // Bind the user ID
+    
+        if ($stmt->execute()) {
+            $_SESSION['message'] = "Resume deleted successfully!";
+        } else {
+            $_SESSION['message'] = "Failed to delete resume: " . $stmt->error;
+        }
+    
+        $stmt->close();
+    
+        // Refresh the page to reflect the changes
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    // Fetch skills from the skill_table
+    $skillQuery = "SELECT skill_name FROM skill_table";
+    $skillResult = $conn->query($skillQuery);
+
+    // Create an array to hold skill names
+    $availableSkills = [];
+
+    if ($skillResult->num_rows > 0) {
+        while($row = $skillResult->fetch_assoc()) {
+            $availableSkills[] = $row['skill_name'];
+        }
+    }
+
+    // Convert the PHP array to JSON
+    $availableSkills_json = json_encode($availableSkills);
+
+    $stmt->close();
     $conn->close();
 }
 
@@ -587,7 +678,11 @@ if (isset($_SESSION['message'])) {
                         </div>
                     </div>
                 </div>
-                    <img src="images/user.svg" alt="">
+                <?php if (!empty($user_data['profile_image'])): ?>
+                    <img src="data:image/jpeg;base64,<?php echo base64_encode($user_data['profile_image']); ?>" alt="" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="" class="small-profile-photo">
+                <?php endif; ?>
                     <button><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
             </nav>
@@ -637,7 +732,7 @@ if (isset($_SESSION['message'])) {
                         <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
                         <div class="nav-acc">
                             <img src="images/user.svg" alt="">
-                            <button id="profile">User Name</button>
+                            <button id="profile"><?php echo htmlspecialchars($user_name); ?></button>
                         </div>
                     </div>
                 </div>
@@ -650,7 +745,16 @@ if (isset($_SESSION['message'])) {
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
-                    <form action="" method="POST">
+                    <form action="" method="POST" enctype="multipart/form-data"> 
+                    <input type="hidden" name="userid" value="<?php echo htmlspecialchars($user_data['userid']); ?>">
+                        <!-- Upload Logo -->
+                        <div class="upload-image-group">
+                            <div class="upload-image" onclick="document.getElementById('logo-upload').click()">
+                                <input type="file" id="logo-upload" name="profile_image" accept="image/*" onchange="previewLogo(event)" style="display: none;">
+                                <img id="logo-preview" src="<?php echo isset($image_src) ? $image_src : ''; ?>" alt="Upload Logo" style="width: 100%; <?php echo isset($image_src) ? 'display: block;' : 'display: none;'; ?>">
+                                <div id="upload-placeholder" style="<?php echo isset($image_src) ? 'display: none;' : 'display: block;'; ?>">Upload Logo</div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             <div>
                                 <label class="label" for="first-name">First Name</label>
@@ -957,7 +1061,7 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <div class="LnE-form sidenav-content">
-                        <form action="" method="POST">
+                        <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                             <!-- Hidden field for license ID if editing -->
                             <input type="hidden" name="license_id" value="<?php echo isset($license_data['id']) ? $license_data['id'] : ''; ?>">
 
@@ -1024,19 +1128,18 @@ if (isset($_SESSION['message'])) {
                                 </div>
                             </div>
                           
-                             <!--License Dropbox--> 
-                             <form action="/upload" method="post" enctype="multipart/form-data">
+                            <!--License Dropbox--> 
                             <div id="license_dropbox" class="form-group">
                                 <img src="images/resume-dropbox.png" alt="">
                                 <label for="licenseFileUpload" style="display: block; margin-top: 10px;">
-                                Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a <br>file to upload your license/certificate.
+                                Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for an <br>image/file to upload.
                                 </label>
-                                <input type="file" id="licenseFileUpload" class="file-input" name="licenseFiles" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewLicenseFiles()" >
+                                <input type="file" id="licenseFileUpload" class="file-input" name="license_attachment" accept=".jpg,.jpeg,.png" multiple onchange="previewLicenseFiles()">
                                 <button type="button" class="button" onclick="document.getElementById('licenseFileUpload').click()">Browse</button>
                             </div>
-                            </form>
                             
                             <div class="preview" id="licensePreviewContainer"></div>
+                            <p>Note: Upload a clear picture of your license/certificate for better evaluation.</p>
 
 
                             <div id="button-group" class="form-group">
@@ -1058,12 +1161,14 @@ if (isset($_SESSION['message'])) {
                     <div class="skills-form sidenav-content">
                         <form id="skills_form" method="POST">
                             <label for="add_skills_group" class="sidenav-content">Add skill/s</label>
-                            <div id="add_skills_group" class="form-group two-columns sidenav-content">
-                                <div>
-                                    <input type="text" id="skills" name="skills[]" class="input-field">
-                                </div>
-                                <div>
-                                    <button id="add_skill_btn" class="button" type="button">Add</button>
+
+                            <div id="add_skills_group" class="skills-input-box">
+                                <div class="skills-row">
+                                    <input type="text" id="skills" name="skills[]" class="input-field" placeholder="Enter skills" autocomplete="off">   
+                                    <button id="add_skill_btn" class="button" type="button">Add</button>                  
+                                </div>     
+                                <div class="result-box">
+                                        <!--Skills are fetched here-->
                                 </div>
                             </div>
 
@@ -1082,29 +1187,30 @@ if (isset($_SESSION['message'])) {
                 
                 <div id="overlay" class="overlay"></div>
                  <!--Resume Sidenav-->
-                 <div id="resume_sidenav" class="sidenav">
+                <div id="resume_sidenav" class="sidenav">
                     <div class="sidenav-header sidenav-content">
                       Add Resume<br>
-                      <p>Your default resume can be viewed by employers when they search for candidates.</p>
+                      <p>Your default resume can be viewed by employers.</p>
+                      <p style="color: red;">Note: Upload a PDF file only.</p>
                     </div>
                     <!--Resume Dropbox--> 
                     <div class="resume-form sidenav-content">
-                      <form action="/upload" method="post" enctype="multipart/form-data">
-                      <div id="resume_dropbox" class="form-group">
-                      <img src="images/resume-dropbox.png" alt="">
-                      <label for="fileUpload" style="display: block; margin-top: 10px;">
-                        Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a file to upload your resume.
-                        </label>
-                        <input type="file" id="fileUpload" class="file-input" name="files" accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt" multiple onchange="previewFiles()" >
-                        <button type="button" class="button" onclick="document.getElementById('fileUpload').click()">Browse</button>
+                      <form action="" method="post" enctype="multipart/form-data">
+                        <div id="resume_dropbox" class="form-group">
+                            <img src="images/resume-dropbox.png" alt="">
+                            <label for="fileUpload" style="display: block; margin-top: 10px;">
+                            Drag and drop here or simply <span style="color: #007BFF; cursor: pointer;">browse</span> for a file to upload your resume.
+                            </label>
+                            <input type="file" id="fileUpload" class="file-input" name="files" accept=".pdf" onchange="previewFiles()" >
+                            <button type="button" class="button" onclick="document.getElementById('fileUpload').click()">Browse</button>
+                            </div>
+                            <div class="preview" id="previewContainer"></div>
+                        </div>
+                        <div id="button-group" class="form-group">
+                            <button class="button" type="submit" name="save_resume">Save</button>
                         </div>
                     </form>
-                    <div class="preview" id="previewContainer"></div>
-                    </div>
-                    <div id="button-group" class="form-group">
-                                <button class="button" type="submit" name="save_resume">Save</button>
-                            </div>
-                    
+    
                     <a href="javascript:void(0)" class="closebtn" onclick="closeNav('resume_sidenav', 'profile-container')">&times;</a>
                 </div>
 
@@ -1115,7 +1221,11 @@ if (isset($_SESSION['message'])) {
 
                         <div class="profile-card">
                             <div class="content">
-                                <img id="profile-picture" src="images/profileicon.svg" alt="">
+                                <?php if (!empty($user_data['profile_image'])): ?>
+                                    <img id="profile-picture" class="profile-photo" src="data:image/jpeg;base64,<?php echo base64_encode($user_data['profile_image']); ?>" alt="">
+                                <?php else: ?>
+                                    <img id="profile-picture" src="images/profileicon.svg" alt="">
+                                <?php endif; ?>
                                 <div>
                                     <h1><?php echo htmlspecialchars($user_name); ?></h1>
                                     <div class="profile-contacts">
@@ -1155,16 +1265,14 @@ if (isset($_SESSION['message'])) {
                     </div>
                     
                     <!--Content-->
-
                     <div class="profile-body">
-
                         <div class="sections">
                             <div class="section">
                                 <h3>Personal Description</h3>
                                 <p>Add a personal description to your profile as a way to introduce who you are.</p>
                                 <?php if (!empty($user_data['personal_description'])): ?>
                                     <div class="info-container">
-                                        <p><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
+                                        <p style="text-align: justify;"><?php echo htmlspecialchars($user_data['personal_description']); ?></p>
                                     </div>
                                 <?php endif; ?>
                                 <button onclick="openNav('personal-description-sidenav', 'profile-container')">Edit</button>
@@ -1178,11 +1286,6 @@ if (isset($_SESSION['message'])) {
                                         <?php foreach ($license_data as $license): ?>
                                             <div class="info-container">
                                                 <div class="icon-group">
-                                                    <div class="edit-icon" onclick="openNav('LnE-sidenav', 'profile-container'); populateLicense(<?php echo htmlspecialchars(json_encode($license)); ?>)">
-                                                        <i class="fas fa-edit"></i>
-                                                        <span class="tooltiptext">Edit</span>
-
-                                                    </div>
                                                     <div class="delete-icon" onclick="deleteLicense(<?php echo $license['id']; ?>)">
                                                         <i class="fas fa-trash"></i>
                                                         <span class="tooltiptext">Delete</span>
@@ -1190,6 +1293,11 @@ if (isset($_SESSION['message'])) {
                                                 </div>
                                                 <h4><?php echo htmlspecialchars($license['license_name']); ?></h4>
                                                 <p><?php echo htmlspecialchars($license['month_issued']); ?> <?php echo htmlspecialchars($license['year_issued']); ?> - <?php echo htmlspecialchars($license['month_expired']); ?> <?php echo htmlspecialchars($license['year_expired']); ?></p>
+                                                <p style="margin: 1rem 0rem;">Your attached image:</p>
+                                                
+                                                <?php if (!empty($license['attachment'])): ?>
+                                                    <img src="data:image/jpeg;base64,<?php echo htmlspecialchars($license['attachment']); ?>" alt="License Attachment" style="max-width: 300px; height: auto;" />
+                                                <?php endif; ?>
                                             </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -1290,8 +1398,24 @@ if (isset($_SESSION['message'])) {
                             </div>
                             <div class="section">
                                 <h3>Resume</h3>
-                                <p>Upload a resume for easy applying and access no matter where you are.</p>
-                                <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
+                                <p>Upload a resume to provide more details about yourself.</p>
+                                <div class="info-container">
+                                    <?php if ($resume_exists): ?>
+                                        <div class="icon-group">
+                                            <div class="delete-icon" onclick="deleteResume(<?php echo $userid; ?>)"> 
+                                                <i class="fas fa-trash"></i>
+                                            </div>
+                                        </div>
+                                        <p>Your uploaded resume.</p> <br>
+                                        <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
+                                                width="600" height="400" style="border: none;"></iframe>
+                                    <?php else: ?>
+                                        <p>You have no uploaded resume.</p>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if (!$resume_exists): // Only show the button if no resume exists ?>
+                                    <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -1373,6 +1497,40 @@ if (isset($_SESSION['message'])) {
 
                 // Call the function to populate the skills list
                 document.addEventListener('DOMContentLoaded', displayUserSkills);
+
+                let availableKeywords = <?php echo $availableSkills_json; ?>;
+
+                const resultsBox = document.querySelector(".result-box");
+                const inputBox = document.getElementById("skills");
+
+                inputBox.onkeyup = function(){
+                    let result = [];
+                    let input = inputBox.value;
+                    if(input.length){
+                        result = availableKeywords.filter((keyword)=>{
+                            return keyword.toLowerCase().includes(input.toLowerCase());
+                        });
+                        console.log(result);
+                    }
+                    display(result);
+
+                    if(!result.length){
+                        resultsBox.innerHTML = '';
+                    }
+                }
+
+                function display(result){
+                    const content = result.map((list)=>{
+                        return "<li onclick=selectInput(this)>" + list + "</li>";
+                    });
+                    
+                    resultsBox.innerHTML = "<ul>" + content.join('') + "</ul>";
+                }
+
+                function selectInput(list){
+                    inputBox.value = list.innerHTML;
+                    resultsBox.innerHTML = '';
+                }
             </script>
 
         </body>

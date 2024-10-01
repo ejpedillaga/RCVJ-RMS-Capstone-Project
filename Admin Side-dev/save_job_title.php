@@ -3,7 +3,7 @@ include 'connection.php';
 
 header('Content-Type: application/json');
 
-try{
+try {
     // Get the data from the AJAX request
     $data = json_decode(file_get_contents("php://input"), true);
 
@@ -18,14 +18,14 @@ try{
         $skills = $data['skills'];
 
         // Connect to the database
-        $conn = connection(); // Assuming your `connection.php` contains a function to connect to the database
+        $conn = connection();
 
         // Insert query for job title
         $query = "INSERT INTO job_title_table (job_title, classification, subclassification, gender, educational_attainment, cert_license, years_of_experience)
-                VALUES (?, ?, ?, ?, ?, ?, ?)";
+                  VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("sssssis", $job_title, $classification, $subclassification, $gender, $educational_attainment, $cert_license, $years_of_experience);
+        $stmt->bind_param("sssssss", $job_title, $classification, $subclassification, $gender, $educational_attainment, $cert_license, $years_of_experience);
 
         if ($stmt->execute()) {
             // Get the last inserted job ID
@@ -68,10 +68,11 @@ try{
         }
 
         $conn->close();
+    } else {
+        echo json_encode(['success' => false, 'error' => 'No data received']);
     }
 } catch (Exception $e) {
     error_log($e->getMessage()); // Log the error
-    echo json_encode(["error" => $e->getMessage()]);
+    echo json_encode(["success" => false, "error" => $e->getMessage()]);
 }
-
 ?>

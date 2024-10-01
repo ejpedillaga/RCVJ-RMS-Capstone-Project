@@ -25,15 +25,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $stmt->close();
 
+    /*
     // Update skills
     $conn->begin_transaction();
 
-    if (empty($skills)) {
-        // $skills is empty
-        echo json_encode(["error" => "Skills cannot be empty"]);
-        $conn->rollback(); // Rollback transaction
-    } else {
-        //$skills not empty
+    try {
+        if (empty($skills)) {
+            // $skills is empty
+            echo json_encode(["error" => "Skills cannot be empty"]);
+            $conn->rollback(); // Rollback transaction
+            exit;
+        }
+
+        // Remove existing skills for the job
+        $delete_stmt = $conn->prepare("DELETE FROM job_skills_table WHERE job_title_id = ?");
+        $delete_stmt->bind_param("i", $jobId);
+        $delete_stmt->execute();
+        $delete_stmt->close();
+
         foreach ($skills as $skill) {
             // Check if the skill already exists
             $skill_stmt = $conn->prepare("SELECT skill_id FROM skill_table WHERE skill_name = ?");
@@ -51,30 +60,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $skill_stmt->close();
 
-            // Check if the job_skill already exists
-            $job_skill_check_stmt = $conn->prepare("SELECT * FROM job_skills_table WHERE job_id = ? AND skill_id = ?");
-            $job_skill_check_stmt->bind_param("ii", $jobId, $skill_id);
-            $job_skill_check_stmt->execute();
-            $job_skill_result = $job_skill_check_stmt->get_result();
-
-            if ($job_skill_result->num_rows == 0) {
-                // Insert into job_skills_table if it doesn't exist
-                $job_skill_stmt = $conn->prepare("INSERT INTO job_skills_table (job_id, skill_id) VALUES (?, ?)");
-                $job_skill_stmt->bind_param("ii", $jobId, $skill_id);
-                if (!$job_skill_stmt->execute()) {
-                    $conn->rollback(); // Rollback transaction
-                    throw new Exception("Error inserting job skill: " . $job_skill_stmt->error);
-                }
-                $job_skill_stmt->close();
-            } else {
-                // Entry already exists, skip insertion
-                $job_skill_check_stmt->close();
+            // Insert into job_skills_table
+            $job_skill_stmt = $conn->prepare("INSERT INTO job_skills_table (job_title_id, skill_id) VALUES (?, ?)");
+            $job_skill_stmt->bind_param("ii", $jobId, $skill_id);
+            if (!$job_skill_stmt->execute()) {
+                $conn->rollback(); // Rollback transaction
+                throw new Exception("Error inserting job skill: " . $job_skill_stmt->error);
             }
+            $job_skill_stmt->close();
         }
 
         $conn->commit(); // Commit transaction
+        */
         echo json_encode(["message" => "Job updated successfully"]);
-    }
+    /*} catch (Exception $e) {
+        $conn->rollback(); // Rollback transaction
+        echo json_encode(["error" => $e->getMessage()]);
+    }*/
+    
 }
 
 $conn->close();

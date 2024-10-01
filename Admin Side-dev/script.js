@@ -1,4 +1,6 @@
 let skillsSet = new Set();
+let globalJobTitleId = null;
+let globalButtonSelector = true; //t for add title, f for edit title
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize ClassicEditor for job posting description
     ClassicEditor
@@ -1609,6 +1611,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showJobTitle() {
+    const btn1 = document.getElementById('saveAndPostBtn1');
+    const btn2 = document.getElementById('saveAndPostBtn2');;
+    const btn3 = document.getElementById('saveAndPostBtn3');;
+
+    if (globalButtonSelector == false) {
+        // Remove the event listener for saveJobTitle
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
+        // Add the event listener for editJobTitle
+        btn1.setAttribute('onclick', 'editJobTitle()')
+        btn2.setAttribute('onclick', 'editJobTitle()')
+        btn3.setAttribute('onclick', 'editJobTitle()')
+    } else {
+        // Remove the event listener for editJobTitle
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
+        // Add the event listener for saveJobTitle
+        btn1.setAttribute('onclick', 'saveJobTitle()');
+        btn2.setAttribute('onclick', 'saveJobTitle()');
+        btn3.setAttribute('onclick', 'saveJobTitle()');
+    }
+
+    console.log(globalButtonSelector);
+
     document.getElementById('add-job-title-popup').style.display = 'block';
     document.getElementById('add-job-title-popup').classList.add('show');
     initializePopupPagination('add-job-title-popup');
@@ -1622,11 +1650,20 @@ function hideJobTitle() {
     document.getElementById('add-job-title-popup').classList.remove('show');
     document.getElementById('popup').style.display = 'block';
     document.getElementById('popup').classList.add('show');
+    const jobTitle = document.getElementById('job_title');
+    jobTitle.removeAttribute('readonly');
+    globalButtonSelector = true;
+
 
     // Remove all skill tags from the container but keep the input field
     const skillsContainer = document.querySelector('#add-job-title-popup .jobposting-skills-container');
     const skills = skillsContainer.querySelectorAll('.jobposting-skill');
     skills.forEach(skill => skillsContainer.removeChild(skill));
+
+
+    //Clear job title input field
+    jobTitle.value = '';
+
 
     // Clear the skills set
     skillsSet.clear();
@@ -1658,7 +1695,9 @@ function saveJobTitle() {
     const gender = document.getElementById('gender').value;
     const educationalAttainment = document.getElementById('educational_attainment').value;
     const certLicense = document.getElementById('job-title-cert').value.trim();
-    const yearsOfExperience = document.getElementById('job-title-exp').value.trim();
+    const minYearsOfExperience = document.getElementById('min-job-title-exp').value.trim();
+    const maxYearsOfExperience = document.getElementById('max-job-title-exp').value.trim();
+    const yearsOfExperience = `${minYearsOfExperience}-${maxYearsOfExperience}`;
 
     // Validation: Ensure all required fields are filled in
     if (!jobTitle) {
@@ -1729,7 +1768,8 @@ function saveJobTitle() {
             document.getElementById('gender').value = '';
             document.getElementById('educational_attainment').value = '';
             document.getElementById('job-title-cert').value = '';
-            document.getElementById('job-title-exp').value = '';
+            document.getElementById('min-job-title-exp').value = '';
+            document.getElementById('max-job-title-exp').value = '';
 
             // Optionally hide the popup after saving
             hideJobTitle('add-job-title-popup');
@@ -1743,6 +1783,128 @@ function saveJobTitle() {
     });
 
 }
+
+function showEditJobTitlePopup(){
+    const jobTitleSelect = document.getElementById('jobposting-job-title')
+    currentJobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex].text; // Get the text
+
+    console.log(currentJobTitle);
+    if(currentJobTitle == "Choose a job title"){
+        alert("Please select a job title to edit");
+    }else{
+        globalButtonSelector=false;
+        showJobTitle();
+
+        fetch(`getJobTitleData.php?selected_job_title=${currentJobTitle}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const jobTitleData = data.data;
+                console.log(jobTitleData);
+
+                // Populate the form fields with the retrieved data
+                globalJobTitleId = jobTitleData.id;
+                document.getElementById('job_title').value = jobTitleData.job_title;
+                // Set readonly attribute to indicate job_title is not editable
+                document.getElementById('job_title').setAttribute('readonly', 'true');
+                document.getElementById('classification').value = jobTitleData.classification;
+                document.getElementById('subclassification').value = jobTitleData.subclassification;
+                document.getElementById('gender').value = jobTitleData.gender;
+                document.getElementById('educational_attainment').value = jobTitleData.educational_attainment;
+
+                //If cert licenses is null (i.e., not required), not required checkbox should be ticked
+                if(jobTitleData.certLicense == null){
+                    //TODO
+                    document.getElementById('req-cert').value=false;
+                }else{
+                    document.getElementById('cert_license').value = jobTitleData.cert_license;
+
+                }
+
+                // Populate years of experience
+                document.getElementById('min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience) || 0;
+                document.getElementById('max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience) || 0;
+
+
+
+                // Initialize skills input
+                initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+
+                // Clear any existing skills in the container
+                const skillsContainer = document.querySelector('#add-jobposting-skills-container');
+                const skillsInput = document.querySelector('#jobposting-skills-input');
+
+                // Add fetched skills to the container
+                jobTitleData.skills.forEach(skill => addSkill(skillsContainer, skill, skillsInput));
+
+            } else {
+                alert(data.message || 'Error fetching job title data.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+}
+
+function editJobTitle() {
+    const jobTitle = document.getElementById('job_title').value;
+    const classification = document.getElementById('classification').value;
+    const subclassification = document.getElementById('subclassification').value;
+    const gender = document.getElementById('gender').value;
+    const educationalAttainment = document.getElementById('educational_attainment').value;
+    const certLicense = document.getElementById('job-title-cert').value.trim();
+    const minYearsOfExperience = document.getElementById('min-job-title-exp').value.trim();
+    const maxYearsOfExperience = document.getElementById('max-job-title-exp').value.trim();
+    const yearsOfExperience = `${minYearsOfExperience}-${maxYearsOfExperience}`;
+
+    // Validation checks
+    if (!jobTitle || !classification || !subclassification || !gender || !educationalAttainment) {
+        alert('All required fields must be filled.');
+        return;
+    }
+
+    // Convert the Set to an array if you're handling skills (optional)
+    const skillsArray = Array.from(skillsSet);
+
+    // Create an object to hold the data
+    const data = {
+        job_title_id: globalJobTitleId, // Use globalJobTitleId for the update
+        classification: classification,
+        subclassification: subclassification,
+        gender: gender,
+        educational_attainment: educationalAttainment,
+        cert_license: certLicense,
+        years_of_experience: yearsOfExperience,
+    };
+
+    const jsonData = JSON.stringify(data); // Convert data to JSON string
+
+    // Send data via AJAX to PHP
+    fetch('editJobTitle.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: jsonData, // Send JSON data
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Job title edited and saved successfully!');
+            hideJobTitle('add-job-title-popup'); // Optionally hide the popup
+            populateJobTitles(); // Refresh the job titles list
+        } else {
+            console.error('Error:', result.error);
+            alert('An error occurred while updating the job title: ' + result.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
 
 function populateJobTitles() {
     fetch('get_job_titles.php')

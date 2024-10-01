@@ -9,13 +9,14 @@ $user_info = [];
 $education_list = [];
 $vocational_list = [];
 $job_experience_list = [];
+$profile_image = null; // Initialize profile image
 
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
     $user_email = $_SESSION['user'];
     
     // Use the existing database connection to fetch user information
-    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description FROM applicant_table WHERE email = ?";
+    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
@@ -25,6 +26,7 @@ if (isset($_SESSION['user'])) {
         $user_info = $result->fetch_assoc();
         $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
         $userid = $user_info['userid']; // Fetch the user's ID for later use in queries
+        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null; // Fetch profile image
 
         // Fetch education details using the fetched userid
         $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
@@ -93,6 +95,34 @@ if ($job && isset($job['logo'])) {
     $job['logo'] = base64_encode($job['logo']);
 }
 
+// Fetch qualifications from job_title_table
+$sql_qualifications = "SELECT gender, educational_attainment, years_of_experience, cert_license FROM job_title_table WHERE job_title = ?";
+$stmt_qual = $conn->prepare($sql_qualifications);
+$stmt_qual->bind_param("s", $job['job_title']);
+$stmt_qual->execute();
+$result_qual = $stmt_qual->get_result();
+
+if ($result_qual->num_rows > 0) {
+    $qualifications = $result_qual->fetch_assoc();
+}
+
+// Fetch skills for the job from job_skills_table
+$sql_skills = "SELECT skill_table.skill_name 
+               FROM job_skills_table 
+               JOIN job_title_table ON job_skills_table.job_title_id = job_title_table.id
+               JOIN skill_table ON job_skills_table.skill_id = skill_table.skill_id
+               WHERE job_title_table.job_title = ?";
+$stmt_skills = $conn->prepare($sql_skills);
+$stmt_skills->bind_param("s", $job['job_title']);
+$stmt_skills->execute();
+$result_skills = $stmt_skills->get_result();
+
+if ($result_skills->num_rows > 0) {
+    while ($row = $result_skills->fetch_assoc()) {
+        $skills[] = $row['skill_name'];
+    }
+}
+
 $company_name = $job['company_name'];
 $stmt->close();
 $conn->close();
@@ -141,7 +171,11 @@ $conn->close();
                     </div>
                 </div>
                 <div>
-                    <img src="images/user.svg" alt="">
+                    <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
+                    <?php else: ?>
+                        <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
+                    <?php endif; ?>
                 </div>
             </div>
             <div id="personal-info">
@@ -166,7 +200,7 @@ $conn->close();
             <!-- Education Information -->
             <!-- Education Information -->
             <div id="education">
-                <h3>Education Attainment</h3>
+                <h3>Educational Attainment</h3>
                 <ul>
                     <?php if (!empty($education_list)): ?>
                         <?php foreach ($education_list as $education): ?>
@@ -247,7 +281,11 @@ $conn->close();
                     </div>
                 </div>
             </div>
-            <img src="images/user.svg" alt="">
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
             <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
         </div>
     </nav>
@@ -314,7 +352,7 @@ $conn->close();
                 <div class="company-box">
                     <h2 class="title3"><?php echo htmlspecialchars($job['job_title']); ?></h2>
                     <p id="company-name"><?php echo htmlspecialchars($job['company_name']); ?></p>
-                    <p id="location"><?php echo htmlspecialchars($job['job_location']); ?></p>
+                    <p id="location"><i class="fa fa-map-marker-alt" aria-hidden="true"></i> <?php echo htmlspecialchars($job['job_location']); ?></p>
                     <p id="date-posted">Posted on: <?php echo htmlspecialchars(date('m/d/Y', strtotime($job['date_posted']))); ?></p>
                     <p id="available">Available Spots: <?php echo htmlspecialchars($job['job_candidates']); ?></p>
                     <div class="buttons-container">
@@ -324,24 +362,41 @@ $conn->close();
                 </div>
                 <img id="company-logo" src="data:image/jpeg;base64,<?php echo htmlspecialchars($job['logo']); ?>" alt="Company Logo">
             </div>
-            <div class="desc-box">
+            <div class="desc-box" id="job-details-desc">
                 <h3>Job Description</h3>
                 <p id="description"><?php echo nl2br(htmlspecialchars($job['job_description'])); ?></p>
                 <h3>Qualifications</h3>
-                <ul id="qualifications list">
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
+                <ul id="qualifications-list">
+                    <?php if (htmlspecialchars($qualifications['gender']) === "Not Specified"): ?>
+                        <li><strong>Open to all genders</strong></li>
+                    <?php else: ?>
+                        <li><strong><?php echo htmlspecialchars($qualifications['gender']); ?></strong></li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['educational_attainment']) === "Undergraduate"): ?>
+                        <li>Undergraduates are qualified</li>
+                    <?php else: ?>
+                        <li>At least a <strong><?php echo htmlspecialchars($qualifications['educational_attainment']); ?></strong></li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "0"): ?>
+                        <li>No experience needed</li>
+                    <?php else: ?>
+                        <li>Preferably with <strong><?php echo htmlspecialchars($qualifications['years_of_experience']); ?> year/s</strong> of professional experience relevant to the field</li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['cert_license']) === ""): ?>
+                        <li>No certification/licenses needed</li>
+                    <?php else: ?>
+                        <li>Must a holder of a <strong><?php echo htmlspecialchars($qualifications['cert_license']); ?></strong></li>
+                    <?php endif; ?>
                 </ul>
                 <h3>Skills</h3>
-                <ul id="skills list">
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
+                <ul id="skills-list">
+                    <?php if (!empty($skills)): ?>
+                        <?php foreach ($skills as $skill): ?>
+                            <li><?php echo htmlspecialchars($skill); ?></li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>No skills required for this job.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>

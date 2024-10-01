@@ -3,28 +3,31 @@ include 'connection.php';
 $conn = connection();
 session_start();
 
+// Fetch open job listings
 $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
 $jobs_result = $conn->query($sql); // Execute the job listing query
 
+// Initialize user name and profile image
+$user_name = 'Sign Up';
+$profile_image = null;
+
 if (isset($_SESSION['user'])) {
-    // Fetch user's full name from the session
+    // Fetch user's email from the session
     $user_email = $_SESSION['user'];
 
-    // Use the existing connection
-    $user_sql = "SELECT fname, lname FROM applicant_table WHERE email = '$user_email'";
+    // Fetch user's full name and profile image
+    $user_sql = "SELECT fname, lname, profile_image FROM applicant_table WHERE email = '$user_email'";
     $user_result = $conn->query($user_sql);
 
     if ($user_result->num_rows > 0) {
         $user = $user_result->fetch_assoc();
         $user_name = $user['fname'] . ' ' . $user['lname'];
-    } else {
-        $user_name = 'User';
+        $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
-} else {
-    $user_name = 'Sign Up';
 }
 
-$conn->close(); // Close the connection once all queries are done
+// Close the connection
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -78,8 +81,13 @@ $conn->close(); // Close the connection once all queries are done
                     </div>
                 </div>
             </div>
-                <img src="images/user.svg" alt="">
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
                 <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+
             </div>
         </nav>
 

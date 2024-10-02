@@ -198,7 +198,6 @@ $conn->close();
                 </ul>
             </div>
             <!-- Education Information -->
-            <!-- Education Information -->
             <div id="education">
                 <h3>Educational Attainment</h3>
                 <ul class="education-list">

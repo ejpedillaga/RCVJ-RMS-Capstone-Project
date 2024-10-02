@@ -1286,7 +1286,7 @@ if (isset($_SESSION['message'])) {
                                         <?php foreach ($license_data as $license): ?>
                                             <div class="info-container">
                                                 <div class="icon-group">
-                                                    <div class="delete-icon" onclick="deleteLicense(<?php echo $license['id']; ?>)">
+                                                    <div id="ic2" class="delete-icon" onclick="deleteLicense(<?php echo $license['id']; ?>)">
                                                         <i class="fas fa-trash"></i>
                                                         <span class="tooltiptext">Delete</span>
                                                     </div>
@@ -1402,7 +1402,7 @@ if (isset($_SESSION['message'])) {
                                 <div class="info-container">
                                     <?php if ($resume_exists): ?>
                                         <div class="icon-group">
-                                            <div class="delete-icon" onclick="deleteResume(<?php echo $userid; ?>)"> 
+                                            <div id="ic2" class="delete-icon" onclick="deleteResume(<?php echo $userid; ?>)"> 
                                                 <i class="fas fa-trash"></i>
                                             </div>
                                         </div>

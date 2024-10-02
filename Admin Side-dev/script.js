@@ -599,6 +599,11 @@ function populateCandidatesTable(data) {
                 <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
                 <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
             </select>
+        </td>
+            <td class="candidates-tooltip-container">
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
+        </td>
         <td class="candidates-tooltip-container">
             <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
             <span class="tooltip-text">Delete Candidate</span>
@@ -1923,6 +1928,3 @@ function populateJobTitles() {
 
 // Call this function when the page loads or when needed to populate the dropdown
 document.addEventListener('DOMContentLoaded', populateJobTitles);
-
-
-

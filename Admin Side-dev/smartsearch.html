@@ -78,11 +78,14 @@
                         <td class="status" id="status-identical">
                           <span class="status-label-identical">Identical</span>
                         </td>
-                        <td><i class="fa-solid fa-check fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;"></i></td>
+                        <td class="candidates-tooltip-container">
+                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                            <span class="tooltip-text">Candidate Information</span>
+                        </td>
                         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                      </tr>
+                    </tr>
                       
-                      <tr class="tr2">
+                    <tr class="tr1">
                         <td class="fullname" id="fullname">Juan Miguel Escalante</td>
                         <td id="job-title"><strong>SUPERMARKET BAGGER</strong></td>
                         <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
@@ -90,11 +93,15 @@
                         <td class="status" id="status-qualified">
                           <span class="status-label-qualified">Qualified</span>
                         </td>
-                        <td><i class="fa-solid fa-check fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;"></i></td>
+                        </td>
+                        <td class="candidates-tooltip-container">
+                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                            <span class="tooltip-text">Candidate Information</span>
+                        </td>
                         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                      </tr>
+                    </tr>
                       
-                      <tr class="tr3">
+                    <tr class="tr1">
                         <td class="fullname" id="fullname">Juan Miguel Escalante</td>
                         <td id="job-title"><strong>SUPERMARKET BAGGER</strong></td>
                         <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
@@ -102,10 +109,76 @@
                         <td class="status" id="status-overqualified">
                           <span class="status-label-overqualified">Overqualified</span>
                         </td>
-                        <td><i class="fa-solid fa-check fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;"></i></td>
+                        <td class="candidates-tooltip-container">
+                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                            <span class="tooltip-text">Candidate Information</span>
+                        </td>
                         <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                      </tr>
+                    </tr>
                 </table>
+            </div>
+
+            <!-- Overlay -->
+            <div class="overlay" id="overlay"></div>
+
+            <!--Candidate Info Popup-->
+            <div class="popup" style="background-color: white;" id="info">
+                <!-- Back Button -->
+                <div class="addpartners-back-button" onclick="hideInfo()">
+                    <i class="fas fa-chevron-left"></i> Back
+                </div>
+                <h3 style="color: #2C1875">Applicant's information:</h3>
+                <p>Review an applicant's details.</p>
+                <div class="candidate-container">
+                    <div class="candidate-header">
+                        <div>
+                            <h2>Candidate</h2>
+                            <div class="locationemail">
+                                <i class="fa fa-map-pin" aria-hidden="true"></i><h3>Location</h3>
+                            </div>
+                            <div class="locationemail">
+                                <i class="fa fa-envelope" aria-hidden="true"></i><h3>Email</h3>
+                            </div>
+                        </div>
+                        <div><!--pic goes here--></div>
+                    </div>
+                    <div class="candidate-body">
+                        <div id="personal-info">
+                            <h3>Personal Information</h3>
+                            <p id="personal-desc">lorem ipsum</p>
+                            <ul>
+                                <li>Gender:</li>
+                                <li>Birthday:</li>
+                                <li>Contact Number:</li>
+                            </ul>
+                        </div>
+                        <div id="past-jobs">
+                            <h3>Past Jobs</h3>
+                            <ul>
+                                <li>Job</li>
+                                <li>job</li>
+                            </ul>
+                        </div>
+                        <div id="education">
+                            <h3>Education</h3>
+                            <ul>
+                                <li>Education</li>
+                                <li>Education</li>
+                            </ul>
+                        </div>
+                        <div id="skills">
+                            <h3>Skills</h3>
+                            <ul>
+                                <li>Skills</li>
+                                <li>Education</li>
+                            </ul>
+                        </div>          
+                    </div>
+                </div>
+
+                <div class="buttons-container">
+                    <button class="button-apply">Approve Application</button>
+                </div>
             </div>
         </div>
     </div>

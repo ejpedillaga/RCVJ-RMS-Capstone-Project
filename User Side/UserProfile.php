@@ -1404,7 +1404,6 @@ if (isset($_SESSION['message'])) {
                                         <div class="icon-group">
                                             <div id="ic2" class="delete-icon" onclick="deleteResume(<?php echo $userid; ?>)"> 
                                                 <i class="fas fa-trash"></i>
-                                                <span class="tooltiptext">Delete</span>
                                             </div>
                                         </div>
                                         <p>Your uploaded resume.</p> <br>

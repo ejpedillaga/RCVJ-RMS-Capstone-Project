@@ -736,7 +736,8 @@ function populatePartnersTable(data) {
 function populateJobsTable(containerSelector, data) {
     const rowTemplate = (job) => `
         <td><img src="data:image/jpeg;base64,${job.company_logo}" alt="${job.company_name} Logo"></td>
-        <td id="company-name"><strong>${job.job_title}</strong><br>${job.job_location}</td>
+        <td id="company-name"><strong>${job.company_name}</strong></td>
+        <td id="job-title"><strong>${job.job_title}</strong><br>${job.job_location}</td>
         <td id="date">${job.date_posted}</td>
         <td id="available">${job.job_candidates}</td>
         <td>

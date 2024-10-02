@@ -1611,22 +1611,31 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function showJobTitle() {
-    const btn = document.getElementById('saveAndPostBtn1');
-    console.log(btn);
+    const btn1 = document.getElementById('saveAndPostBtn1');
+    const btn2 = document.getElementById('saveAndPostBtn2');;
+    const btn3 = document.getElementById('saveAndPostBtn3');;
+
     if (globalButtonSelector == false) {
-        // Remove the event listener for saveAndPostJob
-        btn.removeAttribute('onclick')
+        // Remove the event listener for saveJobTitle
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
         // Add the event listener for editJobTitle
-        btn.setAttribute('onclick', 'editJobTitle()')
+        btn1.setAttribute('onclick', 'editJobTitle()')
+        btn2.setAttribute('onclick', 'editJobTitle()')
+        btn3.setAttribute('onclick', 'editJobTitle()')
     } else {
         // Remove the event listener for editJobTitle
-        btn.removeAttribute('onclick')
-        // Add the event listener for saveAnd   PostJob
-        btn.setAttribute('onclick', 'saveJobTitle()');
+        btn1.removeAttribute('onclick')
+        btn2.removeAttribute('onclick')
+        btn3.removeAttribute('onclick')
+        // Add the event listener for saveJobTitle
+        btn1.setAttribute('onclick', 'saveJobTitle()');
+        btn2.setAttribute('onclick', 'saveJobTitle()');
+        btn3.setAttribute('onclick', 'saveJobTitle()');
     }
 
     console.log(globalButtonSelector);
-    console.log(btn);
 
     document.getElementById('add-job-title-popup').style.display = 'block';
     document.getElementById('add-job-title-popup').classList.add('show');
@@ -1794,7 +1803,7 @@ function showEditJobTitlePopup(){
                 console.log(jobTitleData);
 
                 // Populate the form fields with the retrieved data
-                globalJobTitleId = jobTitleData.job_title_id
+                globalJobTitleId = jobTitleData.id;
                 document.getElementById('job_title').value = jobTitleData.job_title;
                 // Set readonly attribute to indicate job_title is not editable
                 document.getElementById('job_title').setAttribute('readonly', 'true');
@@ -1838,7 +1847,7 @@ function showEditJobTitlePopup(){
     }
 }
 
-function editJobTitle(){
+function editJobTitle() {
     const jobTitle = document.getElementById('job_title').value;
     const classification = document.getElementById('classification').value;
     const subclassification = document.getElementById('subclassification').value;
@@ -1849,55 +1858,27 @@ function editJobTitle(){
     const maxYearsOfExperience = document.getElementById('max-job-title-exp').value.trim();
     const yearsOfExperience = `${minYearsOfExperience}-${maxYearsOfExperience}`;
 
-    // Validation: Ensure all required fields are filled in
-    if (!jobTitle) {
-        alert('Job Title is required.');
-        return;
-    }
-    if (!classification) {
-        alert('Classification is required.');
-        return;
-    }
-    if (!subclassification) {
-        alert('Subclassification is required.');
-        return;
-    }
-    if (!gender) {
-        alert('Gender is required.');
-        return;
-    }
-    if (!educationalAttainment) {
-        alert('Educational Attainment is required.');
+    // Validation checks
+    if (!jobTitle || !classification || !subclassification || !gender || !educationalAttainment) {
+        alert('All required fields must be filled.');
         return;
     }
 
-    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
-
-    // Log the input values to ensure they are captured correctly
-    console.log("Job Title:", jobTitle);
-    console.log("Classification:", classification);
-    console.log("Subclassification:", subclassification);
-    console.log("Gender:", gender);
-    console.log("Educational Attainment:", educationalAttainment);
-    console.log("Cert/License:", certLicense);
-    console.log("Years of Experience:", yearsOfExperience);
-    console.log('Skills Array:', skillsArray);
+    // Convert the Set to an array if you're handling skills (optional)
+    const skillsArray = Array.from(skillsSet);
 
     // Create an object to hold the data
     const data = {
-        job_title_id: globalJobTitleId,
-        job_title: jobTitle,
+        job_title_id: globalJobTitleId, // Use globalJobTitleId for the update
         classification: classification,
         subclassification: subclassification,
         gender: gender,
         educational_attainment: educationalAttainment,
         cert_license: certLicense,
         years_of_experience: yearsOfExperience,
-        //skills: skillsArray
     };
 
     const jsonData = JSON.stringify(data); // Convert data to JSON string
-    console.log(jsonData); // Debug: Print JSON string to console
 
     // Send data via AJAX to PHP
     fetch('editJobTitle.php', {
@@ -1911,20 +1892,8 @@ function editJobTitle(){
     .then(result => {
         if (result.success) {
             alert('Job title edited and saved successfully!');
-            
-            // Clear all fields after successful save
-            document.getElementById('job_title').value = '';
-            document.getElementById('classification').value = '';
-            document.getElementById('subclassification').value = '';
-            document.getElementById('gender').value = '';
-            document.getElementById('educational_attainment').value = '';
-            document.getElementById('job-title-cert').value = '';
-            document.getElementById('min-job-title-exp').value = '';
-            document.getElementById('max-job-title-exp').value = '';
-
-            // Optionally hide the popup after saving
-            hideJobTitle('add-job-title-popup');
-            populateJobTitles();
+            hideJobTitle('add-job-title-popup'); // Optionally hide the popup
+            populateJobTitles(); // Refresh the job titles list
         } else {
             console.error('Error:', result.error);
             alert('An error occurred while updating the job title: ' + result.error);
@@ -1934,6 +1903,8 @@ function editJobTitle(){
         console.error('Error:', error);
     });
 }
+
+
 
 function populateJobTitles() {
     fetch('get_job_titles.php')
@@ -1956,5 +1927,6 @@ function populateJobTitles() {
 
 // Call this function when the page loads or when needed to populate the dropdown
 document.addEventListener('DOMContentLoaded', populateJobTitles);
+
 
 

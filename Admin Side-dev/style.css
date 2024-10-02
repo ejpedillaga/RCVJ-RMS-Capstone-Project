@@ -1674,3 +1674,47 @@ input[type="radio"] {
   #add-job-title-popup .jobposting-box{
     background-color: #ef9a5069;
   }
+
+  .search-box{
+    width: 600px;
+    background: white;
+    margin: 10px auto 10px 0;
+    border-radius: 5px;
+  }
+
+  .row{
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+#jobposting-search{
+    flex: 1;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #000000;
+}
+
+.result-box ul{
+    border-top: 1px solid #999;
+    padding: 15px 10px;
+}
+
+.result-box ul li{
+     list-style: none;
+     border-radius: 3px;
+     padding: 15px 10px;
+     cursor: pointer;
+}
+
+.result-box ul li:hover{
+    background: rgb(194, 194, 228);
+}
+
+.result-box{
+    max-height: 300px;
+    overflow-y: scroll;
+}

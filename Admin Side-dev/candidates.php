@@ -1,3 +1,63 @@
+<?php
+session_start();
+
+// Include the connection.php file
+include 'connection.php'; // Adjust this if necessary
+
+// Call the connection function to establish the database connection
+$conn = connection();
+
+// Check if the connection is established
+if (!$conn) {
+    die("Database connection failed.");
+}
+
+// Handle form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Get the current user's email from session
+    $email = $_SESSION['user'];
+
+    // Fetch full name from applicant_table
+    $query = "SELECT fname, lname FROM applicant_table WHERE email = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $fullName = $row['fname'] . ' ' . $row['lname'];
+
+        // Set current date and default status
+        $dateApplied = date('Y-m-d');
+        $status = 'Pending';
+
+        // Insert data into candidate_list table
+        $insertQuery = "INSERT INTO candidate_list (full_name, job_title, company_name, date_applied, status) 
+                        VALUES (?, ?, ?, ?, ?)";
+        $insertStmt = $conn->prepare($insertQuery);
+
+        // For now, use placeholders for Job Title and Company Name
+        $jobTitle = 'Job Title Placeholder';
+        $companyName = 'Company Placeholder';
+
+        $insertStmt->bind_param("sssss", $fullName, $jobTitle, $companyName, $dateApplied, $status);
+        $insertStmt->execute();
+        $insertStmt->close();
+    } else {
+        echo "No user found.";
+    }
+    $stmt->close();
+}
+
+// Fetch candidates from candidate_list table
+$query = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list";
+$result = $conn->query($query); // Execute the query
+?>
+
+
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +79,7 @@
         </div>
             <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.html"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
-            <a href="candidates.html" class="active"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
+            <a href="candidates.php" class="active"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" ><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.html"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.html"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
@@ -66,23 +126,39 @@
             </div>
 
             <div>
-                <table>
-                    <thead>
-                        <tr class="th1">
-                            <th>Candidate</th>
-                            <th>Job Title</th>
-                            <th>Company</th>
-                            <th>Date Applied</th>
-                            <th>Status</th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <!--Content Goes Here-->
-                    </tbody>
-                </table>
+                    <table>
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
             </div>
+
+
         </div>
 
         <!-- Overlay -->

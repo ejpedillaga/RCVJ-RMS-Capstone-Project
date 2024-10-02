@@ -185,7 +185,7 @@ $conn->close();
             <!-- Past Jobs Information -->
             <div id="past-jobs">
                 <h3>Past Jobs</h3>
-                <ul>
+                <ul class="pastjobs-list">
                     <?php if (!empty($job_experience_list)): ?>
                         <?php foreach ($job_experience_list as $job_exp): ?>
                             <li>
@@ -201,7 +201,7 @@ $conn->close();
             <!-- Education Information -->
             <div id="education">
                 <h3>Educational Attainment</h3>
-                <ul>
+                <ul class="education-list">
                     <?php if (!empty($education_list)): ?>
                         <?php foreach ($education_list as $education): ?>
                             <li>
@@ -217,7 +217,7 @@ $conn->close();
             <!-- Vocational Education Information -->
             <div id="vocational">
                 <h3>Vocational</h3>
-                <ul>
+                <ul class="vocational-list">
                     <?php if (!empty($vocational_list)): ?>
                         <?php foreach ($vocational_list as $vocational): ?>
                             <li>
@@ -231,14 +231,37 @@ $conn->close();
             </div>
             <div id="skills">
                 <h3>Skills</h3>
-                <ul>
+                <ul class="skills-list">
                     <li>Skills</li>
                     <li>Education</li>
                 </ul>
-            </div>    
+            </div>
         </div>
         <div class="buttons-container">
-            <button class="button-apply">Submit</button>
+            <button class="button-apply" id="submitBtn">Submit</button>
+
+            <script>
+            document.getElementById('submitBtn').addEventListener('click', function() {
+                // Create an AJAX request
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/RCVJ-RMS/Admin Side-dev/candidates.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                // Send the necessary data (you can add any additional data if needed)
+                xhr.send();
+
+                xhr.onload = function() {
+                    if (xhr.status == 200) {
+                        alert('Data submitted successfully!');
+                        // Optionally, you could update the table dynamically here
+                        // For example, by appending the new candidate row
+                        document.getElementById('candidateTableBody').innerHTML += xhr.responseText;
+                    } else {
+                        alert('An error occurred!');
+                    }
+                };
+            });
+            </script>
             <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
         </div>
     </div>

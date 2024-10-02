@@ -86,12 +86,23 @@ function openNav(sidenavId, containerId) {
 document.getElementById(sidenavId).classList.add('active');
 document.getElementById(containerId).style.opacity = "0.1";
 document.body.classList.add('no-scroll', 'overlay-active');
+previewLicenseFiles();
+previewFiles();
 }
 
 function closeNav(sidenavId, containerId) {
 document.getElementById(sidenavId).classList.remove('active');
 document.getElementById(containerId).style.opacity = "1";
 document.body.classList.remove('no-scroll', 'overlay-active');
+// Reset the file input and clear the preview
+    const licenseFileInput = document.getElementById('licenseFileUpload');
+    const licensePreviewContainer = document.getElementById('licensePreviewContainer');
+
+    // Clear the file input
+    licenseFileInput.value = ''; 
+
+    // Clear the preview container
+    licensePreviewContainer.innerHTML = ''; 
 }
 
 /*Add Skills*/
@@ -195,27 +206,36 @@ event.preventDefault();
 
 /******************Resume Dropbox*******************/
 function previewFiles() {
-function handleDragAndDrop() {
-  const dropbox = document.getElementById('resume_dropbox');
-  dropbox.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.add('dragover');
-  });
+  function handleDragAndDrop() {
+    const dropbox = document.getElementById('resume_dropbox');
+    dropbox.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.add('dragover');
+    });
 
-  dropbox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    dropbox.classList.remove('dragover');
+    dropbox.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropbox.classList.remove('dragover');
 
-    const files = e.dataTransfer.files;
-    const fileInput = document.getElementById('fileUpload');
-    fileInput.files = files;
+      const files = e.dataTransfer.files;
+      const validFiles = Array.from(files).filter(file => file.type === 'application/pdf');
 
-    previewFiles(); 
-  });
-}
-handleDragAndDrop();
+      if (validFiles.length > 0) {
+        const fileInput = document.getElementById('fileUpload');
+        const dataTransfer = new DataTransfer();
+        
+        validFiles.forEach(file => dataTransfer.items.add(file));
+        fileInput.files = dataTransfer.files;
+
+        previewFiles(); 
+      } else {
+        alert('Only PDF files are allowed!');
+      }
+    });
+  }
+  handleDragAndDrop();
 
   const fileInput = document.getElementById('fileUpload');
   const files = fileInput.files;
@@ -241,17 +261,10 @@ handleDragAndDrop();
     fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
     previewElement.appendChild(fileSizeElement);
 
-    // Add a preview image or icon depending on the file type
-    if (file.type.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.src = URL.createObjectURL(file);
-      img.alt = fileName;
-      previewElement.appendChild(img);
-    } else {
-      const icon = document.createElement('i');
-      icon.className = 'fas fa-file-alt';
-      previewElement.appendChild(icon);
-    }
+    // Display PDF icon
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-file-pdf'; // You can use a PDF icon here
+    previewElement.appendChild(icon);
 
     // Add an "X" button
     const closeButton = document.createElement('button');
@@ -263,13 +276,13 @@ handleDragAndDrop();
       // Remove the file from the file input
       const fileIndex = Array.prototype.indexOf.call(fileInput.files, file);
       if (fileIndex !== -1) {
-        fileInput.files = new DataTransfer().files; // Clear the file input
+        const dataTransfer = new DataTransfer();
         for (let j = 0; j < files.length; j++) {
           if (j !== fileIndex) {
-            fileInput.files = new DataTransfer().files; // Clear the file input
-            fileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
+            dataTransfer.items.add(files[j]);
           }
         }
+        fileInput.files = dataTransfer.files; // Update the file input
       }
       // Remove the preview element
       previewElement.remove();
@@ -309,10 +322,19 @@ function previewLicenseFiles() {
       dropbox.classList.remove('dragover');
   
       const files = e.dataTransfer.files;
-      const licenseFileInput = document.getElementById('licenseFileUpload');
-      licenseFileInput.files = files;
-  
-      previewLicenseFiles(); 
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg']; // Allowed MIME types
+      const validFiles = Array.from(files).filter(file => allowedTypes.includes(file.type));
+
+      if (validFiles.length > 0) {
+        const licenseFileInput = document.getElementById('licenseFileUpload');
+        const dataTransfer = new DataTransfer();
+
+        validFiles.forEach(file => dataTransfer.items.add(file));
+        licenseFileInput.files = dataTransfer.files; // Set the valid files to the input
+        previewLicenseFiles(); 
+      } else {
+        alert("Please upload only PNG or JPG/JPEG files."); // Alert for invalid file types
+      }
     });
   }
 
@@ -332,14 +354,10 @@ function previewLicenseFiles() {
     const previewElement = document.createElement('div');
     previewElement.className = 'license-preview-element';
 
-    // Display the file name and size
-    const fileNameElement = document.createElement('span');
-    fileNameElement.textContent = fileName;
-    previewElement.appendChild(fileNameElement);
-
-    const fileSizeElement = document.createElement('span');
-    fileSizeElement.textContent = `(${formatFileSize(fileSize)})`;
-    previewElement.appendChild(fileSizeElement);
+    // Display the file name and size in one line
+    const fileInfoElement = document.createElement('span');
+    fileInfoElement.textContent = `${fileName} (${formatFileSize(fileSize)})`;
+    previewElement.appendChild(fileInfoElement);
 
     // Add a preview image or icon depending on the file type
     if (file.type.startsWith('image/')) {
@@ -353,24 +371,28 @@ function previewLicenseFiles() {
       previewElement.appendChild(icon);
     }
 
-    // Add an "X" button
-    const closeButton = document.createElement('button');
-    closeButton.className = 'license-close-button';
-    closeButton.innerHTML = '&times;'; // Use HTML entity instead of the character
-    closeButton.style.float = 'right';
-    closeButton.style.cursor = 'pointer';
-    closeButton.onclick = function() {
-      // Remove the file from the file input
-      const fileIndex = Array.prototype.indexOf.call(licenseFileInput.files, file);
-      if (fileIndex !== -1) {
-        licenseFileInput.files = new DataTransfer().files; // Clear the file input
-        for (let j = 0; j < files.length; j++) {
-          if (j !== fileIndex) {
-            licenseFileInput.files = new DataTransfer().files; // Clear the file input
-            licenseFileInput.files.item(j) = files[j]; // Add the remaining files back to the file input
-          }
-        }
-      }
+   // Add a "Remove" button
+   const closeButton = document.createElement('button');
+   closeButton.className = 'license-close-button';
+   closeButton.innerText = 'Remove'; // Set button text to "Remove"
+   closeButton.style.float = 'right';
+   closeButton.style.cursor = 'pointer';
+   closeButton.style.backgroundColor = '#2C1875'; // Set background color
+   closeButton.style.border = 'none'; // Optional: remove border
+   closeButton.style.color = 'white'; // Optional: set text color to white
+   closeButton.style.padding = '5px 10px'; // Optional: add padding for aesthetics
+   closeButton.onclick = function() {
+     // Remove the file from the file input
+     const fileIndex = Array.prototype.indexOf.call(licenseFileInput.files, file);
+     if (fileIndex !== -1) {
+       const dataTransfer = new DataTransfer();
+       for (let j = 0; j < files.length; j++) {
+         if (j !== fileIndex) {
+           dataTransfer.items.add(files[j]); // Add the remaining files back to the DataTransfer object
+         }
+       }
+       licenseFileInput.files = dataTransfer.files; // Update the input files
+     }
       // Remove the preview element
       previewElement.remove();
     };
@@ -588,6 +610,35 @@ if (confirm('Are you sure you want to delete this vocational record?')) {
   // Append the form to the body and submit it
   document.body.appendChild(form);
   form.submit();
+  }
+}
+
+function deleteResume(userId) {
+  if (confirm('Are you sure you want to delete your resume?')) {
+      // Create a form to submit the deletion request
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = ''; // Submit to the same page
+
+      // Create a hidden input for the user ID
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'user_id';
+      input.value = userId;
+
+      // Create a hidden input to identify the deletion action
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'hidden';
+      deleteInput.name = 'delete_resume'; // This identifies the action in PHP
+      deleteInput.value = '1';
+
+    // Append inputs to the form
+    form.appendChild(input);
+    form.appendChild(deleteInput);
+
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
 }
 }
 
@@ -601,4 +652,30 @@ function hideInfo() {
 document.getElementById('info').style.display = 'none';
 document.getElementById('info').classList.remove('show');
 document.getElementById('overlay').classList.remove('show');
+}
+
+function previewLogo(event) {
+  const input = event.target;
+  const file = input.files[0];
+  if (file) {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+          const preview = document.getElementById('logo-preview');
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+          document.getElementById('upload-placeholder').style.display = 'none';
+      };
+      
+      reader.readAsDataURL(file);
+  }
+}
+
+function validateForm() {
+  const attachmentInput = document.getElementById('licenseFileUpload');
+  if (attachmentInput.files.length === 0) {
+      alert('Please upload a license/certificate attachment.');
+      return false; // Prevent form submission
+  }
+  return true; // Allow form submission
 }

@@ -8,12 +8,16 @@ session_start();
 $sql = "SELECT logo, company_name FROM partner_table";
 $result = $conn->query($sql);
 
+// Initialize user data variables
+$user_name = 'Sign Up'; // Default if not logged in
+$profile_image = null; // Initialize profile image
+
 // Check if the user is logged in
 if (isset($_SESSION['user'])) {
     $user_email = $_SESSION['user'];
 
     // Use a prepared statement to safely query user data
-    $stmt = $conn->prepare("SELECT fname, lname FROM applicant_table WHERE email = ?");
+    $stmt = $conn->prepare("SELECT fname, lname, profile_image FROM applicant_table WHERE email = ?");
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
     $user_result = $stmt->get_result();
@@ -21,15 +25,13 @@ if (isset($_SESSION['user'])) {
     if ($user_result->num_rows > 0) {
         $user = $user_result->fetch_assoc();
         $user_name = $user['fname'] . ' ' . $user['lname'];
-    } else {
-        $user_name = 'User';
+        $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
 
     $stmt->close();
-} else {
-    $user_name = 'Sign Up';
 }
 
+// Close the database connection
 $conn->close();
 ?>
 
@@ -83,7 +85,11 @@ $conn->close();
                         </div>
                     </div>
                 </div>
-                    <img src="images/user.svg" alt="">
+                    <?php if ($profile_image): ?>
+                        <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                    <?php else: ?>
+                        <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                    <?php endif; ?>
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 </div>
         </nav>

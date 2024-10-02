@@ -71,6 +71,7 @@ nav {
 .desktopnav a:hover, nav a.active { 
     color: #2C1875;
     font-weight: 500;
+    text-decoration: none;
 }
 
 .desktopnav a::before {
@@ -87,6 +88,140 @@ nav {
 .desktopnav a:hover::before, .desktopnav a.active::before {
   width: 100%;
 }
+
+/**Tooltips**/
+
+.profile-edit {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-edit .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: rgb(242, 237, 237);
+  color: #1e0f5c;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  top: -5px;
+  left: 120%;
+}
+
+.profile-edit:hover .tooltiptext {
+  visibility: visible;
+}
+
+.profile-edit .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent rgb(255, 254, 254) transparent transparent;
+}
+
+.delete-icon .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 2;
+
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -15px;
+}
+
+.delete-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.delete-icon .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+#ic2 .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 999;
+  
+
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -35px;
+}
+
+#ic2:hover .tooltiptext {
+  visibility: visible;
+}
+
+#ic2 .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
+.edit-icon .tooltiptext {
+  visibility: hidden;
+  width: 70px;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  
+  position: absolute;
+  bottom: 100%;
+  left: 30%;
+  margin-left: -38px;
+  z-index: 999;
+}
+
+.edit-icon:hover .tooltiptext {
+  visibility: visible;
+}
+
+.edit-icon .tooltiptext::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+
 
 /*nav nav-acc button*/
 .nav-acc {
@@ -906,19 +1041,29 @@ footer {
   justify-content: center;
   align-items: center;
   transition: 0.3s ease;
+
 }
 
 .details-header img {
-  width: 150px;
+  width: 200px;
   height: auto;
   margin-left: auto;
   border-radius: 20px;
   transition: 0.3s ease;
-  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+  filter: drop-shadow(0px 1px 2px rgba(0, 0, 0, 0.07))
+  drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.07))
+  drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.07))
+  drop-shadow(0px 8px 16px rgba(0, 0, 0, 0.07))
+  drop-shadow(0px 16px 32px rgba(0, 0, 0, 0.07))
+  drop-shadow(0px 32px 64px rgba(0, 0, 0, 0.07));
 }
 
 .details-header p, .desc-box p{
   margin-top: 0.5rem;
+}
+
+#qualifications-list li, #skills-list li{
+  margin: 0.25rem 0rem;
 }
 
 .buttons-container{
@@ -1337,9 +1482,10 @@ footer {
 }
 
 img#profile-picture{
-  padding-bottom: 3rem;
-  padding-top: 2rem;
+  margin-bottom: 3rem;
+  margin-top: 2rem;
 }
+
 .profile-card h1{
   margin-top: 1rem;
   font-size: 3rem;
@@ -1375,7 +1521,7 @@ img#profile-picture{
 
 .profile-edit{
   padding-bottom: 13rem;
-  margin-left: 10rem;
+  margin-left: 2rem;
 }
 
 .profile-edit:hover{
@@ -1595,7 +1741,7 @@ body.overlay-active .overlay {
 /*Edit Profile Sidenav*/
 .edit-profile-form {
   padding: 20px;
-  margin-top: 3rem;
+  margin-top: 0rem;
 }
 
 .edit-profile-form .form-group {
@@ -1923,7 +2069,9 @@ body.overlay-active .overlay {
   border-radius: 5px; 
   margin-left: 5px;
   background-color: #aaaaaa3e;
-  box-shadow: 0rem .1rem .1rem #a8a7c5;;
+  box-shadow: 0rem .1rem .1rem #a8a7c5;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -1960,6 +2108,40 @@ body.overlay-active .overlay {
   margin-top: 2.5rem;
 }
 
+.skills-input-box{
+  width: 80%;
+  background: #FFF;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+}
+
+.skills-row {
+  display: flex;
+  align-items: center;
+}
+
+.result-box{
+  max-height: 300px;
+  overflow-y: scroll;
+}
+
+.result-box ul{
+  border: 1px solid #999;
+  padding: 10px 5px;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.result-box ul li{
+  list-style: none;
+  border-radius: 3px;
+  padding: 15px 10px;
+  cursor: pointer;
+}
+
+.result-box ul li:hover {
+  background: #e9f3ff;
+}
+
 #skills_sidenav p {
   font-size: 18px;
   font-weight: normal;
@@ -1975,7 +2157,7 @@ body.overlay-active .overlay {
 }
 
 .skills-form .input-field{
-  width: 95%;
+  width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
@@ -1986,7 +2168,6 @@ body.overlay-active .overlay {
 
 #add_skills_group .button{
   margin-top: 0;
-  margin-right: 35rem;
 }
 
 #added_skills_list {
@@ -2379,6 +2560,12 @@ body.overlay-active .overlay {
   margin-bottom: 1rem;
   font-family: "Inter", sans-serif;
 }
+
+.info-container img{
+  border: 1px solid #000000;
+  border-radius: 20px;
+}
+
 .info-container ul{
   display: flex;
   flex-wrap: wrap;
@@ -2435,20 +2622,20 @@ body.overlay-active .overlay {
 }
 
 /* Custom Scrollbar for WebKit browsers (Chrome, Safari) */
-.past-jobs-container::-webkit-scrollbar,  .license-container::-webkit-scrollbar{
-  width: 12px; /* Width of the scrollbar */
+.past-jobs-container::-webkit-scrollbar,  .license-container::-webkit-scrollbar, .result-box::-webkit-scrollbar{
+  width: 10px; /* Width of the scrollbar */
 }
 
-.past-jobs-container::-webkit-scrollbar-track, .license-container::-webkit-scrollbar-track{
+.past-jobs-container::-webkit-scrollbar-track, .license-container::-webkit-scrollbar-track, .result-box::-webkit-scrollbar-track{
   background: #f1f1f1; /* Track color */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb, .license-container::-webkit-scrollbar-thumb {
+.past-jobs-container::-webkit-scrollbar-thumb, .license-container::-webkit-scrollbar-thumb, .result-box::-webkit-scrollbar-thumb {
   background: #2C1875; /* Scrollbar color */
   border-radius: 10px; /* Rounded corners */
 }
 
-.past-jobs-container::-webkit-scrollbar-thumb:hover , .license-container::-webkit-scrollbar-thumb:hover {
+.past-jobs-container::-webkit-scrollbar-thumb:hover , .license-container::-webkit-scrollbar-thumb:hover, .result-box::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
 }
 
@@ -2489,7 +2676,7 @@ body.overlay-active .overlay {
   font-size: 36px;
 }
 
-.popup .candidate-header p, ul {
+.popup .candidate-header p, .popup .candidate-header ul {
   padding-left: 3rem;
 }
 
@@ -2525,7 +2712,7 @@ body.overlay-active .overlay {
   justify-content: space-between;
   align-items: center;
 }
-.popup .candidate-container h2, h3, h4{
+.popup .candidate-container h2, .popup .candidate-container h3, .popup .candidate-container h4{
   margin: 0.5rem 0rem;
 }
 
@@ -2564,4 +2751,81 @@ body.overlay-active .overlay {
 
 .candidate-container::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
+}
+
+.upload-image-group {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.upload-image {
+  min-width: 200px; /* Adjust as needed */
+  min-height: 200px; /* Adjust as needed */
+  max-width: 200px; /* Adjust as needed */
+  max-height: 200px; /* Adjust as needed */
+  background-color: #D4D6FF;
+  border: 0.5rem #2C1875 solid;
+  background-clip: content-box;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.upload-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  border-radius: 50%;
+}
+
+.upload-image #upload-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #2C1875;
+}
+
+.profile-photo {
+  min-width: 225px; /* Adjust as needed */
+  min-height: 225px; /* Adjust as needed */
+  max-width: 225px; /* Adjust as needed */
+  max-height: 225px; /* Adjust as needed */
+  background-color: #D4D6FF;
+  border: 0.5rem #2C1875 solid;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+}
+
+.small-profile-photo {
+  width: 50px;
+  height: 50px;
+  background-color: #D4D6FF;
+  border: 0.15rem #2C1875 solid;
+  object-fit: cover; /* Ensures the image maintains aspect ratio */
+  border-radius: 50%; /* Makes the image circular if desired */
+}
+
+.large-profile-photo {
+  width: 125px; /* Adjust size as needed */
+  height: 125px; /* Adjust size as needed */
+  background-color: #D4D6FF;
+  border: 0.3rem #2C1875 solid;
+  object-fit: cover; /* Maintains aspect ratio */
+  border-radius: 50%; /* Makes the image circular */
+}
+
+.upload-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+  border-radius: 50%;
 }

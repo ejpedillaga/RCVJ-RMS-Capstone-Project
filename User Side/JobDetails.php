@@ -6,13 +6,17 @@ $conn = connection();
 session_start();
 $user_name = 'Sign Up'; // Default username if not logged in
 $user_info = [];
+$education_list = [];
+$vocational_list = [];
+$job_experience_list = [];
+$profile_image = null; // Initialize profile image
 
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
     $user_email = $_SESSION['user'];
     
-    // Use the existing database connection
-    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description FROM applicant_table WHERE email = ?";
+    // Use the existing database connection to fetch user information
+    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
     $stmt->execute();
@@ -21,6 +25,53 @@ if (isset($_SESSION['user'])) {
     if ($result->num_rows > 0) {
         $user_info = $result->fetch_assoc();
         $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
+        $userid = $user_info['userid']; // Fetch the user's ID for later use in queries
+        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null; // Fetch profile image
+
+        // Fetch education details using the fetched userid
+        $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
+        $stmt_edu = $conn->prepare($sql);
+        $stmt_edu->bind_param("i", $userid);
+        $stmt_edu->execute();
+        $result_edu = $stmt_edu->get_result();
+
+        // Collect education records
+        if ($result_edu->num_rows > 0) {
+            while ($row = $result_edu->fetch_assoc()) {
+                $education_list[] = $row;
+            }
+        }
+        $stmt_edu->close();
+
+        // Fetch vocational education details using the fetched userid
+        $sql = "SELECT school, course, year_started, year_ended FROM vocational_table WHERE userid = ?";
+        $stmt_voc = $conn->prepare($sql);
+        $stmt_voc->bind_param("i", $userid);
+        $stmt_voc->execute();
+        $result_voc = $stmt_voc->get_result();
+
+        // Collect vocational records
+        if ($result_voc->num_rows > 0) {
+            while ($row = $result_voc->fetch_assoc()) {
+                $vocational_list[] = $row;
+            }
+        }
+        $stmt_voc->close();
+
+        // Fetch job experience details using the fetched userid
+        $sql = "SELECT job_title, company_name, month_started, year_started, month_ended, year_ended FROM job_experience_table WHERE userid = ?";
+        $stmt_job = $conn->prepare($sql);
+        $stmt_job->bind_param("i", $userid);
+        $stmt_job->execute();
+        $result_job = $stmt_job->get_result();
+
+        // Collect job experience records
+        if ($result_job->num_rows > 0) {
+            while ($row = $result_job->fetch_assoc()) {
+                $job_experience_list[] = $row;
+            }
+        }
+        $stmt_job->close();
     }
     $stmt->close();
 }
@@ -28,7 +79,7 @@ if (isset($_SESSION['user'])) {
 // Get job ID from query parameter
 $job_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Prepare and execute SQL query with JOIN
+// Prepare and execute SQL query with JOIN for job details
 $sql = "SELECT job_table.job_title, job_table.job_location, job_table.job_candidates, job_table.company_name, job_table.job_description, job_table.date_posted, partner_table.logo
         FROM job_table
         JOIN partner_table ON job_table.company_name = partner_table.company_name
@@ -42,6 +93,34 @@ $job = $result->fetch_assoc();
 // Encode the company logo in base64
 if ($job && isset($job['logo'])) {
     $job['logo'] = base64_encode($job['logo']);
+}
+
+// Fetch qualifications from job_title_table
+$sql_qualifications = "SELECT gender, educational_attainment, years_of_experience, cert_license FROM job_title_table WHERE job_title = ?";
+$stmt_qual = $conn->prepare($sql_qualifications);
+$stmt_qual->bind_param("s", $job['job_title']);
+$stmt_qual->execute();
+$result_qual = $stmt_qual->get_result();
+
+if ($result_qual->num_rows > 0) {
+    $qualifications = $result_qual->fetch_assoc();
+}
+
+// Fetch skills for the job from job_skills_table
+$sql_skills = "SELECT skill_table.skill_name 
+               FROM job_skills_table 
+               JOIN job_title_table ON job_skills_table.job_title_id = job_title_table.id
+               JOIN skill_table ON job_skills_table.skill_id = skill_table.skill_id
+               WHERE job_title_table.job_title = ?";
+$stmt_skills = $conn->prepare($sql_skills);
+$stmt_skills->bind_param("s", $job['job_title']);
+$stmt_skills->execute();
+$result_skills = $stmt_skills->get_result();
+
+if ($result_skills->num_rows > 0) {
+    while ($row = $result_skills->fetch_assoc()) {
+        $skills[] = $row['skill_name'];
+    }
 }
 
 $company_name = $job['company_name'];
@@ -92,25 +171,62 @@ $conn->close();
                     </div>
                 </div>
                 <div>
-                    <img src="images/user.svg" alt="">
+                    <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
+                    <?php else: ?>
+                        <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
+                    <?php endif; ?>
                 </div>
             </div>
             <div id="personal-info">
                 <h3>Personal Information</h3>
                 <p id="personal-desc"><?php echo nl2br(htmlspecialchars($user_info['personal_description'])); ?></p>
             </div>
+            <!-- Past Jobs Information -->
             <div id="past-jobs">
                 <h3>Past Jobs</h3>
                 <ul>
-                    <li>Job</li>
-                    <li>job</li>
+                    <?php if (!empty($job_experience_list)): ?>
+                        <?php foreach ($job_experience_list as $job_exp): ?>
+                            <li>
+                                <?php echo htmlspecialchars($job_exp['job_title']) . " at " . htmlspecialchars($job_exp['company_name']) . " (" . htmlspecialchars($job_exp['month_started']) . " " . htmlspecialchars($job_exp['year_started']) . " - " . (!empty($job_exp['month_ended']) ? htmlspecialchars($job_exp['month_ended']) . " " . htmlspecialchars($job_exp['year_ended']) : 'Present') . ")"; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>No past job experience records found.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
+            <!-- Education Information -->
+            <!-- Education Information -->
             <div id="education">
-                <h3>Education</h3>
+                <h3>Educational Attainment</h3>
                 <ul>
-                    <li>Education</li>
-                    <li>Education</li>
+                    <?php if (!empty($education_list)): ?>
+                        <?php foreach ($education_list as $education): ?>
+                            <li>
+                                <?php echo htmlspecialchars($education['educational_attainment']) . " in " . htmlspecialchars($education['course']) . " from " . htmlspecialchars($education['school']) . " (" . htmlspecialchars($education['sy_started']) . " - " . htmlspecialchars($education['sy_ended']) . ")"; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>No education records found.</li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+
+            <!-- Vocational Education Information -->
+            <div id="vocational">
+                <h3>Vocational</h3>
+                <ul>
+                    <?php if (!empty($vocational_list)): ?>
+                        <?php foreach ($vocational_list as $vocational): ?>
+                            <li>
+                                <?php echo htmlspecialchars($vocational['course']) . " from " . htmlspecialchars($vocational['school']) . " (" . htmlspecialchars($vocational['year_started']) . " - " . htmlspecialchars($vocational['year_ended']) . ")"; ?>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>No vocational education records found.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
             <div id="skills">
@@ -165,7 +281,11 @@ $conn->close();
                     </div>
                 </div>
             </div>
-            <img src="images/user.svg" alt="">
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
             <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
         </div>
     </nav>
@@ -232,7 +352,7 @@ $conn->close();
                 <div class="company-box">
                     <h2 class="title3"><?php echo htmlspecialchars($job['job_title']); ?></h2>
                     <p id="company-name"><?php echo htmlspecialchars($job['company_name']); ?></p>
-                    <p id="location"><?php echo htmlspecialchars($job['job_location']); ?></p>
+                    <p id="location"><i class="fa fa-map-marker-alt" aria-hidden="true"></i> <?php echo htmlspecialchars($job['job_location']); ?></p>
                     <p id="date-posted">Posted on: <?php echo htmlspecialchars(date('m/d/Y', strtotime($job['date_posted']))); ?></p>
                     <p id="available">Available Spots: <?php echo htmlspecialchars($job['job_candidates']); ?></p>
                     <div class="buttons-container">
@@ -242,24 +362,41 @@ $conn->close();
                 </div>
                 <img id="company-logo" src="data:image/jpeg;base64,<?php echo htmlspecialchars($job['logo']); ?>" alt="Company Logo">
             </div>
-            <div class="desc-box">
+            <div class="desc-box" id="job-details-desc">
                 <h3>Job Description</h3>
                 <p id="description"><?php echo nl2br(htmlspecialchars($job['job_description'])); ?></p>
                 <h3>Qualifications</h3>
-                <ul id="qualifications list">
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
+                <ul id="qualifications-list">
+                    <?php if (htmlspecialchars($qualifications['gender']) === "Not Specified"): ?>
+                        <li><strong>Open to all genders</strong></li>
+                    <?php else: ?>
+                        <li><strong><?php echo htmlspecialchars($qualifications['gender']); ?></strong></li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['educational_attainment']) === "Undergraduate"): ?>
+                        <li>Undergraduates are qualified</li>
+                    <?php else: ?>
+                        <li>At least a <strong><?php echo htmlspecialchars($qualifications['educational_attainment']); ?></strong></li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "0"): ?>
+                        <li>No experience needed</li>
+                    <?php else: ?>
+                        <li>Preferably with <strong><?php echo htmlspecialchars($qualifications['years_of_experience']); ?> year/s</strong> of professional experience relevant to the field</li>
+                    <?php endif; ?>
+                    <?php if (htmlspecialchars($qualifications['cert_license']) === ""): ?>
+                        <li>No certification/licenses needed</li>
+                    <?php else: ?>
+                        <li>Must a holder of a <strong><?php echo htmlspecialchars($qualifications['cert_license']); ?></strong></li>
+                    <?php endif; ?>
                 </ul>
                 <h3>Skills</h3>
-                <ul id="skills list">
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
-                    <li>Sample</li>
+                <ul id="skills-list">
+                    <?php if (!empty($skills)): ?>
+                        <?php foreach ($skills as $skill): ?>
+                            <li><?php echo htmlspecialchars($skill); ?></li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li>No skills required for this job.</li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>

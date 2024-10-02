@@ -1,4 +1,6 @@
 <?php
+//This php retrieves the list of job titles. Used for populating the dropdowns for jobtitles
+
 include_once("connection.php");
 
 $conn = connection();

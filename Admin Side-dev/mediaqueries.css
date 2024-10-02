@@ -59,7 +59,7 @@
     .tr1 i{
         font-size: 1.5rem;
     }
-    #company-name, #date, #available, #fullname, #job-title{
+    #company-name, #job-title, #date, #available, #fullname, #job-title{
         font-size: 0.8rem;
     }
     .status-dropdown {

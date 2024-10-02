@@ -273,7 +273,7 @@ function previewEditLogo(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
 
-    if (currentPage.includes('candidates.html')) {
+    if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
     } else if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);

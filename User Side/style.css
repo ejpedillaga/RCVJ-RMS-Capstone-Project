@@ -2829,3 +2829,7 @@ body.overlay-active .overlay {
   display: none;
   border-radius: 50%;
 }
+
+.vocational-list, .pastjobs-list, .education-list, .skills-list {
+  padding-left: 20px; /* Indent the list */
+}

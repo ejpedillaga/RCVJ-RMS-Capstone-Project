@@ -275,6 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
+    } else if (currentPage.includes('smartsearch.php')) {
+        fetchData('fetch_smartsearch.php', populateSmartSearchTable);
     } else if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
@@ -644,6 +646,32 @@ function populateEmployeesTable(data) {
                 <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
                 <span class="tooltip-text">Delete Employee</span>
             </div>
+        </td>
+    `;
+    populateTable(data, 'table', rowTemplate);
+}
+
+function populateSmartSearchTable(data) {
+    const rowTemplate = (candidate) => `  
+        <td id="fullname" class="fullname">${candidate.full_name}</td>
+        <td id="job-title"><strong>${candidate.job_title}</strong></td>
+        <td id="company-name">${candidate.company_name}</td>
+        <td id="date">${candidate.date_applied}</td>
+        <td>
+            <select class="status-dropdown">
+                <option ${candidate.status === 'Interview' ? 'selected' : ''}>Interview</option>
+                <option ${candidate.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
+            </select>
+        </td>
+            <td class="candidates-tooltip-container">
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
+        </td>
+        <td class="candidates-tooltip-container">
+            <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+            <span class="tooltip-text">Delete Candidate</span>
         </td>
     `;
     populateTable(data, 'table', rowTemplate);

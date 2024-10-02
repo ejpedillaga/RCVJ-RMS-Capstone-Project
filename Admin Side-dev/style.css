@@ -1815,3 +1815,33 @@ input[type="radio"] {
     box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
     transition: 0.3s ease;
 }
+
+.profile-photo {
+    min-width: 225px; /* Adjust as needed */
+    min-height: 225px; /* Adjust as needed */
+    max-width: 225px; /* Adjust as needed */
+    max-height: 225px; /* Adjust as needed */
+    background-color: #D4D6FF;
+    border: 0.5rem #2C1875 solid;
+    padding: 5px;
+    border-radius: 50%;
+    display: flex;
+  }
+  
+  .small-profile-photo {
+    width: 50px;
+    height: 50px;
+    background-color: #D4D6FF;
+    border: 0.15rem #2C1875 solid;
+    object-fit: cover; /* Ensures the image maintains aspect ratio */
+    border-radius: 50%; /* Makes the image circular if desired */
+  }
+  
+  .large-profile-photo {
+    width: 125px; /* Adjust size as needed */
+    height: 125px; /* Adjust size as needed */
+    background-color: #D4D6FF;
+    border: 0.3rem #2C1875 solid;
+    object-fit: cover; /* Maintains aspect ratio */
+    border-radius: 50%; /* Makes the image circular */
+  }

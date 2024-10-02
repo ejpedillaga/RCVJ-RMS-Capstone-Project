@@ -2,7 +2,6 @@
 include 'connection.php';
 $conn = connection();
 
-// Start session and check for logged-in user
 session_start();
 $user_name = 'Sign Up'; // Default username if not logged in
 $user_info = [];
@@ -10,12 +9,15 @@ $education_list = [];
 $vocational_list = [];
 $job_experience_list = [];
 $profile_image = null; // Initialize profile image
+$skills = [];
+$company_name = '';
+$job_title = '';
 
+// Check if user is logged in
 if (isset($_SESSION['user'])) {
-    // Fetch user's email from the session
-    $user_email = $_SESSION['user'];
+    $user_email = $_SESSION['user']; // Fetch user's email from session
     
-    // Use the existing database connection to fetch user information
+    // Fetch user information from applicant_table
     $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
@@ -24,18 +26,17 @@ if (isset($_SESSION['user'])) {
 
     if ($result->num_rows > 0) {
         $user_info = $result->fetch_assoc();
-        $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
-        $userid = $user_info['userid']; // Fetch the user's ID for later use in queries
-        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null; // Fetch profile image
+        $user_name = $user_info['fname'] . ' ' . $user_info['lname']; // Get full name
+        $userid = $user_info['userid']; // Get user ID
+        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null;
 
-        // Fetch education details using the fetched userid
+        // Fetch education details
         $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
         $stmt_edu = $conn->prepare($sql);
         $stmt_edu->bind_param("i", $userid);
         $stmt_edu->execute();
         $result_edu = $stmt_edu->get_result();
 
-        // Collect education records
         if ($result_edu->num_rows > 0) {
             while ($row = $result_edu->fetch_assoc()) {
                 $education_list[] = $row;
@@ -43,14 +44,13 @@ if (isset($_SESSION['user'])) {
         }
         $stmt_edu->close();
 
-        // Fetch vocational education details using the fetched userid
+        // Fetch vocational education details
         $sql = "SELECT school, course, year_started, year_ended FROM vocational_table WHERE userid = ?";
         $stmt_voc = $conn->prepare($sql);
         $stmt_voc->bind_param("i", $userid);
         $stmt_voc->execute();
         $result_voc = $stmt_voc->get_result();
 
-        // Collect vocational records
         if ($result_voc->num_rows > 0) {
             while ($row = $result_voc->fetch_assoc()) {
                 $vocational_list[] = $row;
@@ -58,14 +58,13 @@ if (isset($_SESSION['user'])) {
         }
         $stmt_voc->close();
 
-        // Fetch job experience details using the fetched userid
+        // Fetch job experience details
         $sql = "SELECT job_title, company_name, month_started, year_started, month_ended, year_ended FROM job_experience_table WHERE userid = ?";
         $stmt_job = $conn->prepare($sql);
         $stmt_job->bind_param("i", $userid);
         $stmt_job->execute();
         $result_job = $stmt_job->get_result();
 
-        // Collect job experience records
         if ($result_job->num_rows > 0) {
             while ($row = $result_job->fetch_assoc()) {
                 $job_experience_list[] = $row;
@@ -79,7 +78,7 @@ if (isset($_SESSION['user'])) {
 // Get job ID from query parameter
 $job_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Prepare and execute SQL query with JOIN for job details
+// Fetch selected job details with company logo from job_table and partner_table
 $sql = "SELECT job_table.job_title, job_table.job_location, job_table.job_candidates, job_table.company_name, job_table.job_description, job_table.date_posted, partner_table.logo
         FROM job_table
         JOIN partner_table ON job_table.company_name = partner_table.company_name
@@ -124,6 +123,7 @@ if ($result_skills->num_rows > 0) {
 }
 
 $company_name = $job['company_name'];
+$job_title = $job['job_title'];
 $stmt->close();
 $conn->close();
 ?>
@@ -241,20 +241,21 @@ $conn->close();
 
             <script>
             document.getElementById('submitBtn').addEventListener('click', function() {
-                // Create an AJAX request
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', '/RCVJ-RMS/Admin Side-dev/candidates.php', true);
+                xhr.open('POST', '/RCVJ-RMS/Admin Side-dev/smartsearch.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
-                // Send the necessary data (you can add any additional data if needed)
-                xhr.send();
+                // Collect job details and send them with the request
+                var jobTitle = '<?php echo $job_title; ?>';
+                var companyName = '<?php echo $company_name; ?>';
+
+                // Send job title and company name via AJAX
+                var data = 'job_title=' + encodeURIComponent(jobTitle) + '&company_name=' + encodeURIComponent(companyName);
+                xhr.send(data);
 
                 xhr.onload = function() {
                     if (xhr.status == 200) {
                         alert('Data submitted successfully!');
-                        // Optionally, you could update the table dynamically here
-                        // For example, by appending the new candidate row
-                        document.getElementById('candidateTableBody').innerHTML += xhr.responseText;
                     } else {
                         alert('An error occurred!');
                     }

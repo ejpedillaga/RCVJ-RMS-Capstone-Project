@@ -414,7 +414,6 @@ function formatFileSize(size) {
 }
 
 
-
 /*Resume Dialog Popup*/
 const dialog = document.getElementById("submit_dialog");
 function submitForm(){
@@ -633,14 +632,14 @@ function deleteResume(userId) {
       deleteInput.name = 'delete_resume'; // This identifies the action in PHP
       deleteInput.value = '1';
 
-      // Append inputs to the form
-      form.appendChild(input);
-      form.appendChild(deleteInput);
+    // Append inputs to the form
+    form.appendChild(input);
+    form.appendChild(deleteInput);
 
-      // Append the form to the body and submit it
-      document.body.appendChild(form);
-      form.submit();
-  }
+    // Append the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+}
 }
 
 function showInfo() {

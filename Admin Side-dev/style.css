@@ -763,6 +763,9 @@ table td:last-child{
     margin: auto;
     border-radius: 20px;
     overflow: auto;
+}
+
+#info{
     height: 90%;
 }
 
@@ -1838,10 +1841,10 @@ input[type="radio"] {
   }
   
   .large-profile-photo {
-    width: 125px; /* Adjust size as needed */
-    height: 125px; /* Adjust size as needed */
+    width: 200px; /* Adjust size as needed */
+    height: 200px; /* Adjust size as needed */
     background-color: #D4D6FF;
-    border: 0.3rem #2C1875 solid;
+    /*border: 0.3rem #2C1875 solid;*/
     object-fit: cover; /* Maintains aspect ratio */
-    border-radius: 50%; /* Makes the image circular */
+    /*border-radius: 50%; /* Makes the image circular */
   }

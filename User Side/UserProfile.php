@@ -1407,7 +1407,7 @@ if (isset($_SESSION['message'])) {
                                                 <span class="tooltiptext">Delete</span>
                                             </div>
                                         </div>
-                                        <p>Your uploaded resume.</p> <br>
+                                        <p>Your uploaded resume:</p> <br>
                                         <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
                                                 width="600" height="400" style="border: none;"></iframe>
                                     <?php else: ?>

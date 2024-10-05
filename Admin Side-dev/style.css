@@ -63,7 +63,7 @@ body {
     color: var(--semi-light-violet);
 }
 
-.active {
+.sidebar .active {
     background-color: var(--semi-light-violet);
 }
 
@@ -1818,6 +1818,56 @@ input[type="radio"] {
     box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
     transition: 0.3s ease;
 }
+
+
+.tabs {
+    margin-top: 3rem;
+    display: flex;
+    border-bottom: 2px solid #ddd;
+    transition: 0.3s ease;
+    font-size: 1rem;
+  }
+  
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid transparent;
+    border-bottom: none;
+    font-weight: 500;
+  }
+  
+  .tab:hover,
+  .tab.active {
+    border-bottom: 2px solid #2C1875;
+    font-weight: 600;
+    color: #2C1875;
+  }
+  
+  .tab-content {
+    display: none;
+    padding: 20px;
+    border: 0 0 0 1px solid #ddd;
+    border-top: none;
+    transition: 0.3s ease;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding and border are included in the element's width and height */
+    margin: 0 auto; 
+  }
+  
+  .tab-content .category {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    margin: 1rem 0;  
+  }
+  
+  .tab-content p{
+    text-align: justify;
+  }
+  
+  .tab-content.active {
+    display: block;
 
 .profile-photo {
     min-width: 225px; /* Adjust as needed */

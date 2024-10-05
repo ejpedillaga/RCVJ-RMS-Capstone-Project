@@ -125,7 +125,13 @@ $result = $conn->query($query); // Execute the query
                 <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
 
-            <div>
+            <div class="tabs">
+                    <div class="tab active" onclick="openTab('pending')">Pending</div>
+                    <div class="tab" onclick="openTab('scheduled')">Scheduled</div>
+                    <div class="tab" onclick="openTab('interviewed')">Interviewed</div>
+                    <div class="tab" onclick="openTab('deployed')">Deployed</div>
+                </div>
+                <div id="pending" class="tab-content active">
                     <table>
                         <thead>
                             <tr class="th1">
@@ -156,6 +162,106 @@ $result = $conn->query($query); // Execute the query
                             ?>
                         </tbody>
                     </table>
+                </div>
+                
+                <div id="scheduled" class="tab-content">
+                    <table>
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="interviewed" class="tab-content">
+                    <table>
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id="deployed" class="tab-content">
+                    <table>
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
+                                while($row = $result->fetch_assoc()) {
+                                    echo "<tr>";
+                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
+                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
+                                    echo "</tr>";
+                                }
+                            } else {
+                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
+                            }
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
 

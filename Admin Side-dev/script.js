@@ -1961,3 +1961,17 @@ function populateJobTitles() {
 
 // Call this function when the page loads or when needed to populate the dropdown
 document.addEventListener('DOMContentLoaded', populateJobTitles);
+
+function openTab(tabName) {
+    var i, tabcontent, tabs;
+    tabcontent = document.getElementsByClassName('tab-content');
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove('active');
+    }
+    tabs = document.getElementsByClassName('tab');
+    for (i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+    document.getElementById(tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+    }

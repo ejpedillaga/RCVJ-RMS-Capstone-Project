@@ -12,7 +12,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list";
+$sql = "SELECT userid, full_name, job_title, company_name, date_applied, status FROM candidate_list";
 $result = $conn->query($sql);
 
 $candidates = array();

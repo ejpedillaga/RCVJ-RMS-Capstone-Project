@@ -1868,6 +1868,7 @@ input[type="radio"] {
   
   .tab-content.active {
     display: block;
+  }
 
 .profile-photo {
     min-width: 225px; /* Adjust as needed */

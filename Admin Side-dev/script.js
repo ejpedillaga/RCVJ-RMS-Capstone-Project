@@ -275,6 +275,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
+    } else if (currentPage.includes('smartsearch.php')) {
+        fetchData('fetch_smartsearch.php', populateSmartSearchTable);
     } else if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
@@ -644,6 +646,32 @@ function populateEmployeesTable(data) {
                 <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
                 <span class="tooltip-text">Delete Employee</span>
             </div>
+        </td>
+    `;
+    populateTable(data, 'table', rowTemplate);
+}
+
+function populateSmartSearchTable(data) {
+    const rowTemplate = (candidate) => `  
+        <td id="fullname" class="fullname">${candidate.full_name}</td>
+        <td id="job-title"><strong>${candidate.job_title}</strong></td>
+        <td id="company-name">${candidate.company_name}</td>
+        <td id="date">${candidate.date_applied}</td>
+        <td>
+            <select class="status-dropdown">
+                <option ${candidate.status === 'Interview' ? 'selected' : ''}>Interview</option>
+                <option ${candidate.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
+                <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
+            </select>
+        </td>
+            <td class="candidates-tooltip-container">
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <span class="tooltip-text">Candidate Information</span>
+        </td>
+        <td class="candidates-tooltip-container">
+            <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+            <span class="tooltip-text">Delete Candidate</span>
         </td>
     `;
     populateTable(data, 'table', rowTemplate);
@@ -1496,10 +1524,13 @@ initializePopupPagination('thirdPopup')
 
 
 // Function to initialize skill input handling for a specific popup
-function initializeSkillsInput(popupId, inputId, containerSelector) {
+function initializeSkillsInput(popupId, inputId1, inputId2, containerSelector1, containerSelector2) {
     var popup = document.getElementById(popupId);
-    var skillsInput = popup.querySelector(`#${inputId}`);
-    var skillsContainer = popup.querySelector(`#${containerSelector}`);
+    var skillsInput = popup.querySelector(`#${inputId1}`);
+    var skillsContainer = popup.querySelector(`#${containerSelector1}`);
+
+    var skillsDisplay = popup.querySelector(`#${inputId2}`);
+    var skillsDisplayContainer = popup.querySelector(`#${containerSelector2}`);
 
     console.log(popup);
     console.log(skillsInput);
@@ -1517,7 +1548,7 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
             event.preventDefault();
             const value = skillsInput.value.trim();
             if (value && !skillsSet.has(value.toLowerCase())) {
-                addSkill(skillsContainer, value, skillsInput); // Pass skillsInput as an argument
+                addSkill(skillsDisplayContainer, value, skillsDisplay); // Pass skillsInput as an argument
                 skillsInput.value = '';
             }
         }
@@ -1536,6 +1567,8 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
         });
     });
 }
+//Start of edit
+
 
 // Function to add a new skill
 function addSkill(container, text, skillsInput) {
@@ -1643,7 +1676,7 @@ function showJobTitle() {
     initializePopupPagination('add-job-title-popup');
     document.getElementById('popup').style.display = 'none';
     document.getElementById('popup').classList.remove('show');
-    initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+    initializeSkillsInput('add-job-title-popup', 'jobposting-search', 'jobposting-skills-input', 'add-jobposting-search-container','add-jobposting-skills-container');
 }
 
 function hideJobTitle() {

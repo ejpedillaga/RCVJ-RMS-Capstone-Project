@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         VALUES (?, ?, ?, ?, ?)";
         $insertStmt = $conn->prepare($insertQuery);
 
-        // For now, use placeholders for Job Title and Company Name
-        $jobTitle = 'Job Title Placeholder';
-        $companyName = 'Company Placeholder';
+        // Get job title and company name from POST request (sent from JobDetails.php)
+        $jobTitle = isset($_POST['job_title']) ? $_POST['job_title'] : 'Job Title Placeholder';
+        $companyName = isset($_POST['company_name']) ? $_POST['company_name'] : 'Company Placeholder';
 
         $insertStmt->bind_param("sssss", $fullName, $jobTitle, $companyName, $dateApplied, $status);
         $insertStmt->execute();
@@ -78,7 +78,7 @@ $result = $conn->query($query); // Execute the query
             </button>
         </div>
             <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
-            <a href="smartsearch.html"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
+            <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php" class="active"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" ><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.html"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>

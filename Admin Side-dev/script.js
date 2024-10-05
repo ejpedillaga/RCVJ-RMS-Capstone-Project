@@ -657,16 +657,11 @@ function populateSmartSearchTable(data) {
         <td id="job-title"><strong>${candidate.job_title}</strong></td>
         <td id="company-name">${candidate.company_name}</td>
         <td id="date">${candidate.date_applied}</td>
-        <td>
-            <select class="status-dropdown">
-                <option ${candidate.status === 'Interview' ? 'selected' : ''}>Interview</option>
-                <option ${candidate.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option ${candidate.status === 'Rejected' ? 'selected' : ''}>Rejected</option>
-                <option ${candidate.status === 'Deployed' ? 'selected' : ''}>Deployed</option>
-            </select>
+        <td class="status" id="status-qualified">
+            <span class="status-label-qualified">Qualified</span>
         </td>
             <td class="candidates-tooltip-container">
-            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.userid})"></i>
             <span class="tooltip-text">Candidate Information</span>
         </td>
         <td class="candidates-tooltip-container">

@@ -12,44 +12,6 @@ if (!$conn) {
     die("Database connection failed.");
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the current user's email from session
-    $email = $_SESSION['user'];
-
-    // Fetch full name from applicant_table
-    $query = "SELECT fname, lname FROM applicant_table WHERE email = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $fullName = $row['fname'] . ' ' . $row['lname'];
-
-        // Set current date and default status
-        $dateApplied = date('Y-m-d');
-        $status = 'Pending';
-
-        // Insert data into candidate_list table
-        $insertQuery = "INSERT INTO candidate_list (full_name, job_title, company_name, date_applied, status) 
-                        VALUES (?, ?, ?, ?, ?)";
-        $insertStmt = $conn->prepare($insertQuery);
-
-        // Get job title and company name from POST request (sent from JobDetails.php)
-        $jobTitle = isset($_POST['job_title']) ? $_POST['job_title'] : 'Job Title Placeholder';
-        $companyName = isset($_POST['company_name']) ? $_POST['company_name'] : 'Company Placeholder';
-
-        $insertStmt->bind_param("sssss", $fullName, $jobTitle, $companyName, $dateApplied, $status);
-        $insertStmt->execute();
-        $insertStmt->close();
-    } else {
-        echo "No user found.";
-    }
-    $stmt->close();
-}
-
 $user_name = 'Sign Up'; // Default username if not logged in
 $user_info = [];
 $education_list = [];
@@ -60,14 +22,15 @@ $skills = [];
 $company_name = '';
 $job_title = '';
 
-// Check if user is logged in
-if (isset($_SESSION['user'])) {
-    $user_email = $_SESSION['user']; // Fetch user's email from session
-    
-    // Fetch user information from applicant_table
-    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
+// Assuming $passed_userid is the userid you want to use
+$passed_userid = '';
+
+// Check if the passed_userid is set and is valid
+if (isset($passed_userid)) {
+    // Fetch user information from applicant_table based on passed userid
+    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE userid = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $user_email);
+    $stmt->bind_param("i", $passed_userid);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -120,11 +83,9 @@ if (isset($_SESSION['user'])) {
         $stmt_job->close();
     }
     $stmt->close();
+} else {
+    echo "User ID is not set.";
 }
-
-// Fetch candidates from candidate_list table
-$query = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list";
-$result = $conn->query($query); // Execute the query
 ?>
 
 
@@ -203,68 +164,8 @@ $result = $conn->query($query); // Execute the query
                     <thead>
 
                     <tbody>
-                            <?php
-                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
-                                while($row = $result->fetch_assoc()) {
-                                    echo "<tr>";
-                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                                    echo "</tr>";
-                                }
-                            } else {
-                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
-                            }
-                            ?>
-                        </tbody>
-                    
-                    <tr class="tr1">
-                        <td class="fullname" id="fullname">Juan Miguel Escalante</td>
-                        <td id="job-title"><strong>SUPERMARKET BAGGER</strong></td>
-                        <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
-                        <td id="#date">5/13/2024</td>
-                        <td class="status" id="status-identical">
-                          <span class="status-label-identical">Identical</span>
-                        </td>
-                        <td class="candidates-tooltip-container">
-                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
-                            <span class="tooltip-text">Candidate Information</span>
-                        </td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                    </tr>
-                    
-                    <tr class="tr1">
-                        <td class="fullname" id="fullname">Juan Miguel Escalante</td>
-                        <td id="job-title"><strong>SUPERMARKET BAGGER</strong></td>
-                        <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
-                        <td id="#date">5/13/2024</td>
-                        <td class="status" id="status-qualified">
-                          <span class="status-label-qualified">Qualified</span>
-                        </td>
-                        </td>
-                        <td class="candidates-tooltip-container">
-                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
-                            <span class="tooltip-text">Candidate Information</span>
-                        </td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                    </tr>
-                      
-                    <tr class="tr1">
-                        <td class="fullname" id="fullname">Juan Miguel Escalante</td>
-                        <td id="job-title"><strong>SUPERMARKET BAGGER</strong></td>
-                        <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
-                        <td id="#date">5/13/2024</td>
-                        <td class="status" id="status-overqualified">
-                          <span class="status-label-overqualified">Overqualified</span>
-                        </td>
-                        <td class="candidates-tooltip-container">
-                            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
-                            <span class="tooltip-text">Candidate Information</span>
-                        </td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i></td>
-                    </tr>
+                        <!-- Data is displayed here -->
+                    </tbody>
                 </table>
             </div>
 

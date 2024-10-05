@@ -121,6 +121,27 @@ if ($result_skills->num_rows > 0) {
         $skills[] = $row['skill_name'];
     }
 }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Handle the form submission
+    $userid = $user_info['userid'];
+    $full_name = $user_name;
+    $job_title = $job['job_title'];
+    $company_name = $job['company_name'];
+    $date_applied = date('Y-m-d');
+    $status = 'Pending';
+
+    $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, date_applied, status) VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt_insert = $conn->prepare($sql_insert);
+    $stmt_insert->bind_param("isssss", $userid, $full_name, $job_title, $company_name, $date_applied, $status);
+
+    if ($stmt_insert->execute()) {
+        echo "Application submitted successfully!";
+        // Optional: Redirect or update UI accordingly
+    } else {
+        echo "Error: " . $stmt_insert->error;
+    }
+    $stmt_insert->close();
+}
 
 $company_name = $job['company_name'];
 $job_title = $job['job_title'];
@@ -150,6 +171,7 @@ $conn->close();
         </div>
         <h3 style="color: #2C1875">Review your information:</h3>
         <p>This information will be reviewed by the employer.</p>
+        <form method="post" action="">
         <div class="candidate-container">
             <div class="candidate-header">
                 <div>
@@ -237,34 +259,12 @@ $conn->close();
             </div>
         </div>
         <div class="buttons-container">
-            <button class="button-apply" id="submitBtn">Submit</button>
-
-            <script>
-            document.getElementById('submitBtn').addEventListener('click', function() {
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', '/RCVJ-RMS/Admin Side-dev/smartsearch.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-                // Collect job details and send them with the request
-                var jobTitle = '<?php echo $job_title; ?>';
-                var companyName = '<?php echo $company_name; ?>';
-
-                // Send job title and company name via AJAX
-                var data = 'job_title=' + encodeURIComponent(jobTitle) + '&company_name=' + encodeURIComponent(companyName);
-                xhr.send(data);
-
-                xhr.onload = function() {
-                    if (xhr.status == 200) {
-                        alert('Data submitted successfully!');
-                    } else {
-                        alert('An error occurred!');
-                    }
-                };
-            });
-            </script>
+            <button type="submit" class="button-apply" id="submitBtn">Submit</button>
             <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
         </div>
     </div>
+    </form>
+    
     <!--Desktop Nav-->
     <nav class="desktopnav" id="desktop-nav">
         <div class="logo">

@@ -4,7 +4,7 @@ $conn = connection();
 session_start();
 
 // Fetch open job listings
-$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
+$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description, date_posted FROM job_table WHERE job_status = 'open'";
 $jobs_result = $conn->query($sql); // Execute the job listing query
 
 // Initialize user name and profile image
@@ -188,8 +188,11 @@ $conn->close();
                             echo '<h4 id="available">(' . $row["job_candidates"] . ')</h4>';
                             echo '</div>';
                             echo '<div class="company-box">';
-                            echo '<p style="margin-top: 5px" id="company-name">' . $row["company_name"] . '</p>';
-                            echo '<p id="location"><i class="location fas fa-map-marker-alt"></i>' . $row["job_location"] . '</p>';
+                            echo '<p style="margin-top: 0.5rem; margin-bottom: 0.5rem;" id="company-name">' . $row["company_name"] . '</p>';
+                            echo '<p style="margin-top: 5px" id="location"><i class="location fas fa-map-marker-alt"></i>' . $row["job_location"] . '</p>';
+                            $datePosted = new DateTime($row["date_posted"]);
+                            $formattedDate = $datePosted->format('m/d/Y');
+                            echo '<p style="margin-top: 5px" id="date"><i class="fas fa-calendar-alt"></i> ' . $formattedDate . '</p>';
                             echo '</div>';
                             echo '</div>';
                             echo '</li>';

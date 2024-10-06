@@ -981,7 +981,7 @@ footer {
   flex-wrap: wrap;
   justify-content: center;
   overflow-y: scroll;
-  height: 50%;
+  height: 60%;
 }
 
 .jobs-main-container ul {
@@ -1250,7 +1250,6 @@ footer {
 
 #company-name {
   word-wrap: break-word;
-  height: 64px; 
 }
 
 #company-name {

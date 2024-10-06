@@ -121,10 +121,10 @@ if (isset($_POST['fetch_jobs']) && isset($_POST['company_id'])) {
               AND job_status = 'Open'";
     
     $result = mysqli_query($conn, $query);
-    echo "<select id='jobDropdown' class='select-job' onchange='fetchJobDetails(this.value, $company_id)'>"; // Pass company ID to JS
+    echo "<select id='jobDropdown' class='select-job' onchange='fetchJobDetails(this.value, $company_id)'>";
     echo "<option value='' disabled selected>Select Job</option>";
     while ($row = mysqli_fetch_assoc($result)) {
-        echo "<option value='".$row['id']."'>".$row['job_title']." (".$row['job_location'].", ".$row['job_candidates']." open)</option>"; // Pass job id
+        echo "<option value='".$row['id']."'>".$row['job_title'].", ".$row['job_location']." (".$row['job_candidates'].")</option>";
     }
     echo "</select>";
 
@@ -363,8 +363,9 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     <td><strong>${candidate.candidate.job_title}</strong></td>
                     <td>${candidate.candidate.company_name}</td>
                     <td>${candidate.candidate.date_applied}</td>
-                    <td class="status">
+                    <td class="status candidates-tooltip-container">
                         <span class="${statusClass}">${statusText}</span>
+                        <span class="tooltip-text">${tooltipText}</span>
                     </td>
                     <td class="candidates-tooltip-container">
                         <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.candidate.userid})"></i>
@@ -407,15 +408,19 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 if (score === maxScore) {
                     statusClass = 'status-label-identical';
                     statusText = 'Identical';
+                    tooltipText = 'Perfect fit for the role';
                 } else if (score > (maxScore / 2)) {
                     statusClass = 'status-label-Underqualified';
                     statusText = 'Underqualified';
+                    tooltipText = 'Great qualifications, but not the best fit for role';
                 } else if (score > 0) {
                     statusClass = 'status-label-unqualified';
                     statusText = 'Unqualified';
+                    tooltipText = 'Limited qualities, skills, and experience';
                 } else {
                     statusClass = 'status-label-not';
                     statusText = 'Not Qualified';
+                    tooltipText = 'Does not meet any of the qualifications';
                 }
 
                 // Append row to the table

@@ -1229,15 +1229,22 @@ footer {
 .partner-card p{
   font-weight: 500;
   margin-top: 1rem;
-  overflow-wrap: break-word;
   width: 100%;
   box-sizing: border-box; 
   max-height: 100px; 
   overflow: auto;
   text-align: center; 
-  word-wrap: break-word; 
-  word-break: break-all;
   white-space: normal;
+}
+
+#company-name {
+  word-wrap: break-word;
+  height: 64px; 
+}
+
+#company-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /*Company Profile Styles*/

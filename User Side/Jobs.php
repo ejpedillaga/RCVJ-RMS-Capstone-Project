@@ -26,6 +26,17 @@ if (isset($_SESSION['user'])) {
     }
 }
 
+// Display success message if available
+if (isset($_SESSION['message'])) {
+    echo "<script type='text/javascript'>
+            alert('{$_SESSION['message']}');
+            $(document).ready(function() {
+                $('#successModal').modal('show');
+            });
+          </script>";
+    unset($_SESSION['message']);  // Clear the message after displaying
+}
+
 // Close the connection
 $conn->close();
 ?>

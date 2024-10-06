@@ -131,8 +131,8 @@ body {
 
 .post-button {
     padding: 1rem;
-    font-size: 1.2rem;
-    border-radius: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
     border: none;
     background-color: var(--primary-color);
     color: var(--default-color);
@@ -143,8 +143,8 @@ body {
 
 .rejected-button {
     padding: 1rem;
-    font-size: 1.2rem;
-    border-radius: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
     border: none;
     background-color: var(--primary-color);
     color: var(--default-color);
@@ -155,7 +155,7 @@ body {
 
 .toggle-button {
     height: 61px;
-    border-radius: 20px;
+    border-radius: 10px;
     display: flex;
     overflow: hidden;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
@@ -222,8 +222,8 @@ body {
 
 .search-bar {
     width: 100%;
-    font-size: 20px;
-    border: 1px solid #ccc;
+    font-size: 16px;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 10px 10px 10px 40px;
     box-sizing: border-box;
@@ -235,7 +235,7 @@ body {
     top: 50%;
     left: 10px;
     transform: translateY(-50%);
-    font-size: 20px;
+    font-size: 16px;
     color: #888;
 }
 
@@ -261,20 +261,20 @@ table td {
 }
 
 table th:first-child{
-    border-radius:20px 0 0 20px;
+    border-radius:10px 0 0 10px;
 }
 
 table th:last-child{
-    border-radius:0 20px 20px 0;
+    border-radius:0 10px 10px 0;
 }
 
 table td:first-child{
-    border-radius:20px 0 0 20px;
+    border-radius:10px 0 0 10px;
     
 }
 
 table td:last-child{
-    border-radius:0 20px 20px 0;
+    border-radius:0 10px 10px 0;
 }
 
 .th1 {
@@ -352,7 +352,7 @@ table td:last-child{
     width: 70%; 
   }
   
-  .status-label-qualified {
+  .status-label-underqualified {
       font-size: 17px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -365,7 +365,7 @@ table td:last-child{
       width: 70%; 
     }
   
-  .status-label-overqualified {
+  .status-label-unqualified {
       font-size: 17px;
       border: 1px solid #ccc;
       border-radius: 10px;
@@ -377,12 +377,31 @@ table td:last-child{
       display: inline-block;
       width: 70%; 
     }
+
+    .status-label-not {
+        font-size: 17px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 0.2rem 0.5rem; 
+        box-sizing: border-box;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        background-color: red;
+        color: #ffffff;
+        display: inline-block;
+        width: 70%; 
+    }
+    
+    .match-tag {
+        margin-right: 5px; /* Adjust spacing between the tag and status */
+        padding: 3px 6px; /* Add padding for better appearance */
+        border-radius: 5px; /* Rounded corners */
+    }
   
 
 /*CANDIDATES CSS*/
 .search-candidates {
-    font-size: 20px;
-    border: 1px solid #ccc;
+    font-size: 16px;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 10px 10px 10px 40px;
     box-sizing: border-box;
@@ -394,16 +413,18 @@ table td:last-child{
     top: 50%;
     left: 10px;
     transform: translateY(-50%);
-    font-size: 20px;
+    font-size: 16px;
     color: #888;
 }
 
 .sort-by,
 .order-sort,
 .company-sort,
-.status-sort {
-    font-size: 20px;
-    border: 1px solid #ccc;
+.status-sort,
+.select-company,
+.select-job {
+    font-size: 16px;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 10px;
     box-sizing: border-box;
@@ -414,8 +435,8 @@ table td:last-child{
 .reject-button {
     width: 145px;
     height: 61px;
-    font-size: 24px;
-    border-radius: 20px;
+    font-size: 16px;
+    border-radius: 10px;
     border: none;
     background-color: var(--primary-color);
     color: var(--default-color);
@@ -507,8 +528,8 @@ table td:last-child{
 /*Partners CSS*/
 .add-partners-button {
     padding: 1rem;
-    font-size: 1.2rem;
-    border-radius: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
     border: none;
     background-color: var(--primary-color);
     color: var(--default-color);
@@ -517,8 +538,8 @@ table td:last-child{
 }
 .search-partners {
     width: 100%;
-    font-size: 20px;
-    border: 1px solid #ccc;
+    font-size: 16px;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 10px 10px 10px 40px;
     box-sizing: border-box;
@@ -529,7 +550,7 @@ table td:last-child{
 
 .add-employees-button {
     padding: 1rem;
-    font-size: 1.2rem;
+    font-size: 1rem;
     border-radius: 20px;
     border: none;
     background-color: var(--primary-color);
@@ -539,8 +560,8 @@ table td:last-child{
 }
 .search-employees {
     width: 100%;
-    font-size: 20px;
-    border: 1px solid #ccc;
+    font-size: 16px;
+    border: 1px solid #000000;
     border-radius: 10px;
     padding: 10px 10px 10px 40px;
     box-sizing: border-box;

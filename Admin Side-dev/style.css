@@ -1920,3 +1920,36 @@ input[type="radio"] {
     object-fit: cover; /* Maintains aspect ratio */
     /*border-radius: 50%; /* Makes the image circular */
   }
+
+  #pagination {
+    margin-top: 20px;
+  }
+
+    .pagination {
+        list-style-type: none;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination li {
+        margin: 0 5px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 8px 12px;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .pagination a:hover {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
+    .pagination .active a {
+        background-color: var(--secondary-color);
+        color: white;
+        border: 1px solid var(--secondary-color);
+    }

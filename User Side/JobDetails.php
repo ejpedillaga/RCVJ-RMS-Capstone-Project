@@ -127,20 +127,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $full_name = $user_name;
     $job_title = $job['job_title'];
     $company_name = $job['company_name'];
+    $job_location = $job['job_location']; // Assuming this is captured from your form
+    $job_id = $job_id; // The job ID from the GET parameter
     $date_applied = date('Y-m-d');
     $status = 'Pending';
 
-    $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, date_applied, status) VALUES (?, ?, ?, ?, ?, ?)";
+    // Updated SQL to include job_id
+    $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_insert = $conn->prepare($sql_insert);
-    $stmt_insert->bind_param("isssss", $userid, $full_name, $job_title, $company_name, $date_applied, $status);
+    $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
 
     if ($stmt_insert->execute()) {
-        echo "Application submitted successfully!";
-        // Optional: Redirect or update UI accordingly
+        // Store success message in session
+        $_SESSION['message'] = "Application submitted successfully!";
+        header("Location: Jobs.php");
+        exit; 
     } else {
-        echo "Error: " . $stmt_insert->error;
+        echo "Error deleting education record: " . $conn->error;
     }
     $stmt_insert->close();
+}
+
+// Display success message if available
+if (isset($_SESSION['message'])) {
+    echo "<script type='text/javascript'>
+            alert('{$_SESSION['message']}');
+            $(document).ready(function() {
+                $('#successModal').modal('show');
+            });
+          </script>";
+    unset($_SESSION['message']);  // Clear the message after displaying
 }
 
 $company_name = $job['company_name'];
@@ -400,7 +416,7 @@ $conn->close();
                     <?php else: ?>
                         <li>At least a <strong><?php echo htmlspecialchars($qualifications['educational_attainment']); ?></strong></li>
                     <?php endif; ?>
-                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "0"): ?>
+                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "-"): ?>
                         <li>No experience needed</li>
                     <?php else: ?>
                         <li>Preferably with <strong><?php echo htmlspecialchars($qualifications['years_of_experience']); ?> year/s</strong> of professional experience relevant to the field</li>

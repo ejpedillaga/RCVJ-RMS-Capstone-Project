@@ -651,27 +651,6 @@ function populateEmployeesTable(data) {
     populateTable(data, 'table', rowTemplate);
 }
 
-function populateSmartSearchTable(data) {
-    const rowTemplate = (candidate) => `  
-        <td id="fullname" class="fullname">${candidate.full_name}</td>
-        <td id="job-title"><strong>${candidate.job_title}</strong></td>
-        <td id="company-name">${candidate.company_name}</td>
-        <td id="date">${candidate.date_applied}</td>
-        <td class="status" id="status-qualified">
-            <span class="status-label-qualified">Qualified</span>
-        </td>
-            <td class="candidates-tooltip-container">
-            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.userid})"></i>
-            <span class="tooltip-text">Candidate Information</span>
-        </td>
-        <td class="candidates-tooltip-container">
-            <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-            <span class="tooltip-text">Delete Candidate</span>
-        </td>
-    `;
-    populateTable(data, 'table', rowTemplate);
-}
-
 function handleEmployeeStatusChange(employeeId) {
     const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
     const selectedValue = dropdown.value;

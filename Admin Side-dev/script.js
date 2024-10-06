@@ -273,9 +273,9 @@ function previewEditLogo(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
 
-    if (currentPage.includes('candidates.php')) {
+    /*if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
-    } else if (currentPage.includes('smartsearch.php')) {
+    } else*/ if (currentPage.includes('smartsearch.php')) {
         fetchData('fetch_smartsearch.php', populateSmartSearchTable);
     } else if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
@@ -588,7 +588,7 @@ function populateTable(data, tableSelector, rowTemplate) {
     });
 }
 
-function populateCandidatesTable(data) {
+/*function populateCandidatesTable(data) {
     const rowTemplate = (candidate) => `  
         <td id="fullname" class="fullname">${candidate.full_name}</td>
         <td id="job-title"><strong>${candidate.job_title}</strong></td>
@@ -612,7 +612,7 @@ function populateCandidatesTable(data) {
         </td>
     `;
     populateTable(data, 'table', rowTemplate);
-}
+}*/
 
 function populateRejectsTable(data) {
     const rowTemplate = (reject) => `

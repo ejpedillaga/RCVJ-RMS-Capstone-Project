@@ -283,102 +283,59 @@ $conn->close();
     
     <!--Desktop Nav-->
     <nav class="desktopnav" id="desktop-nav">
-        <div class="logo">
-            <img src="images/logo.png" alt="">
-        </div>
-        <div>
-            <ul class="nav-links">
-                <li><a href="Home.php">Home</a></li>
-                <li><a class="active" href="#">Jobs</a></li>
-                <li><a href="About.php">About</a></li>
-                <li><a href="Partner.php">Partner Companies</a></li>
-            </ul>
-        </div>
-        <div class="nav-acc">
-            <div class="notification_wrap">
-                <div class="notification_icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="dropdown">
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="logo">
+                <img src="images/logo.png" alt="">
             </div>
+            <div>
+                <ul class="nav-links">
+                    <li><a href="Home.php">Home</a></li>
+                    <li><a class="active" href="#">Jobs</a></li>
+                    <li><a href="About.php">About</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
+                </ul>
+            </div>
+            <div class="nav-acc">
                 <?php if ($profile_image): ?>
                     <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
                 <?php else: ?>
                     <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
                 <?php endif; ?>
-            <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
-        </div>
-    </nav>
-
-    <!---Burger Nav-->
-    <nav id="hamburger-nav">
-        <div class="logo">
-            <img src="images/logo.png" alt="">
-        </div>
-        <div class="hamburger-menu">
-            <div class="nav-icons">
-                <div class="notification_wrap">
-                    <div class="notification_icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="dropdown">
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hamburger-icon" onclick="toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="menu-links">
-                <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
-                <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
-                <li><a href="About.php" onclick="toggleMenu()">About</a></li>
-                <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
-                <div class="nav-acc">
-                    <img src="images/user.svg" alt="">
+                <?php if (isset($_SESSION['user'])): ?>
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php else: ?>
+                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+            </div>
+        </nav>
+
+        <!---Burger Nav-->
+        <nav id="hamburger-nav">
+            <div class="logo">
+                <img src="images/logo.png" alt="">
+            </div>
+            <div class="hamburger-menu">
+                <div class="nav-icons">
+                    <div class="hamburger-icon" onclick="toggleMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="menu-links">
+                    <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
+                    <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
+                    <li><a href="About.php" onclick="toggleMenu()">About</a></li>
+                    <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
+                    <li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <a href="UserProfile.php">Profile</a>
+                        <?php else: ?>
+                            <a href="../Login/Applicant.php"><?php echo htmlspecialchars($user_name); ?></a>
+                        <?php endif; ?>
+                    </li>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
     
     <section class="details-section">
         <div class="main-container">

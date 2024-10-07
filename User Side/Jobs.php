@@ -134,11 +134,11 @@ $conn->close();
                 <div class="search-box">
                     <div class="search-input" id="job-title">
                         <i class="search-icon fas fa-search"></i>
-                        <input type="text" name="job_title" placeholder="Job title, keywords, or company">
+                        <input type="text" name="job_title" placeholder="Job title, Company">
                     </div>
                     <div class="search-input" id="location">
                         <i class="search-icon fas fa-map-marker-alt"></i>
-                        <input type="text" name="location" placeholder="City, state, zip code, or 'remote'">
+                        <input type="text" name="location" placeholder="City, Municipality">
                         <button class="search-button" type="submit">Search</button>
                     </div>
                 </div>

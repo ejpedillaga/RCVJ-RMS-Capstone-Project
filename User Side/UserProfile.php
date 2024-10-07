@@ -51,7 +51,7 @@ $license_data = [
     'attachment' => ''
 ];
 
-$user_name = 'User';
+$user_name = 'Sign Up';
 $user_location = 'Unknown Location';
 
 // Check if user is logged in

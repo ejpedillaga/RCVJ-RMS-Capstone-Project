@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+$user_name = 'Sign Up'; // Default value
+$profile_image = null; // Initialize the profile_image variable
+
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
     $user_email = $_SESSION['user'];
@@ -29,9 +32,6 @@ if (isset($_SESSION['user'])) {
 
         // Fetch the profile image
         $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
-    } else {
-        $user_name = 'User';
-        $profile_image = null; // Default to null if no profile image is found
     }
 
     // Close the connection

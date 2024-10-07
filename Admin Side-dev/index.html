@@ -51,7 +51,7 @@
                 <div class="filter-container">
                     <div class="search-wrapper">
                         <i class="fas fa-magnifying-glass search-icon"></i>
-                        <input type="text" class="search-bar" placeholder="Search Jobs">
+                        <input type="text" id="search-bar" class="search-bar" placeholder="Search Jobs">
                     </div>
                     <select class="sort-by">
                         <option>Sort by: Posting Date</option>
@@ -65,6 +65,7 @@
                 </div>
 
                 <div class="tab-content" id="tab1-content">
+                    <p id="no-jobs-message-tab1" style="display:none; text-align:center;">No Jobs Available</p> <!-- No jobs message -->
                     <table>
                         <thead>
                             <tr class="th1">
@@ -85,6 +86,7 @@
                 </div>
 
                 <div class="tab-content" id="tab2-content" >
+                    <p id="no-jobs-message-tab2" style="display:none; text-align:center;">No Jobs Available</p> <!-- No jobs message -->
                     <table>
                         <thead>
                             <tr class="th1">
@@ -556,6 +558,50 @@
             inputBox.value = list.innerHTML;
             resultsBox.innerHTML = '';
         }
+
+        function searchJobs() {
+            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
+            const allRows = document.querySelectorAll('#tab1-content tbody tr, #tab2-content tbody tr');
+            let visibleRows = 0;
+
+            allRows.forEach(row => {
+                const companyName = row.querySelector('#company-name').textContent.toLowerCase();
+                const jobTitle = row.querySelector('#job-title').textContent.toLowerCase();
+
+                // Check if the search term is present in either company name or job title
+                if (companyName.includes(searchTerm) || jobTitle.includes(searchTerm)) {
+                    row.style.display = ''; // Show row
+                    visibleRows++;
+                } else {
+                    row.style.display = 'none'; // Hide row
+                }
+            });
+
+            // If no rows are visible, display "No Jobs Available" message
+            displayNoJobsMessage(visibleRows === 0);
+        }
+
+        // Function to display "No Jobs Available" message
+        function displayNoJobsMessage(show) {
+            const tab1Body = document.querySelector('#tab1-content tbody');
+            const tab2Body = document.querySelector('#tab2-content tbody');
+            const noJobsRow = document.createElement('tr');
+            noJobsRow.classList.add('no-jobs-message');
+            noJobsRow.innerHTML = `<td colspan="7" style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; color: #2C1875; height: 200px; vertical-align: middle;">No Jobs Available</td>`;
+
+            // Remove existing "No Jobs Available" message
+            const existingMessage = document.querySelector('.no-jobs-message');
+            if (existingMessage) existingMessage.remove();
+
+            // If 'show' is true, add the message to both tab1 and tab2
+            if (show) {
+                tab1Body.appendChild(noJobsRow.cloneNode(true));
+                tab2Body.appendChild(noJobsRow);
+            }
+        }
+
+        // Attach the search function to the input event
+        document.getElementById('search-bar').addEventListener('input', searchJobs);
         </script>
     </body>
 </html>

@@ -69,9 +69,9 @@ $conn->close();
             <div>
                 <ul class="nav-links">
                     <li><a href="Home.php">Home</a></li>
-                    <li><a class="active" href="#">Jobs</a></li>
+                    <li><a href="Jobs.php">Jobs</a></li>
                     <li><a href="About.php">About</a></li>
-                    <li><a href="Partner.php">Partner Companies</a></li>
+                    <li><a class="active" href="#">Partner Companies</a></li>
                 </ul>
             </div>
             <div class="nav-acc">
@@ -103,9 +103,9 @@ $conn->close();
                 </div>
                 <div class="menu-links">
                     <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
-                    <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
+                    <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
-                    <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
+                    <li><a class="active" href="#" onclick="toggleMenu()">Partner Companies</a></li>
                     <li>
                         <?php if (isset($_SESSION['user'])): ?>
                             <a href="UserProfile.php">Profile</a>

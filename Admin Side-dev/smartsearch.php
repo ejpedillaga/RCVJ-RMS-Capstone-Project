@@ -86,6 +86,193 @@ if (isset($passed_userid)) {
 } else {
     echo "User ID is not set.";
 }
+
+//JOB MATCHING ALGORITHM HERE
+
+// Fetch partner companies with open job postings
+function fetchPartnerCompanies() {
+    $conn = connection();
+    $query = "
+        SELECT DISTINCT p.id, p.company_name 
+        FROM partner_table p 
+        JOIN job_table j ON p.company_name = j.company_name 
+        WHERE j.job_status = 'Open'
+    ";
+    $result = mysqli_query($conn, $query);
+    
+    echo "<select id='companyDropdown' class='select-company' onchange='fetchJobs(this.value)'>";
+    echo "<option value='' disabled selected>Select Company</option>";
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='".$row['id']."'>".$row['company_name']."</option>";
+    }
+    echo "</select>";
+
+    mysqli_close($conn);
+}
+
+// Fetch job postings for selected company (use job_id now)
+if (isset($_POST['fetch_jobs']) && isset($_POST['company_id'])) {
+    $company_id = $_POST['company_id'];
+    $conn = connection();
+
+    $query = "SELECT id, job_title, job_location, job_candidates 
+              FROM job_table 
+              WHERE company_name = (SELECT company_name FROM partner_table WHERE id = $company_id) 
+              AND job_status = 'Open'";
+    
+    $result = mysqli_query($conn, $query);
+    echo "<select id='jobDropdown' class='select-job' onchange='fetchJobDetails(this.value, $company_id)'>";
+    echo "<option value='' disabled selected>Select Job</option>";
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo "<option value='".$row['id']."'>".$row['job_title'].", ".$row['job_location']." (".$row['job_candidates'].")</option>";
+    }
+    echo "</select>";
+
+    mysqli_close($conn);
+    exit();
+}
+
+// Fetch candidates that applied to the selected job by job_id
+if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POST['company_id'])) {
+    $job_id = $_POST['job_id']; // Use job_id now
+    $company_id = $_POST['company_id']; // Get the company_id
+    $conn = connection();
+
+    // Fetch job requirements using job_id
+    $query = "SELECT jt.classification, jt.subclassification, jt.gender, jt.educational_attainment, jt.years_of_experience, jt.cert_license, j.job_location
+    FROM job_title_table jt
+    JOIN job_table j ON jt.job_title = j.job_title
+    WHERE j.id = $job_id"; // Use job_id to filter job
+
+    $job_result = mysqli_query($conn, $query);
+    if (!$job_result) {
+        echo json_encode(['error' => mysqli_error($conn)]);
+        exit();
+    }
+    $job_details = mysqli_fetch_assoc($job_result);
+
+   // Fetch candidates with "Pending" status that applied for the job by job_id
+    $query = "SELECT c.id, a.userid, a.fname, a.lname, a.gender, e.educational_attainment, 
+    a.classi, a.subclassi, a.location, c.date_applied, 
+    j.job_title, p.company_name, SUM(je.year_ended - je.year_started) AS total_years_experience
+    FROM candidate_list c
+    JOIN applicant_table a ON c.userid = a.userid
+    LEFT JOIN education_table e ON a.userid = e.userid
+    LEFT JOIN job_experience_table je ON a.userid = je.userid
+    LEFT JOIN job_table j ON c.job_id = j.id
+    LEFT JOIN partner_table p ON j.company_name = p.company_name
+    WHERE c.status = 'Pending'
+    AND c.job_id = $job_id -- Use job_id instead of job_title
+    GROUP BY a.userid";
+
+    $result = mysqli_query($conn, $query);
+    $candidates = [];
+
+    while ($row = mysqli_fetch_assoc($result)) {
+    // Score applicants based on matching criteria
+    $score = 0;
+    $max_score = 0; // Initialize max score
+
+    // Match classification
+    if ($row['classi'] == $job_details['classification']) {
+    $score += 1;
+    }
+    $max_score += 1; // Increment max score
+
+    // Match subclassification
+    if ($row['subclassi'] == $job_details['subclassification']) {
+    $score += 1;
+    }
+    $max_score += 1; // Increment max score
+
+    // Match gender
+    if ($row['gender'] == $job_details['gender']) {
+    $score += 1;
+    }
+    $max_score += 1; // Increment max score
+
+    // Match educational attainment
+    if ($row['educational_attainment'] == $job_details['educational_attainment']) {
+    $score += 1;
+    }
+    $max_score += 1; // Increment max score
+
+    // Check if the total years of experience fall within the required range
+    if ($job_details['years_of_experience'] !== '-') { // Check if years_of_experience is not "-"
+    list($min_exp, $max_exp) = explode('-', $job_details['years_of_experience']);
+    if ($row['total_years_experience'] >= (int)$min_exp && $row['total_years_experience'] <= (int)$max_exp) {
+    $score += 1; // Add point for matching experience range
+    }
+    $max_score += 1; // Increment max score
+    }
+
+    // Match job location
+    if ($row['location'] == $job_details['job_location']) { // Assuming job_details has job_location
+    $score += 1; // Add point if location matches
+    }
+    $max_score += 1; // Increment max score for location match
+
+    // Fetch skills of the applicant
+    $skills_query = "SELECT skill_id FROM user_skills_table WHERE userid = '".$row['userid']."'";
+    $skills_result = mysqli_query($conn, $skills_query);
+    $applicant_skills = [];
+    while ($skill_row = mysqli_fetch_assoc($skills_result)) {
+    $applicant_skills[] = $skill_row['skill_id'];
+    }
+
+    // Fetch required skills for the job
+    $required_skills_query = "SELECT skill_id 
+                          FROM job_skills_table 
+                          WHERE job_title_id = (SELECT id FROM job_title_table WHERE job_title = (
+                              SELECT job_title FROM job_table WHERE id = $job_id
+                          ))";
+    $required_skills_result = mysqli_query($conn, $required_skills_query);
+    while ($req_skill_row = mysqli_fetch_assoc($required_skills_result)) {
+    if (in_array($req_skill_row['skill_id'], $applicant_skills)) {
+    $score += 1; // Increase score for each matching skill
+    }
+    $max_score += 1; // Increment max score
+    }
+
+    // Match certifications and licenses
+    // Fetch applicant's licenses
+    $licenses_query = "SELECT license_name FROM certification_license_table WHERE userid = '".$row['userid']."'";
+    $licenses_result = mysqli_query($conn, $licenses_query);
+    $applicant_licenses = [];
+    while ($license_row = mysqli_fetch_assoc($licenses_result)) {
+    $applicant_licenses[] = $license_row['license_name'];
+    }
+
+    // Check if any license matches the job's cert_license
+    if (in_array($job_details['cert_license'], $applicant_licenses)) {
+    $score += 1; // Add point if there's a match
+    }
+    $max_score += 1; // Increment max score
+
+    // Add candidate to array with all required fields
+    $candidates[] = [
+        'candidate' => [
+            'userid' => $row['userid'],
+            'fname' => $row['fname'],
+            'lname' => $row['lname'],
+            'job_title' => $row['job_title'],
+            'company_name' => $row['company_name'], 
+            'date_applied' => $row['date_applied'], 
+        ],
+        'score' => $score,
+        'max_score' => $max_score,
+    ];
+    }
+
+    // Sort candidates by score (higher score first)
+    usort($candidates, function($a, $b) {
+        return $b['score'] - $a['score'];
+    });
+
+    mysqli_close($conn);
+    echo json_encode($candidates);
+    exit();
+}
 ?>
 
 
@@ -97,8 +284,150 @@ if (isset($passed_userid)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
-    <script src="script.js"></script>  
-      
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
+    <script>
+        // Fetch job postings for a selected company
+        function fetchJobs(companyId) {
+            let formData = new FormData();
+            formData.append('fetch_jobs', true);
+            formData.append('company_id', companyId);
+
+            fetch('', { 
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('jobDropdownContainer').innerHTML = data;
+            });
+        }
+
+        // Fetch candidates that applied to the selected job and match them
+        function fetchJobDetails(jobId, companyId) {
+            let formData = new FormData();
+            formData.append('fetch_job_details', true);
+            formData.append('job_id', jobId);
+            formData.append('company_id', companyId);
+
+            fetch('', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(candidates => {
+                if (candidates.error) {
+                    console.error(candidates.error);
+                    document.getElementById('candidateResults').innerHTML = "An error occurred: " + candidates.error;
+                    return;
+                }
+                // Call the function to populate the candidates table
+                populateSmartSearchTable(candidates);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('candidateResults').innerHTML = "An error occurred: " + error.message;
+            });
+        }
+
+        // Function to show the initial message when no search has been made
+        function showInitialMessage() {
+            const tableBody = document.getElementById('candidateTableBody');
+            const initialMessageRow = `
+                <tr>
+                    <td colspan="7" style="text-align: center; margin-top: 20px; color: #2C1875; height: 200px; vertical-align: middle;">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                            <img src="img/jobs.png" alt="Search Icon" style="width: 200px; margin-bottom: 10px;">
+                            <span style="font-weight: bold; font-size: 20px;">Find the most fitting candidate for the job using smart search.</span>
+                        </div>  
+                    </td>
+                </tr>
+            `;
+            tableBody.innerHTML = initialMessageRow;
+        }
+
+        // Call this function when the page loads
+        window.onload = function() {
+            showInitialMessage();
+        };
+
+        // Populate the candidates table with the fetched data
+        function populateSmartSearchTable(data) {
+            const rowTemplate = (candidate, statusClass, statusText) => `
+                <tr class="tr1">
+                    <td class="fullname">${candidate.candidate.fname} ${candidate.candidate.lname}</td>
+                    <td><strong>${candidate.candidate.job_title}</strong></td>
+                    <td>${candidate.candidate.company_name}</td>
+                    <td>${candidate.candidate.date_applied}</td>
+                    <td class="status candidates-tooltip-container">
+                        <span class="${statusClass}">${statusText}</span>
+                        <span class="tooltip-text">${tooltipText}</span>
+                    </td>
+                    <td class="candidates-tooltip-container">
+                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.candidate.userid})"></i>
+                        <span class="tooltip-text">Candidate Information</span>
+                    </td>
+                    <td class="candidates-tooltip-container">
+                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                        <span class="tooltip-text">Delete Candidate</span>
+                    </td>
+                </tr>
+            `;
+
+            // Clear previous results
+            const tableBody = document.getElementById('candidateTableBody');
+            tableBody.innerHTML = ''; // Clear previous results
+
+            // Check if there are any candidates
+            if (data.length === 0) {
+                // Add a row to display a message
+                const noCandidatesRow = `
+                    <tr class="tr1">
+                        <td colspan="7" style="text-align: center; font-weight: bold; color: #999;">
+                            No candidates found.
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML = noCandidatesRow; // Insert the message row
+                return; // Exit the function early
+            }
+
+            // Populate table rows
+            data.forEach(candidate => {
+                // Calculate score ratio
+                const score = candidate.score;
+                const maxScore = candidate.max_score;
+                let statusClass = '';
+                let statusText = '';
+
+                // Determine status based on the score
+                if (score === maxScore) {
+                    statusClass = 'status-label-identical';
+                    statusText = 'Identical';
+                    tooltipText = 'Perfect fit for the role';
+                } else if (score > (maxScore / 2)) {
+                    statusClass = 'status-label-Underqualified';
+                    statusText = 'Underqualified';
+                    tooltipText = 'Great qualifications, but not the best fit for role';
+                } else if (score > 0) {
+                    statusClass = 'status-label-unqualified';
+                    statusText = 'Unqualified';
+                    tooltipText = 'Limited qualities, skills, and experience';
+                } else {
+                    statusClass = 'status-label-not';
+                    statusText = 'Not Qualified';
+                    tooltipText = 'Does not meet any of the qualifications';
+                }
+
+                // Append row to the table
+                tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText);
+            });
+        }
+    </script>
 </head>
 <body>
     <div id="mySidebar" class="sidebar closed">
@@ -127,25 +456,19 @@ if (isset($passed_userid)) {
         <div id="main">
             <h2 style="font-size: 36px;">Smart Search</h2>
             <div class="filter-container">
-                <div class="search-wrapper">
-                    <div class="input-container">
-                        <input type="text" class="job-bar" id="job-bar" placeholder="Search Jobs">
-                        <label for="job-bar" class="input-label">Job:</label>
-                    </div>
+                <!-- Partner Companies Dropdown -->
+                <div>
+                    <?php fetchPartnerCompanies(); ?>
                 </div>
-            
-                <div class="search-wrapper">
-                    <div class="input-container">
-                        <input type="text" class="location-bar" id="location-bar" placeholder="Search Location">
-                        <label for="location-bar" class="input-label">Location:</label>
-                    </div>
+
+                <!-- Job Postings Dropdown -->
+                <div id="jobDropdownContainer">
+                    <!-- Job dropdown will be populated here by JS -->
                 </div>
-            
-                <div class="search-wrapper">
-                    <div class="input-container">
-                        <input type="text" class="skills-bar" id="skills-bar" placeholder="Search Skills">
-                        <label for="skills-bar" class="input-label">Skills:</label>
-                    </div>
+
+                <!-- Display Candidates -->
+                <div id="candidateResults">
+                    <!-- Candidates who applied will be displayed here -->
                 </div>
             </div>
             
@@ -163,8 +486,8 @@ if (isset($passed_userid)) {
                     </tr>
                     <thead>
 
-                    <tbody>
-                        <!-- Data is displayed here -->
+                    <tbody id="candidateTableBody">
+                        <!-- Candidate results will be populated here -->
                     </tbody>
                 </table>
             </div>

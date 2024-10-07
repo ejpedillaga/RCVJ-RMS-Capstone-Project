@@ -273,11 +273,11 @@ function previewEditLogo(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
 
-    if (currentPage.includes('candidates.php')) {
+    /*if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
     } else if (currentPage.includes('smartsearch.php')) {
         fetchData('fetch_smartsearch.php', populateSmartSearchTable);
-    } else if (currentPage.includes('rejected.html')) {
+    } else */if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
         fetchData('fetch_employees.php', populateEmployeesTable)
@@ -588,7 +588,7 @@ function populateTable(data, tableSelector, rowTemplate) {
     });
 }
 
-function populateCandidatesTable(data) {
+/*function populateCandidatesTable(data) {
     const rowTemplate = (candidate) => `  
         <td id="fullname" class="fullname">${candidate.full_name}</td>
         <td id="job-title"><strong>${candidate.job_title}</strong></td>
@@ -612,7 +612,7 @@ function populateCandidatesTable(data) {
         </td>
     `;
     populateTable(data, 'table', rowTemplate);
-}
+}*/
 
 function populateRejectsTable(data) {
     const rowTemplate = (reject) => `
@@ -646,27 +646,6 @@ function populateEmployeesTable(data) {
                 <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
                 <span class="tooltip-text">Delete Employee</span>
             </div>
-        </td>
-    `;
-    populateTable(data, 'table', rowTemplate);
-}
-
-function populateSmartSearchTable(data) {
-    const rowTemplate = (candidate) => `  
-        <td id="fullname" class="fullname">${candidate.full_name}</td>
-        <td id="job-title"><strong>${candidate.job_title}</strong></td>
-        <td id="company-name">${candidate.company_name}</td>
-        <td id="date">${candidate.date_applied}</td>
-        <td class="status" id="status-qualified">
-            <span class="status-label-qualified">Qualified</span>
-        </td>
-            <td class="candidates-tooltip-container">
-            <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.userid})"></i>
-            <span class="tooltip-text">Candidate Information</span>
-        </td>
-        <td class="candidates-tooltip-container">
-            <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-            <span class="tooltip-text">Delete Candidate</span>
         </td>
     `;
     populateTable(data, 'table', rowTemplate);

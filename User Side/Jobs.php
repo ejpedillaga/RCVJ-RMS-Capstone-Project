@@ -4,7 +4,7 @@ $conn = connection();
 session_start();
 
 // Fetch open job listings
-$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
+$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description, date_posted FROM job_table WHERE job_status = 'open'";
 $jobs_result = $conn->query($sql); // Execute the job listing query
 
 // Initialize user name and profile image
@@ -26,6 +26,17 @@ if (isset($_SESSION['user'])) {
     }
 }
 
+// Display success message if available
+if (isset($_SESSION['message'])) {
+    echo "<script type='text/javascript'>
+            alert('{$_SESSION['message']}');
+            $(document).ready(function() {
+                $('#successModal').modal('show');
+            });
+          </script>";
+    unset($_SESSION['message']);  // Clear the message after displaying
+}
+
 // Close the connection
 $conn->close();
 ?>
@@ -43,51 +54,29 @@ $conn->close();
     </head>
     <body>
        <!--Desktop Nav-->
-       <nav class="desktopnav" id="desktop-nav">
-        <div class="logo">
-            <img src="images/logo.png" alt="">
-        </div>
-        <div>
-            <ul class="nav-links">
-                <li><a href="Home.php">Home</a></li>
-                <li><a class="active" href="#">Jobs</a></li>
-                <li><a href="About.php">About</a></li>
-                <li><a href="Partner.php">Partner Companies</a></li>
-            </ul>
-        </div>
-        <div class="nav-acc">
-            <div class="notification_wrap">
-                <div class="notification_icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="dropdown">
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                </div>
+        <nav class="desktopnav" id="desktop-nav">
+            <div class="logo">
+                <img src="images/logo.png" alt="">
             </div>
+            <div>
+                <ul class="nav-links">
+                    <li><a href="Home.php">Home</a></li>
+                    <li><a class="active" href="#">Jobs</a></li>
+                    <li><a href="About.php">About</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
+                </ul>
+            </div>
+            <div class="nav-acc">
                 <?php if ($profile_image): ?>
                     <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
                 <?php else: ?>
                     <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
                 <?php endif; ?>
-                <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
-
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php else: ?>
+                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
             </div>
         </nav>
 
@@ -98,31 +87,6 @@ $conn->close();
             </div>
             <div class="hamburger-menu">
                 <div class="nav-icons">
-                    <div class="notification_wrap">
-                        <div class="notification_icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="dropdown">
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="hamburger-icon" onclick="toggleMenu()">
                         <span></span>
                         <span></span>
@@ -134,10 +98,13 @@ $conn->close();
                     <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
                     <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
-                    <div class="nav-acc">
-                        <img src="images/user.svg" alt="">
-                        <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
-                    </div>
+                    <li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <a href="UserProfile.php">Profile</a>
+                        <?php else: ?>
+                            <a href="../Login/Applicant.php"><?php echo htmlspecialchars($user_name); ?></a>
+                        <?php endif; ?>
+                    </li>
                 </div>
             </div>
         </nav>
@@ -154,11 +121,11 @@ $conn->close();
                     <div class="search-box">
                         <div class="search-input" id="job-title">
                             <i class="search-icon fas fa-search"></i>
-                            <input type="text" placeholder="Job title, keywords, or company">
+                            <input type="text" placeholder="Job Title, Company Name">
                         </div>
                         <div class="search-input" id="location">
                             <i class="search-icon fas fa-map-marker-alt"></i>
-                            <input type="text" placeholder="City, state, zip code, or 'remote'">
+                            <input type="text" placeholder="City, Municipality">
                         </div>
                     </div>
                     <button class="search-button">Search</button>
@@ -177,8 +144,11 @@ $conn->close();
                             echo '<h4 id="available">(' . $row["job_candidates"] . ')</h4>';
                             echo '</div>';
                             echo '<div class="company-box">';
-                            echo '<p style="margin-top: 5px" id="company-name">' . $row["company_name"] . '</p>';
-                            echo '<p id="location"><i class="location fas fa-map-marker-alt"></i>' . $row["job_location"] . '</p>';
+                            echo '<p style="margin-top: 0.5rem; margin-bottom: 0.5rem;" id="company-name">' . $row["company_name"] . '</p>';
+                            echo '<p style="margin-top: 5px" id="location"><i class="location fas fa-map-marker-alt"></i>' . $row["job_location"] . '</p>';
+                            $datePosted = new DateTime($row["date_posted"]);
+                            $formattedDate = $datePosted->format('m/d/Y');
+                            echo '<p style="margin-top: 5px" id="date"><i class="fas fa-calendar-alt"></i> ' . $formattedDate . '</p>';
                             echo '</div>';
                             echo '</div>';
                             echo '</li>';

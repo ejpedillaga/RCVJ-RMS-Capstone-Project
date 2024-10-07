@@ -3,10 +3,6 @@ include 'connection.php';
 $conn = connection();
 session_start();
 
-//Search
-$search_title = isset($_GET['job_title']) ? $_GET['job_title'] : '';
-$search_location = isset($_GET['location']) ? $_GET['location'] : '';
-
 // Fetch open job listings
 $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description FROM job_table WHERE job_status = 'open'";
 $jobs_result = $conn->query($sql); // Execute the job listing query
@@ -29,15 +25,6 @@ if (isset($_SESSION['user'])) {
         $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
 }
-
-if (!empty($search_title)) {
-    $sql .= " AND (job_title LIKE '%$search_title%' OR company_name LIKE '%$search_title%')";
-}
-if (!empty($search_location)) {
-    $sql .= " AND job_location LIKE '%$search_location%'";
-}
-
-$jobs_result = $conn->query($sql);
 
 // Close the connection
 $conn->close();
@@ -163,19 +150,19 @@ $conn->close();
                 </div>
 
                 <!--Search Bar-->
-                <form method="GET" action="Jobs.php">
-                <div class="search-box">
-                    <div class="search-input" id="job-title">
-                        <i class="search-icon fas fa-search"></i>
-                        <input type="text" name="job_title" placeholder="Job title, keywords, or company">
+                <div class="search-container">
+                    <div class="search-box">
+                        <div class="search-input" id="job-title">
+                            <i class="search-icon fas fa-search"></i>
+                            <input type="text" placeholder="Job title, keywords, or company">
+                        </div>
+                        <div class="search-input" id="location">
+                            <i class="search-icon fas fa-map-marker-alt"></i>
+                            <input type="text" placeholder="City, state, zip code, or 'remote'">
+                        </div>
                     </div>
-                    <div class="search-input" id="location">
-                        <i class="search-icon fas fa-map-marker-alt"></i>
-                        <input type="text" name="location" placeholder="City, state, zip code, or 'remote'">
-                        <button class="search-button" type="submit">Search</button>
-                    </div>
+                    <button class="search-button">Search</button>
                 </div>
-            </form><br>
                 
                 <!--List of Jobs-->
                 <div class="jobs-main-container">

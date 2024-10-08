@@ -46,26 +46,23 @@
                         
                     <button class="post-button" onclick="openJobPostingPopup()">Post a Job</button>
                 </div>
-                
-
-                <div class="filter-container">
-                    <div class="search-wrapper">
-                        <i class="fas fa-magnifying-glass search-icon"></i>
-                        <input type="text" id="search-bar" class="search-bar" placeholder="Search Jobs">
-                    </div>
-                    <select class="sort-by">
-                        <option>Sort by: Posting Date</option>
-                        <option>Sort by: Company Name</option>
-                        <option>Sort by: Job Title</option>
-                    </select>
-                    <select class="order-sort">
-                        <option>Ascending</option>
-                        <option>Descending</option>
-                    </select>
-                </div>
 
                 <div class="tab-content" id="tab1-content">
-                    <p id="no-jobs-message-tab1" style="display:none; text-align:center;">No Jobs Available</p> <!-- No jobs message -->
+                    <div class="filter-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="search-bar-open" class="search-bar" placeholder="Search Jobs">
+                        </div>
+                        <select class="sort-by" id="sort-by-open">
+                            <option value="date">Posting Date</option>
+                            <option value="company">Company Name</option>
+                            <option value="title">Job Title</option>
+                        </select>
+                        <select class="order-sort" id="order-sort-open">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
                     <table>
                         <thead>
                             <tr class="th1">
@@ -80,13 +77,27 @@
                         </thead>
                         
                         <tbody>
-                            <!--Content Goes Here-->
+                            
                         </tbody>
                     </table>
                 </div>
 
                 <div class="tab-content" id="tab2-content" >
-                    <p id="no-jobs-message-tab2" style="display:none; text-align:center;">No Jobs Available</p> <!-- No jobs message -->
+                    <div class="filter-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="search-bar-closed" class="search-bar" placeholder="Search Jobs">
+                        </div>
+                        <select class="sort-by" id="sort-by-closed">
+                            <option value="date">Posting Date</option>
+                            <option value="company">Company Name</option>
+                            <option value="title">Job Title</option>
+                        </select>
+                        <select class="order-sort" id="order-sort-closed">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
                     <table>
                         <thead>
                             <tr class="th1">
@@ -559,49 +570,74 @@
             resultsBox.innerHTML = '';
         }
 
-        function searchJobs() {
-            const searchTerm = document.getElementById('search-bar').value.toLowerCase();
-            const allRows = document.querySelectorAll('#tab1-content tbody tr, #tab2-content tbody tr');
-            let visibleRows = 0;
+        // Update search function
+        function filterJobsBySearchTerm(status) {
+            const searchTerm = status === 'Open' 
+                ? document.getElementById('search-bar-open').value.toLowerCase() 
+                : document.getElementById('search-bar-closed').value.toLowerCase(); // Get search term based on active tab
 
-            allRows.forEach(row => {
-                const companyName = row.querySelector('#company-name').textContent.toLowerCase();
-                const jobTitle = row.querySelector('#job-title').textContent.toLowerCase();
-
-                // Check if the search term is present in either company name or job title
-                if (companyName.includes(searchTerm) || jobTitle.includes(searchTerm)) {
-                    row.style.display = ''; // Show row
-                    visibleRows++;
-                } else {
-                    row.style.display = 'none'; // Hide row
-                }
-            });
-
-            // If no rows are visible, display "No Jobs Available" message
-            displayNoJobsMessage(visibleRows === 0);
+            fetch(`fetch_jobs.php?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    const filteredData = data.filter(job => 
+                        job.company_name.toLowerCase().includes(searchTerm) || 
+                        job.job_title.toLowerCase().includes(searchTerm) || 
+                        job.job_location.toLowerCase().includes(searchTerm)
+                    );
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, filteredData); // Populate table with filtered data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
         }
 
-        // Function to display "No Jobs Available" message
-        function displayNoJobsMessage(show) {
-            const tab1Body = document.querySelector('#tab1-content tbody');
-            const tab2Body = document.querySelector('#tab2-content tbody');
-            const noJobsRow = document.createElement('tr');
-            noJobsRow.classList.add('no-jobs-message');
-            noJobsRow.innerHTML = `<td colspan="7" style="text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; color: #2C1875; height: 200px; vertical-align: middle;">No Jobs Available</td>`;
+        // Add event listener to both search bars
+        document.getElementById('search-bar-open').addEventListener('input', () => {
+            filterJobsBySearchTerm('Open'); // Filter Open jobs
+        });
 
-            // Remove existing "No Jobs Available" message
-            const existingMessage = document.querySelector('.no-jobs-message');
-            if (existingMessage) existingMessage.remove();
+        document.getElementById('search-bar-closed').addEventListener('input', () => {
+            filterJobsBySearchTerm('Closed'); // Filter Closed jobs
+        });
 
-            // If 'show' is true, add the message to both tab1 and tab2
-            if (show) {
-                tab1Body.appendChild(noJobsRow.cloneNode(true));
-                tab2Body.appendChild(noJobsRow);
-            }
+        // Add event listeners for sorting dropdowns
+        document.getElementById('sort-by-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('order-sort-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('sort-by-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        document.getElementById('order-sort-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        // Function to sort and fetch jobs
+        function sortAndFetchJobs(status) {
+            const sortBy = status === 'Open' 
+                ? document.getElementById('sort-by-open').value 
+                : document.getElementById('sort-by-closed').value;
+
+            const order = status === 'Open' 
+                ? document.getElementById('order-sort-open').value 
+                : document.getElementById('order-sort-closed').value;
+
+            fetch(`fetch_jobs.php?status=${status}&sort_by=${sortBy}&order=${order}`)
+                .then(response => response.json())
+                .then(data => {
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, data); // Populate table with sorted data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
         }
 
-        // Attach the search function to the input event
-        document.getElementById('search-bar').addEventListener('input', searchJobs);
+        // Modify initial fetch for Open and Closed jobs on page load to include sorting
+        fetchJobsByStatus('Open');
+        fetchJobsByStatus('Closed');
         </script>
     </body>
 </html>

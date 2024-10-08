@@ -3,9 +3,6 @@ include 'connection.php';
 $conn = connection();
 session_start();
 
-//Search
-$search_title = isset($_GET['job_title']) ? $_GET['job_title'] : '';
-$search_location = isset($_GET['location']) ? $_GET['location'] : '';
 
 // Fetch open job listings
 $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description, date_posted FROM job_table WHERE job_status = 'open'";
@@ -28,24 +25,6 @@ if (isset($_SESSION['user'])) {
         $user_name = $user['fname'] . ' ' . $user['lname'];
         $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
-}
-
-// Display success message if available
-if (isset($_SESSION['message'])) {
-    echo "<script type='text/javascript'>
-            alert('{$_SESSION['message']}');
-            $(document).ready(function() {
-                $('#successModal').modal('show');
-            });
-          </script>";
-    unset($_SESSION['message']);  // Clear the message after displaying
-}
-
-if (!empty($search_title)) {
-    $sql .= " AND (job_title LIKE '%$search_title%' OR company_name LIKE '%$search_title%')";
-}
-if (!empty($search_location)) {
-    $sql .= " AND job_location LIKE '%$search_location%'";
 }
 
 $jobs_result = $conn->query($sql);
@@ -130,19 +109,16 @@ $conn->close();
                 </div>
 
                 <!--Search Bar-->
-                <form method="GET" action="Jobs.php">
                 <div class="search-box">
-                    <div class="search-input" id="job-title">
-                        <i class="search-icon fas fa-search"></i>
-                        <input type="text" name="job_title" placeholder="Job title, Company">
-                    </div>
-                    <div class="search-input" id="location">
-                        <i class="search-icon fas fa-map-marker-alt"></i>
-                        <input type="text" name="location" placeholder="City, Municipality">
-                        <button class="search-button" type="submit">Search</button>
-                    </div>
+                <div class="search-input" id="job-title">
+                    <i class="search-icon fas fa-search"></i>
+                    <input type="text" name="job_title" placeholder="Job title, Company" onkeyup="searchByTitleOrCompany()">
                 </div>
-            </form><br>
+                <div class="search-input" id="location">
+                    <i class="search-icon fas fa-map-marker-alt"></i>
+                    <input type="text" name="location" placeholder="City, Municipality" onkeyup="searchByLocation()">
+                </div>
+            </div><br>
                 
                 <!--List of Jobs-->
                 <div class="jobs-main-container">
@@ -214,5 +190,30 @@ $conn->close();
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script defer src="script.js"></script>
+        <script>
+            function searchJobs(querySelector, inputName) {
+            const input = document.querySelector(`input[name="${inputName}"]`).value.toLowerCase();
+            const jobCards = document.querySelectorAll('.jobs-card');
+            let hasVisibleJobs = false;
+
+            jobCards.forEach(card => {
+                const jobData = card.querySelector(querySelector).textContent.toLowerCase();
+                const isVisible = jobData.includes(input);
+
+                card.parentElement.style.display = isVisible ? '' : 'none';
+                hasVisibleJobs = hasVisibleJobs || isVisible;
+            });
+
+            document.getElementById('no-results-message').style.display = hasVisibleJobs ? 'none' : 'block';
+        }
+
+        function searchByTitleOrCompany() {
+            searchJobs('#job-title, #company-name', 'job_title');
+        }
+
+        function searchByLocation() {
+            searchJobs('#location', 'location');
+        }
+        </script>
     </body>
 </html>

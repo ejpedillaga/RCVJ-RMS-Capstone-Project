@@ -102,7 +102,7 @@ $conn->close();
         </nav>
 
         <section class="jobs-section">  
-            <div class="main-container">
+            <div class="main-container-jobs">
                 <div class="jobs-header">
                     <h1 class="title6">Be part of <span style="color: #2C1875;">RCVJ, Inc.</span></h1>
                     <img src="images/jobs.png" alt="">
@@ -122,6 +122,7 @@ $conn->close();
                 
                 <!--List of Jobs-->
                 <div class="jobs-main-container">
+                <div id="no-results-message" style="display: none; color: #999; text-align: center; font-weight: bold; font-size: 1.5rem;">No result found.</div>
                     <ul>
                     <?php
                     if ($jobs_result->num_rows > 0) {

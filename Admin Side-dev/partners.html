@@ -43,13 +43,13 @@
                 <i class="fas fa-magnifying-glass search-icon"></i>
                 <input type="text" id="partner-search-bar" class="search-partners" placeholder="Search Partners">
             </div>
-            <select class="sort-by">
-                <option>Sort by: Date Added</option>
-                <option>Sort by: Company Name</option>
+            <select id="sort-by" class="sort-by" onchange="sortPartners()">
+                <option value="date">Date Added</option>
+                <option value="company">Company Name</option>
             </select>
-            <select class="order-sort">
-                <option>Ascending</option>
-                <option>Descending</option>
+            <select id="order-sort" class="order-sort" onchange="sortPartners()">
+                <option value="asc">Ascending</option>
+                <option value="desc">Descending</option>
             </select>
             <button class="add-partners-button" onclick="showDialog()">Add Partners</button>
         </div>
@@ -67,34 +67,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!--
-                    <tr class="tr1">
-                        <td><img src="img/walter.png" alt="Walter Supermarket Logo"></td>
-                        <td id="company-name">WalterMart Supermarket - Dasmarinas</td>
-                         <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openPopup()"></i></td>
-                        <td id="date">07/07/2024</td>
-                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;" onclick="showDialog()"></i></td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete()"></i></td>
-                    </tr>
-
-                    <tr class="tr1">
-                        <td><img src="img/lpu.jpg" alt="LPU Logo"></td>
-                        <td id="company-name">Lyceum of the Philippines University - Cavite</td>
-                         <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openPopup()"></i></td>
-                        <td id="date">07/07/2024</td>
-                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;" onclick="showDialog()"></i></td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete()"></i></td>
-                    </tr>
-
-                    <tr class="tr1">
-                        <td><img src="img/scipark.png" alt="SciPark Logo"></td>
-                        <td id="company-name">SciPark - Dasmarinas</td>
-                         <td><i class="fa-solid fa fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openPopup()"></i></td>
-                        <td id="date">07/07/2024</td>
-                        <td><i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875;" onclick="showDialog()"></i></td>
-                        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete()"></i></td>
-                    </tr>
-                    -->
+                    
                 </tbody>
             </table>
         </div>
@@ -314,29 +287,107 @@
     </div>
     <script>
         document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Prevent the form from submitting
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent the form from submitting
 
-        var skillInput = document.getElementById('jobposting-qualifications-input');
-        var skillValue = skillInput.value.trim();
+                var skillInput = document.getElementById('jobposting-qualifications-input');
+                var skillValue = skillInput.value.trim();
 
-        if (skillValue !== '') {
-            var ul = document.getElementById('added_qualifications_list');
-            var li = document.createElement('li');
-            li.innerHTML = `
-                <span>${skillValue}</span>
-                <button class="close-btn">&times;</button>
-            `;
-            ul.appendChild(li);
-            skillInput.value = ''; // Clear the input after adding
+                if (skillValue !== '') {
+                    var ul = document.getElementById('added_qualifications_list');
+                    var li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${skillValue}</span>
+                        <button class="close-btn">&times;</button>
+                    `;
+                    ul.appendChild(li);
+                    skillInput.value = ''; // Clear the input after adding
 
-            // Add event listener to the close button
-            li.querySelector('.close-btn').addEventListener('click', function() {
-                li.remove();
+                    // Add event listener to the close button
+                    li.querySelector('.close-btn').addEventListener('click', function() {
+                        li.remove();
+                    });
+                }
+            }
+        });
+        
+         // Add an event listener to the search input
+        document.getElementById('partner-search-bar').addEventListener('input', filterPartners);
+
+        function filterPartners() {
+            const searchValue = document.getElementById('partner-search-bar').value.toLowerCase();
+            const rows = document.querySelectorAll('table tbody tr'); // Select all table rows
+            let rowCount = 0; // Keep track of visible rows
+            
+            rows.forEach(row => {
+                const companyName = row.querySelector('#company-name').innerText.toLowerCase(); // Get the company name text
+
+                // Check if the company name includes the search value
+                if (companyName.includes(searchValue)) {
+                    row.style.display = ''; // Show the row
+                    rowCount++; // Count visible rows
+                } else {
+                    row.style.display = 'none'; // Hide the row
+                }
             });
+
+            // If no rows are visible, display a "No results found" message
+            const tableBody = document.querySelector('table tbody');
+            const noResultsRow = document.querySelector('.no-results-row');
+
+            if (rowCount === 0) {
+                // If no "no-results" row exists, add one
+                if (!noResultsRow) {
+                    const noResultsMessage = document.createElement('tr');
+                    noResultsMessage.classList.add('no-results-row');
+                    noResultsMessage.innerHTML = `
+                        <td colspan="6" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No available partners found.</td>
+                    `;
+                    tableBody.appendChild(noResultsMessage);
+                }
+            } else {
+                // If rows are visible, remove the "No results" message if it exists
+                if (noResultsRow) {
+                    noResultsRow.remove();
+                }
+            }
         }
+
+        function sortPartners() {
+        const sortBy = document.getElementById('sort-by').value; // Get the selected sort-by option
+        const order = document.getElementById('order-sort').value; // Get the selected sort order
+        const rows = Array.from(document.querySelectorAll('table tbody tr')); // Get all rows
+
+        const compareFunction = (a, b) => {
+            let valA, valB;
+
+            // Compare based on the selected sort type
+            if (sortBy === 'date') {
+                valA = new Date(a.querySelector('#date-added').innerText); // Date comparison
+                valB = new Date(b.querySelector('#date-added').innerText);
+            } else if (sortBy === 'company') {
+                valA = a.querySelector('#company-name').innerText.toLowerCase(); // Company name comparison
+                valB = b.querySelector('#company-name').innerText.toLowerCase();
+            }
+
+            if (order === 'asc') {
+                return valA > valB ? 1 : -1; // Ascending order
+            } else {
+                return valA < valB ? 1 : -1; // Descending order
+            }
+        };
+
+        // Sort the rows array
+        rows.sort(compareFunction);
+
+        // Append the sorted rows back to the table body
+        const tableBody = document.querySelector('table tbody');
+        rows.forEach(row => tableBody.appendChild(row));
+
+        // Trigger filtering after sorting, to display the correct results based on the search bar input
+        filterPartners();
     }
-});
+
     </script>
 </body>
 </html>

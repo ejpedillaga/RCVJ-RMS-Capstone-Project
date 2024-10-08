@@ -707,7 +707,7 @@ function updateEmployeeStatusInDatabase(employeeId, status) {
 function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
-        <td>
+        <td id="logo">
             <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
         </td>
         <td id="company-name">${partner.company_name}</td>
@@ -717,7 +717,7 @@ function populatePartnersTable(data) {
                 <span class="tooltip-text">Post a Job for Partner</span>
             </div>
         </td>
-        <td id="date">${partner.date_added}</td>
+        <td id="date-added">${partner.date_added}</td>
         <td>
             <div class="partners-tooltip-container">
                 <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i>
@@ -762,7 +762,7 @@ function populateJobsTable(containerSelector, data) {
     if (data.length === 0) {
         // If no jobs found, display message
         const messageRow = document.createElement('tr');
-        messageRow.innerHTML = `<td colspan="7" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No results found.</td>`; // Adjust colspan as needed
+        messageRow.innerHTML = `<td colspan="7" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No available jobs found.</td>`; // Adjust colspan as needed
         tableBody.appendChild(messageRow);
     } else {
         // Populate table with jobs

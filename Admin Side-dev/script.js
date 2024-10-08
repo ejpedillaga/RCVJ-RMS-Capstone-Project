@@ -749,15 +749,30 @@ function populateJobsTable(containerSelector, data) {
             </select>
         </td>
         <td id="edit">
-    <div class="tooltip-container">
-        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
-        <span class="tooltip-text">Edit Job Listing</span>
-    </div>
-</td>
-
+            <div class="tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
+                <span class="tooltip-text">Edit Job Listing</span>
+            </div>
+        </td>
     `;
 
-    populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
+    const tableBody = document.querySelector(containerSelector + ' table tbody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    if (data.length === 0) {
+        // If no jobs found, display message
+        const messageRow = document.createElement('tr');
+        messageRow.innerHTML = `<td colspan="7" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No results found.</td>`; // Adjust colspan as needed
+        tableBody.appendChild(messageRow);
+    } else {
+        // Populate table with jobs
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.classList.add('tr1'); // Add the 'tr1' class to each row
+            row.innerHTML = rowTemplate(item);
+            tableBody.appendChild(row);
+        });
+    }
 }
 
 

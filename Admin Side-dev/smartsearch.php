@@ -285,7 +285,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
-    <script src="script.js"></script>  
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
     <script>
         // Fetch job postings for a selected company
         function fetchJobs(companyId) {

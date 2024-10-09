@@ -26,6 +26,9 @@ try {
         $cert_license = $data['cert_license'];
         $years_of_experience = $data['years_of_experience'];
 
+        // Retrieve skills only if they exist and are an array
+        $new_skills = isset($data['skills']) && is_array($data['skills']) ? $data['skills'] : [];
+
         // Connect to the database
         $conn = connection(); // Assuming this function establishes the database connection
 
@@ -50,9 +53,80 @@ try {
             exit;
         }
 
-        // Close the statement and return success response
+        // Close the statement
         $stmt->close();
+
+        // Handle updating skills only if new skills are provided
+        if (!empty($new_skills)) {
+            // Step 1: Retrieve the current skills associated with the job title
+            $current_skills_stmt = $conn->prepare("SELECT skill_id FROM job_skills_table WHERE job_title_id = ?");
+            $current_skills_stmt->bind_param("i", $job_title_id);
+            $current_skills_stmt->execute();
+            $result = $current_skills_stmt->get_result();
+            
+            // Get the current skill IDs as an array
+            $current_skill_ids = [];
+            while ($row = $result->fetch_assoc()) {
+                $current_skill_ids[] = $row['skill_id'];
+            }
+            $current_skills_stmt->close();
+
+            // Step 2: Map new skills to skill IDs (inserting new ones if necessary)
+            $new_skill_ids = [];
+            foreach ($new_skills as $skill) {
+                // Check if the skill already exists
+                $skill_stmt = $conn->prepare("SELECT skill_id FROM skill_table WHERE skill_name = ?");
+                $skill_stmt->bind_param("s", $skill);
+                $skill_stmt->execute();
+                $result = $skill_stmt->get_result();
+
+                if ($result->num_rows > 0) {
+                    $skill_id = $result->fetch_assoc()['skill_id'];
+                } else {
+                    // Insert new skill
+                    $skill_stmt = $conn->prepare("INSERT INTO skill_table (skill_name) VALUES (?)");
+                    $skill_stmt->bind_param("s", $skill);
+                    if (!$skill_stmt->execute()) {
+                        throw new Exception("Error inserting skill: " . $skill_stmt->error);
+                    }
+                    $skill_id = $skill_stmt->insert_id;
+                }
+                $skill_stmt->close();
+
+                // Add the skill ID to the list of new skill IDs
+                $new_skill_ids[] = $skill_id;
+            }
+
+            // Step 3: Identify skills to remove (present in current skills but not in new skills)
+            $skills_to_remove = array_diff($current_skill_ids, $new_skill_ids);
+
+            // Step 4: Remove obsolete skills from job_skills_table
+            if (!empty($skills_to_remove)) {
+                $remove_skills_stmt = $conn->prepare("DELETE FROM job_skills_table WHERE job_title_id = ? AND skill_id = ?");
+                foreach ($skills_to_remove as $skill_id) {
+                    $remove_skills_stmt->bind_param("ii", $job_title_id, $skill_id);
+                    $remove_skills_stmt->execute();
+                }
+                $remove_skills_stmt->close();
+            }
+
+            // Step 5: Insert new skills into job_skills_table
+            $skills_to_add = array_diff($new_skill_ids, $current_skill_ids); // Skills that need to be added
+            if (!empty($skills_to_add)) {
+                $insert_skill_stmt = $conn->prepare("INSERT INTO job_skills_table (job_title_id, skill_id) VALUES (?, ?)");
+                foreach ($skills_to_add as $skill_id) {
+                    $insert_skill_stmt->bind_param("ii", $job_title_id, $skill_id);
+                    if (!$insert_skill_stmt->execute()) {
+                        throw new Exception("Error inserting job skill: " . $insert_skill_stmt->error);
+                    }
+                }
+                $insert_skill_stmt->close();
+            }
+        }
+
+        // Return success response
         echo json_encode(["success" => true]);
+
     } else {
         echo json_encode(["error" => "No data received"]);
     }

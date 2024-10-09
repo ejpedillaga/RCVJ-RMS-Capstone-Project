@@ -3,6 +3,7 @@ include 'connection.php';
 $conn = connection();
 session_start();
 
+
 // Fetch open job listings
 $sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description, date_posted FROM job_table WHERE job_status = 'open'";
 $jobs_result = $conn->query($sql); // Execute the job listing query
@@ -26,16 +27,7 @@ if (isset($_SESSION['user'])) {
     }
 }
 
-// Display success message if available
-if (isset($_SESSION['message'])) {
-    echo "<script type='text/javascript'>
-            alert('{$_SESSION['message']}');
-            $(document).ready(function() {
-                $('#successModal').modal('show');
-            });
-          </script>";
-    unset($_SESSION['message']);  // Clear the message after displaying
-}
+$jobs_result = $conn->query($sql);
 
 // Close the connection
 $conn->close();
@@ -110,29 +102,27 @@ $conn->close();
         </nav>
 
         <section class="jobs-section">  
-            <div class="main-container">
+            <div class="main-container-jobs">
                 <div class="jobs-header">
                     <h1 class="title6">Be part of <span style="color: #2C1875;">RCVJ, Inc.</span></h1>
                     <img src="images/jobs.png" alt="">
                 </div>
 
                 <!--Search Bar-->
-                <div class="search-container">
-                    <div class="search-box">
-                        <div class="search-input" id="job-title">
-                            <i class="search-icon fas fa-search"></i>
-                            <input type="text" placeholder="Job Title, Company Name">
-                        </div>
-                        <div class="search-input" id="location">
-                            <i class="search-icon fas fa-map-marker-alt"></i>
-                            <input type="text" placeholder="City, Municipality">
-                        </div>
-                    </div>
-                    <button class="search-button">Search</button>
+                <div class="search-box">
+                <div class="search-input" id="job-title">
+                    <i class="search-icon fas fa-search"></i>
+                    <input type="text" name="job_title" placeholder="Job title, Company" onkeyup="searchByTitleOrCompany()">
                 </div>
+                <div class="search-input" id="location">
+                    <i class="search-icon fas fa-map-marker-alt"></i>
+                    <input type="text" name="location" placeholder="City, Municipality" onkeyup="searchByLocation()">
+                </div>
+            </div><br>
                 
                 <!--List of Jobs-->
                 <div class="jobs-main-container">
+                <div id="no-results-message" style="display: none; color: #999; text-align: center; font-weight: bold; font-size: 1.5rem;">No result found.</div>
                     <ul>
                     <?php
                     if ($jobs_result->num_rows > 0) {
@@ -201,5 +191,30 @@ $conn->close();
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script defer src="script.js"></script>
+        <script>
+            function searchJobs(querySelector, inputName) {
+            const input = document.querySelector(`input[name="${inputName}"]`).value.toLowerCase();
+            const jobCards = document.querySelectorAll('.jobs-card');
+            let hasVisibleJobs = false;
+
+            jobCards.forEach(card => {
+                const jobData = card.querySelector(querySelector).textContent.toLowerCase();
+                const isVisible = jobData.includes(input);
+
+                card.parentElement.style.display = isVisible ? '' : 'none';
+                hasVisibleJobs = hasVisibleJobs || isVisible;
+            });
+
+            document.getElementById('no-results-message').style.display = hasVisibleJobs ? 'none' : 'block';
+        }
+
+        function searchByTitleOrCompany() {
+            searchJobs('#job-title, #company-name', 'job_title');
+        }
+
+        function searchByLocation() {
+            searchJobs('#location', 'location');
+        }
+        </script>
     </body>
 </html>

@@ -46,25 +46,23 @@
                         
                     <button class="post-button" onclick="openJobPostingPopup()">Post a Job</button>
                 </div>
-                
-
-                <div class="filter-container">
-                    <div class="search-wrapper">
-                        <i class="fas fa-magnifying-glass search-icon"></i>
-                        <input type="text" class="search-bar" placeholder="Search Jobs">
-                    </div>
-                    <select class="sort-by">
-                        <option>Sort by: Posting Date</option>
-                        <option>Sort by: Company Name</option>
-                        <option>Sort by: Job Title</option>
-                    </select>
-                    <select class="order-sort">
-                        <option>Ascending</option>
-                        <option>Descending</option>
-                    </select>
-                </div>
 
                 <div class="tab-content" id="tab1-content">
+                    <div class="filter-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="search-bar-open" class="search-bar" placeholder="Search Jobs">
+                        </div>
+                        <select class="sort-by" id="sort-by-open">
+                            <option value="date">Posting Date</option>
+                            <option value="company">Company Name</option>
+                            <option value="title">Job Title</option>
+                        </select>
+                        <select class="order-sort" id="order-sort-open">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
                     <table>
                         <thead>
                             <tr class="th1">
@@ -79,12 +77,27 @@
                         </thead>
                         
                         <tbody>
-                            <!--Content Goes Here-->
+                            
                         </tbody>
                     </table>
                 </div>
 
                 <div class="tab-content" id="tab2-content" >
+                    <div class="filter-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-magnifying-glass search-icon"></i>
+                            <input type="text" id="search-bar-closed" class="search-bar" placeholder="Search Jobs">
+                        </div>
+                        <select class="sort-by" id="sort-by-closed">
+                            <option value="date">Posting Date</option>
+                            <option value="company">Company Name</option>
+                            <option value="title">Job Title</option>
+                        </select>
+                        <select class="order-sort" id="order-sort-closed">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
                     <table>
                         <thead>
                             <tr class="th1">
@@ -239,7 +252,7 @@
                         <div class="form-step">
                             <div class="jobposting-box">
                                 <label for="jobposting-job-title">Job Title <span style="color: red;">*</span></label>
-                                <input type="text" id="edit-jobposting-job-title" class="jobposting-input" placeholder="Enter job title"><br>
+                                <input type="text" id="edit-jobposting-job-title" class="jobposting-input" placeholder="Enter job title" readonly><br>
                                 <label for="jobposting-location">Location <span style="color: red;">*</span></label>
                                 <input type="text" id="edit-jobposting-location" class="jobposting-input" placeholder="Enter job location"><br>
                                 <label for="jobposting-openings">Available openings <span style="color: red;">*</span></label>
@@ -556,6 +569,75 @@
             inputBox.value = list.innerHTML;
             resultsBox.innerHTML = '';
         }
+
+        // Update search function
+        function filterJobsBySearchTerm(status) {
+            const searchTerm = status === 'Open' 
+                ? document.getElementById('search-bar-open').value.toLowerCase() 
+                : document.getElementById('search-bar-closed').value.toLowerCase(); // Get search term based on active tab
+
+            fetch(`fetch_jobs.php?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    const filteredData = data.filter(job => 
+                        job.company_name.toLowerCase().includes(searchTerm) || 
+                        job.job_title.toLowerCase().includes(searchTerm) || 
+                        job.job_location.toLowerCase().includes(searchTerm)
+                    );
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, filteredData); // Populate table with filtered data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
+        }
+
+        // Add event listener to both search bars
+        document.getElementById('search-bar-open').addEventListener('input', () => {
+            filterJobsBySearchTerm('Open'); // Filter Open jobs
+        });
+
+        document.getElementById('search-bar-closed').addEventListener('input', () => {
+            filterJobsBySearchTerm('Closed'); // Filter Closed jobs
+        });
+
+        // Add event listeners for sorting dropdowns
+        document.getElementById('sort-by-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('order-sort-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('sort-by-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        document.getElementById('order-sort-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        // Function to sort and fetch jobs
+        function sortAndFetchJobs(status) {
+            const sortBy = status === 'Open' 
+                ? document.getElementById('sort-by-open').value 
+                : document.getElementById('sort-by-closed').value;
+
+            const order = status === 'Open' 
+                ? document.getElementById('order-sort-open').value 
+                : document.getElementById('order-sort-closed').value;
+
+            fetch(`fetch_jobs.php?status=${status}&sort_by=${sortBy}&order=${order}`)
+                .then(response => response.json())
+                .then(data => {
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, data); // Populate table with sorted data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
+        }
+
+        // Modify initial fetch for Open and Closed jobs on page load to include sorting
+        fetchJobsByStatus('Open');
+        fetchJobsByStatus('Closed');
         </script>
     </body>
 </html>

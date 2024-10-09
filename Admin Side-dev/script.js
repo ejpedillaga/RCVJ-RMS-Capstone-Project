@@ -161,12 +161,14 @@ function hideDialogEdit() {
 }
 
 function openThirdPopup(companyName) {
-    document.getElementById('thirdPopup').classList.add('show');
-    document.getElementById('overlay').classList.add('show');
+    openPopup('thirdPopup');
     document.getElementById('partner-jobposting-partner-company').value = companyName;
     // Initialize pagination for the third popup
     initializePopupPagination('thirdPopup');
-    initializeSkillsInput('thirdPopup','partner-jobposting-skills-input','partner-jobposting-skills-container');
+    populatePartnerJobTitles()
+
+    //initializeSkillsInput('thirdPopup','partner-jobposting-skills-input','partner-jobposting-skills-container');
+
 }
 
 function closeThirdPopup() {
@@ -1069,16 +1071,11 @@ function saveAndPostJob() {
     const candidates = document.getElementById('jobposting-openings').value;
     const description = document.getElementById('jobposting-description').value.trim();
 
-
-    // Collect skills
-    //const skillsArray = Array.from(skillsSet); // Convert the Set to an array
-
     console.log('Company Name:', companyName);
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Candidates:', candidates);
     console.log('Description:', description);
-    //console.log('Skills Array:', skillsArray);
 
     // Input validation
     if (!companyName || !jobTitle || !location || !candidates /*|| skillsArray.length === 0*/) {
@@ -1137,26 +1134,27 @@ function saveAndPostJob() {
 // Function to collect form data and send to the server from partner section
 function partnerSaveAndPostJob() {
     // Collect data from the popup
+    console.log('clicked');
 
     const companyName = document.getElementById('partner-jobposting-partner-company').value;
-    const jobTitle = document.getElementById('partner-jobposting-job-title').value;
-    const location = document.getElementById('partner-jobposting-location').value;
-    const candidates = document.getElementById('partner-jobposting-openings').value;
-    const description = document.getElementById('partner-jobposting-description').value;
-
-
-    // Collect skills
-    const skillsArray = Array.from(skillsSet); // Convert the Set to an array
-
     console.log('Company Name:', companyName);
+    
+    const jobTitleSelect = document.getElementById('partner-jobposting-job-title');
+    const jobTitle = jobTitleSelect.options[jobTitleSelect.selectedIndex]?.text || '';
     console.log('Job Title:', jobTitle);
-    console.log('Location:', location);
-    console.log('Candidates:', candidates);
-    console.log('Description:', description);
-    console.log('Skills Array:', skillsArray);
+    
 
+    const location = document.getElementById('partner-jobposting-location').value;
+    console.log('Location:', location);
+    
+    const candidates = document.getElementById('partner-jobposting-openings').value;
+    console.log('Candidates:', candidates);
+    
+    const description = document.getElementById('partner-jobposting-description').value.trim();
+    console.log('Description:', description);
+    
     // Input validation
-    if (!companyName || !jobTitle || !location || !candidates || !description || skillsArray.length === 0) {
+    if (!companyName || !jobTitle || !location || !candidates) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1168,6 +1166,7 @@ function partnerSaveAndPostJob() {
         return; // Prevent form submission
     }
 
+    
     // Create form data
     const formData = new FormData();
     formData.append('company_name', companyName);
@@ -1175,37 +1174,44 @@ function partnerSaveAndPostJob() {
     formData.append('location', location);
     formData.append('candidates', candidates);
     formData.append('description', description);
-    formData.append('skills', JSON.stringify(skillsArray)); // Send the skills as a JSON string
 
-    
+    // Check if FormData is populated correctly
+    console.log('FormData:', Array.from(formData.entries()));
 
     // Send data using fetch
     fetch('addJobPost.php', {
         method: 'POST',
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        // Check for HTTP errors
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
     .then(data => {
-        if(data.message){
+        if (data.message) {
             console.log('Success:', data.message);
-            // Handle success, e.g., close the popup or display a message
             alert('Job post added successfully!');
-            closeThirdPopup('popup');
+            closePopup('popup');
 
+            fetchJobCounts();
+            fetchJobsByStatus('Open');
 
             window.location.reload();
-        }
-        else {
+        } else {
             console.error('Error:', data.error);
             alert('An error occurred while adding the job: ' + data.error);
         }     
     })
     .catch(error => {
         console.error('Error:', error);
-        // Handle error, e.g., display an error message
-        alert('An error occurred while adding the job.');
+        alert('An error occurred while adding the job: ' + error.message);
     });
+    
 }
+
 
 function showEditDialog(employeeId){
     currentEmployeeId = employeeId;
@@ -1887,8 +1893,8 @@ function editJobTitle() {
         return;
     }
 
-    // Convert the Set to an array if you're handling skills (optional)
-    const skillsArray = Array.from(skillsSet);
+    // Convert the Set to an array if you're handling skills
+    const skillsArray = Array.from(skillsSet); // Ensure this variable exists and is a Set
 
     // Create an object to hold the data
     const data = {
@@ -1899,7 +1905,9 @@ function editJobTitle() {
         educational_attainment: educationalAttainment,
         cert_license: certLicense,
         years_of_experience: yearsOfExperience,
+        skills: skillsArray // Include the skills array in the data object
     };
+    console.log('Edit Job Payload: ', data);
 
     const jsonData = JSON.stringify(data); // Convert data to JSON string
 
@@ -1929,6 +1937,7 @@ function editJobTitle() {
 
 
 
+
 function populateJobTitles() {
     fetch('get_job_titles.php')
         .then(response => response.json())
@@ -1948,6 +1957,24 @@ function populateJobTitles() {
         });
 }
 
+function populatePartnerJobTitles() {
+    fetch('get_job_titles.php')
+        .then(response => response.json())
+        .then(data => {
+            const jobTitleSelect = document.getElementById('partner-jobposting-job-title');
+            jobTitleSelect.innerHTML = '<option value="" disabled selected>Choose a job title</option>'; // Clear and set default option
+            
+            data.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.job_title_id;  // You can use job_title_id as the value
+                option.textContent = job.job_title; // Display the job title
+                jobTitleSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching job titles:', error);
+        });
+}
 // Call this function when the page loads or when needed to populate the dropdown
 document.addEventListener('DOMContentLoaded', populateJobTitles);
 

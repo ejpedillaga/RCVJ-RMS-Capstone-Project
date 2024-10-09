@@ -903,7 +903,7 @@ footer {
   height: 100vh;
 }
 
-.main-container-jobs{
+.main-container-jobs {
   width: 100em;
 }
 
@@ -1273,7 +1273,7 @@ footer {
   box-shadow: rgba(0.15, 0.15, 0.15, 0.15) 0px 1px 2px,
     rgba(0, 0, 0, 0.15) 0px 2px 4px, rgba(0, 0, 0, 0.15) 0px 4px 8px,
     rgba(0, 0, 0, 0.15) 0px 8px 16px, rgba(0, 0, 0, 0.15) 0px 16px 32px,
-    rgba(0, 0, 0, 0.15) 0px 32px 64px; 
+    rgba(0, 0, 0, 0.15) 0px 32px 64px;
 }
 
 .partner-card img {
@@ -2191,7 +2191,7 @@ body.overlay-active .overlay {
 }
 
 .result-box {
-  max-height: 300px;
+  max-height: 200px;
   overflow-y: scroll;
 }
 

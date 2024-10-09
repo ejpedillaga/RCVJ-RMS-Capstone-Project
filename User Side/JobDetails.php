@@ -357,7 +357,7 @@ $conn->close();
                     <?php else: ?>
                         <li>At least a <strong><?php echo htmlspecialchars($qualifications['educational_attainment']); ?></strong></li>
                     <?php endif; ?>
-                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "-"): ?>
+                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "-" || htmlspecialchars($qualifications['years_of_experience']) === "0-0"): ?>
                         <li>No experience needed</li>
                     <?php else: ?>
                         <li>Preferably with <strong><?php echo htmlspecialchars($qualifications['years_of_experience']); ?> year/s</strong> of professional experience relevant to the field</li>

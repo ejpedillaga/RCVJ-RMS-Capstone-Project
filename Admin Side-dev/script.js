@@ -275,9 +275,11 @@ function previewEditLogo(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
 
-    if (currentPage.includes('candidates.php')) {
+    /*if (currentPage.includes('candidates.php')) {
         fetchData('fetch_candidates.php', populateCandidatesTable);
-    } else if (currentPage.includes('rejected.html')) {
+    } else if (currentPage.includes('smartsearch.php')) {
+        fetchData('fetch_smartsearch.php', populateSmartSearchTable);
+    } else */if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
         fetchData('fetch_employees.php', populateEmployeesTable)
@@ -588,7 +590,7 @@ function populateTable(data, tableSelector, rowTemplate) {
     });
 }
 
-function populateCandidatesTable(data) {
+/*function populateCandidatesTable(data) {
     const rowTemplate = (candidate) => `  
         <td id="fullname" class="fullname">${candidate.full_name}</td>
         <td id="job-title"><strong>${candidate.job_title}</strong></td>
@@ -612,7 +614,7 @@ function populateCandidatesTable(data) {
         </td>
     `;
     populateTable(data, 'table', rowTemplate);
-}
+}*/
 
 function populateRejectsTable(data) {
     const rowTemplate = (reject) => `
@@ -707,7 +709,7 @@ function updateEmployeeStatusInDatabase(employeeId, status) {
 function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
-        <td>
+        <td id="logo">
             <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
         </td>
         <td id="company-name">${partner.company_name}</td>
@@ -717,7 +719,7 @@ function populatePartnersTable(data) {
                 <span class="tooltip-text">Post a Job for Partner</span>
             </div>
         </td>
-        <td id="date">${partner.date_added}</td>
+        <td id="date-added">${partner.date_added}</td>
         <td>
             <div class="partners-tooltip-container">
                 <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditPartnerDialog(${partner.id})"></i>
@@ -749,15 +751,30 @@ function populateJobsTable(containerSelector, data) {
             </select>
         </td>
         <td id="edit">
-    <div class="tooltip-container">
-        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
-        <span class="tooltip-text">Edit Job Listing</span>
-    </div>
-</td>
-
+            <div class="tooltip-container">
+                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="openEditJobPopup(${job.id})"></i>
+                <span class="tooltip-text">Edit Job Listing</span>
+            </div>
+        </td>
     `;
 
-    populateTable(data, containerSelector + ' table', rowTemplate); // Use the table within the container
+    const tableBody = document.querySelector(containerSelector + ' table tbody');
+    tableBody.innerHTML = ''; // Clear existing rows
+
+    if (data.length === 0) {
+        // If no jobs found, display message
+        const messageRow = document.createElement('tr');
+        messageRow.innerHTML = `<td colspan="7" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No available jobs found.</td>`; // Adjust colspan as needed
+        tableBody.appendChild(messageRow);
+    } else {
+        // Populate table with jobs
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.classList.add('tr1'); // Add the 'tr1' class to each row
+            row.innerHTML = rowTemplate(item);
+            tableBody.appendChild(row);
+        });
+    }
 }
 
 
@@ -1502,10 +1519,13 @@ initializePopupPagination('thirdPopup')
 
 
 // Function to initialize skill input handling for a specific popup
-function initializeSkillsInput(popupId, inputId, containerSelector) {
+function initializeSkillsInput(popupId, inputId1, inputId2, containerSelector1, containerSelector2) {
     var popup = document.getElementById(popupId);
-    var skillsInput = popup.querySelector(`#${inputId}`);
-    var skillsContainer = popup.querySelector(`#${containerSelector}`);
+    var skillsInput = popup.querySelector(`#${inputId1}`);
+    var skillsContainer = popup.querySelector(`#${containerSelector1}`);
+
+    var skillsDisplay = popup.querySelector(`#${inputId2}`);
+    var skillsDisplayContainer = popup.querySelector(`#${containerSelector2}`);
 
     console.log(popup);
     console.log(skillsInput);
@@ -1523,7 +1543,7 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
             event.preventDefault();
             const value = skillsInput.value.trim();
             if (value && !skillsSet.has(value.toLowerCase())) {
-                addSkill(skillsContainer, value, skillsInput); // Pass skillsInput as an argument
+                addSkill(skillsDisplayContainer, value, skillsDisplay); // Pass skillsInput as an argument
                 skillsInput.value = '';
             }
         }
@@ -1542,6 +1562,8 @@ function initializeSkillsInput(popupId, inputId, containerSelector) {
         });
     });
 }
+//Start of edit
+
 
 // Function to add a new skill
 function addSkill(container, text, skillsInput) {
@@ -1649,7 +1671,7 @@ function showJobTitle() {
     initializePopupPagination('add-job-title-popup');
     document.getElementById('popup').style.display = 'none';
     document.getElementById('popup').classList.remove('show');
-    initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
+    initializeSkillsInput('add-job-title-popup', 'jobposting-search', 'jobposting-skills-input', 'add-jobposting-search-container','add-jobposting-skills-container');
 }
 
 function hideJobTitle() {
@@ -1955,3 +1977,17 @@ function populatePartnerJobTitles() {
 }
 // Call this function when the page loads or when needed to populate the dropdown
 document.addEventListener('DOMContentLoaded', populateJobTitles);
+
+function openTab(tabName) {
+    var i, tabcontent, tabs;
+    tabcontent = document.getElementsByClassName('tab-content');
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].classList.remove('active');
+    }
+    tabs = document.getElementsByClassName('tab');
+    for (i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+    document.getElementById(tabName).classList.add('active');
+    event.currentTarget.classList.add('active');
+    }

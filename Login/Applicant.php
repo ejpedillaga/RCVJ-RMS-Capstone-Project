@@ -35,8 +35,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     } else {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "INSERT INTO applicant_table (email, password, fname, lname, gender, birthday, location, phone, classi, subclassi)
-                VALUES ('$email', '$hashed_password', '$fname', '$lname', '$gender', '$birthday', '$location', '$phone', '$classi', '$subclassi')";
+        // Profile image set to NULL
+        $profile_image = 'NULL'; 
+
+        $sql = "INSERT INTO applicant_table (email, password, fname, lname, gender, birthday, location, phone, classi, subclassi, profile_image)
+                VALUES ('$email', '$hashed_password', '$fname', '$lname', '$gender', '$birthday', '$location', '$phone', '$classi', '$subclassi', $profile_image)";
 
         if ($conn->query($sql) === TRUE) {
             $message = "Registration successful!";
@@ -71,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin_submit'])) {
 }
 $conn->close();
 ?>
+
 
 
 <!DOCTYPE html>

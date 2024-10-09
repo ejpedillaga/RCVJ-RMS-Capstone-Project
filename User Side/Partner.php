@@ -60,38 +60,17 @@ $conn->close();
                 </ul>
             </div>
             <div class="nav-acc">
-                <div class="notification_wrap">
-                    <div class="notification_icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="dropdown">
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    <?php if ($profile_image): ?>
-                        <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
-                    <?php else: ?>
-                        <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
-                    <?php endif; ?>
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
+                <?php if (isset($_SESSION['user'])): ?>
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
-                </div>
+                <?php else: ?>
+                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+            </div>
         </nav>
 
         <!---Burger Nav-->
@@ -101,31 +80,6 @@ $conn->close();
             </div>
             <div class="hamburger-menu">
                 <div class="nav-icons">
-                    <div class="notification_wrap">
-                        <div class="notification_icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="dropdown">
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="hamburger-icon" onclick="toggleMenu()">
                         <span></span>
                         <span></span>
@@ -137,10 +91,13 @@ $conn->close();
                     <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
                     <li><a class="active" href="#" onclick="toggleMenu()">Partner Companies</a></li>
-                    <div class="nav-acc">
-                        <img src="images/user.svg" alt="">
-                        <button onclick="redirectTo('UserProfile.php')">Sign Up</button>
-                    </div>
+                    <li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <a href="UserProfile.php">Profile</a>
+                        <?php else: ?>
+                            <a href="../Login/Applicant.php"><?php echo htmlspecialchars($user_name); ?></a>
+                        <?php endif; ?>
+                    </li>
                 </div>
             </div>
         </nav>
@@ -153,7 +110,7 @@ $conn->close();
                         <div class="search-box">
                             <div class="search-input" id="partner-companies">
                                 <i class="search-icon fas fa-search"></i>
-                                <input type="text" placeholder="Company Name">
+                                <input type="text" placeholder="Company Name" id="search-input" onkeyup="searchPartners()">
                             </div>
                         </div>
                     </div>
@@ -163,10 +120,11 @@ $conn->close();
                 <!--Body-->
                 <h1 class="title3" style="margin-top: 2rem;">Partner Companies</h1>     
                 <div id="partner-results" class="partner-main-container">
+                    <div id="no-results-message" style="display: none; color: #999; text-align: center; font-weight: bold; font-size: 1.5rem;">No available companies found.</div>
                     <ul>
                         <?php
                         if ($result->num_rows > 0) {
-                            while($row = $result->fetch_assoc()) {
+                            while ($row = $result->fetch_assoc()) {
                                 if (isset($row['logo'])) {
                                     $row['logo'] = base64_encode($row['logo']);
                                 }
@@ -177,8 +135,6 @@ $conn->close();
                                 echo '</div>';
                                 echo '</li>';
                             }
-                        } else {
-                            echo "<p>No partner companies found.</p>";
                         }
                         ?>
                     </ul>
@@ -225,5 +181,34 @@ $conn->close();
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script defer src="script.js"></script>
+        <script>
+            function searchPartners() {
+                // Get the input value
+                var input = document.getElementById('search-input').value.toLowerCase();
+                
+                // Get the list of partner company names
+                var partnerCards = document.querySelectorAll('.partner-card');
+                var hasVisibleCompanies = false;  // Track if any company is visible
+                
+                // Loop through the partner cards and hide those that do not match the search query
+                partnerCards.forEach(function(card) {
+                    var companyName = card.querySelector('#company-name').textContent.toLowerCase();
+                    if (companyName.includes(input)) {
+                        card.parentElement.style.display = '';  // Show the matching cards
+                        hasVisibleCompanies = true;  // At least one company is visible
+                    } else {
+                        card.parentElement.style.display = 'none';  // Hide the non-matching cards
+                    }
+                });
+                
+                // Show or hide the "no results" message
+                var noResultsMessage = document.getElementById('no-results-message');
+                if (hasVisibleCompanies) {
+                    noResultsMessage.style.display = 'none';  // Hide the message if there are visible companies
+                } else {
+                    noResultsMessage.style.display = 'block';  // Show the message if no companies are visible
+                }
+            }
+        </script>
     </body>
 </html>

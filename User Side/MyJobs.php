@@ -1,10 +1,54 @@
+<?php
+include 'connection.php';
+$conn = connection();
+session_start();
+
+// Initialize user name and profile image
+$user_name = 'Sign Up';
+$profile_image = null;
+
+if (isset($_SESSION['user'])) {
+    // Fetch user's email from the session
+    $user_email = $_SESSION['user'];
+
+    // Fetch user's full name and profile image
+    $user_sql = "SELECT fname, lname, profile_image FROM applicant_table WHERE email = '$user_email'";
+    $user_result = $conn->query($user_sql);
+
+    if ($user_result->num_rows > 0) {
+        $user = $user_result->fetch_assoc();
+        $user_name = $user['fname'] . ' ' . $user['lname'];
+        $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
+    }
+
+    // Fetch jobs applied by the current user
+    $user_id_sql = "SELECT job_id, full_name, job_title, company_name, date_applied, job_location, status 
+                    FROM candidate_list WHERE userid = (SELECT userid FROM applicant_table WHERE email = '$user_email')";
+    $jobs_result = $conn->query($user_id_sql);
+}
+
+// Display success message if available
+if (isset($_SESSION['message'])) {
+    echo "<script type='text/javascript'>
+            alert('{$_SESSION['message']}');
+            $(document).ready(function() {
+                $('#successModal').modal('show');
+            });
+          </script>";
+    unset($_SESSION['message']);  // Clear the message after displaying
+}
+
+// Close the connection
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
@@ -23,33 +67,16 @@
                 </ul>
             </div>
             <div class="nav-acc">
-                <div class="notification_wrap">
-                    <div class="notification_icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="dropdown">
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Application on <span>[JOB TITLE]</span> was rejected.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Interview on <span>[JOB TITLE]</span> was scheduled.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Deployment on <span>[JOB TITLE]</span> is in process.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <img src="images/user.svg" alt="">
-                <button id="profile" onclick="redirectTo('UserProfile.php')">User Name</button>
+                <?php if ($profile_image): ?>
+                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
+                <?php else: ?>
+                    <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
+                <?php endif; ?>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php else: ?>
+                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
             </div>
         </nav>
 
@@ -60,31 +87,6 @@
             </div>
             <div class="hamburger-menu">
                 <div class="nav-icons">
-                    <div class="notification_wrap">
-                        <div class="notification_icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="dropdown">
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Application on <span>[JOB TITLE]</span> was rejected.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Interview on <span>[JOB TITLE]</span> was scheduled.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                            <div class="notify_item">
-                                <div class="notify_info">
-                                    <p>Deployment on <span>[JOB TITLE]</span> is in process.</p>
-                                    <span class="company_name">Company Name</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="hamburger-icon" onclick="toggleMenu()">
                         <span></span>
                         <span></span>
@@ -92,14 +94,17 @@
                     </div>
                 </div>
                 <div class="menu-links">
-                    <li><a class="active" href="#" onclick="toggleMenu()">Home</a></li>
+                    <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
                     <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
                     <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
-                    <div class="nav-acc">
-                        <img src="images/user.svg" alt="">
-                        <button id="profile">User Name</button>
-                    </div>
+                    <li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <a href="UserProfile.php">Profile</a>
+                        <?php else: ?>
+                            <a href="../Login/Applicant.php"><?php echo htmlspecialchars($user_name); ?></a>
+                        <?php endif; ?>
+                    </li>
                 </div>
             </div>
         </nav>
@@ -121,32 +126,25 @@
 
                 <div id="applied" class="tab-content active">
                     <ul class="job-list">
-                        <li>
-                            <div class="jobs-card" onclick="redirectTo('JobDetails.php')">
-                                <div class="job-header">
-                                    <h3 id="job-title">Job Title</h3>
-                                    <h4 id="available">(14)</h4>
-                                </div>
-                                <div class="company-box">
-                                    <p id="location"><i class="fas fa-map-marker-alt"></i>Location</p>
-                                    <p id="date"><i class="fas fa-calendar-alt"></i>MM/DD/YYYY</p>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="jobs-card" onclick="redirectTo('JobDetails.php')">
-                                <div class="job-header">
-                                    <h3 id="job-title">Job Title</h3>
-                                    <h4 id="available">(14)</h4>
-                                </div>
-                                <div class="company-box">
-                                    <p id="location"><i class="fas fa-map-marker-alt"></i>Location</p>
-                                    <p id="date"><i class="fas fa-calendar-alt"></i>MM/DD/YYYY</p>
-                                </div>
-                            </div>
-                        </li>
+                        <?php if ($jobs_result->num_rows > 0): ?>
+                            <?php while ($job = $jobs_result->fetch_assoc()): ?>
+                                <li>
+                                    <div class="jobs-card" onclick="redirectTo('JobDetails.php?id=<?php echo $job['job_id']; ?>')">
+                                        <div class="job-header">
+                                            <h3 id="job-title"><?php echo htmlspecialchars($job['job_title']); ?></h3>
+                                        </div>
+                                        <div class="company-box">
+                                            <p id="location"><i class="fas fa-map-marker-alt"></i><?php echo htmlspecialchars($job['job_location']); ?></p>
+                                            <p id="date"><i class="fas fa-calendar-alt"></i><?php echo date('m/d/Y', strtotime($job['date_applied'])); ?></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
                     </ul>
-                    <div class="empty-message" style="display: none;">
+
+                    <!-- Empty message should be outside the job list -->
+                    <div class="empty-message" style="<?php echo ($jobs_result->num_rows > 0) ? 'display: none;' : 'display: flex;'; ?>">
                         <img src="images/findjobs.png" alt="">
                         <p>You haven't applied for a job.<br>Look for jobs.</p>
                         <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
@@ -157,9 +155,10 @@
                     <ul class="job-list">
                         <!-- Job items will be dynamically added here -->
                     </ul>
-                    <div class="empty-message" style="display: none;">
+                    <!-- Empty message should be outside the job list -->
+                    <div class="empty-message" style="<?php echo ($jobs_result->num_rows > 0) ? 'display: none;' : 'display: flex;'; ?>">
                         <img src="images/findjobs.png" alt="">
-                        <p>You have no scheduled interviews.<br>Look for jobs.</p>
+                        <p>You have no interviews for a job.<br>Look for jobs.</p>
                         <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
                     </div>
                 </div>
@@ -179,9 +178,10 @@
                             </div>
                         </li>
                     </ul>
-                    <div class="empty-message" style="display: none;">
+                    <!-- Empty message should be outside the job list -->
+                    <div class="empty-message" style="<?php echo ($jobs_result->num_rows > 0) ? 'display: none;' : 'display: flex;'; ?>">
                         <img src="images/findjobs.png" alt="">
-                        <p>You have no current jobs.<br>Look for jobs.</p>
+                        <p>You haven't applied for a job.<br>Look for jobs.</p>
                         <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
                     </div>
                 </div>

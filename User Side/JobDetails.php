@@ -2,7 +2,6 @@
 include 'connection.php';
 $conn = connection();
 
-// Start session and check for logged-in user
 session_start();
 $user_name = 'Sign Up'; // Default username if not logged in
 $user_info = [];
@@ -10,12 +9,15 @@ $education_list = [];
 $vocational_list = [];
 $job_experience_list = [];
 $profile_image = null; // Initialize profile image
+$skills = [];
+$company_name = '';
+$job_title = '';
 
+// Check if user is logged in
 if (isset($_SESSION['user'])) {
-    // Fetch user's email from the session
-    $user_email = $_SESSION['user'];
+    $user_email = $_SESSION['user']; // Fetch user's email from session
     
-    // Use the existing database connection to fetch user information
+    // Fetch user information from applicant_table
     $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $user_email);
@@ -24,18 +26,17 @@ if (isset($_SESSION['user'])) {
 
     if ($result->num_rows > 0) {
         $user_info = $result->fetch_assoc();
-        $user_name = $user_info['fname'] . ' ' . $user_info['lname'];
-        $userid = $user_info['userid']; // Fetch the user's ID for later use in queries
-        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null; // Fetch profile image
+        $user_name = $user_info['fname'] . ' ' . $user_info['lname']; // Get full name
+        $userid = $user_info['userid']; // Get user ID
+        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null;
 
-        // Fetch education details using the fetched userid
+        // Fetch education details
         $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
         $stmt_edu = $conn->prepare($sql);
         $stmt_edu->bind_param("i", $userid);
         $stmt_edu->execute();
         $result_edu = $stmt_edu->get_result();
 
-        // Collect education records
         if ($result_edu->num_rows > 0) {
             while ($row = $result_edu->fetch_assoc()) {
                 $education_list[] = $row;
@@ -43,14 +44,13 @@ if (isset($_SESSION['user'])) {
         }
         $stmt_edu->close();
 
-        // Fetch vocational education details using the fetched userid
+        // Fetch vocational education details
         $sql = "SELECT school, course, year_started, year_ended FROM vocational_table WHERE userid = ?";
         $stmt_voc = $conn->prepare($sql);
         $stmt_voc->bind_param("i", $userid);
         $stmt_voc->execute();
         $result_voc = $stmt_voc->get_result();
 
-        // Collect vocational records
         if ($result_voc->num_rows > 0) {
             while ($row = $result_voc->fetch_assoc()) {
                 $vocational_list[] = $row;
@@ -58,14 +58,13 @@ if (isset($_SESSION['user'])) {
         }
         $stmt_voc->close();
 
-        // Fetch job experience details using the fetched userid
+        // Fetch job experience details
         $sql = "SELECT job_title, company_name, month_started, year_started, month_ended, year_ended FROM job_experience_table WHERE userid = ?";
         $stmt_job = $conn->prepare($sql);
         $stmt_job->bind_param("i", $userid);
         $stmt_job->execute();
         $result_job = $stmt_job->get_result();
 
-        // Collect job experience records
         if ($result_job->num_rows > 0) {
             while ($row = $result_job->fetch_assoc()) {
                 $job_experience_list[] = $row;
@@ -79,7 +78,7 @@ if (isset($_SESSION['user'])) {
 // Get job ID from query parameter
 $job_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// Prepare and execute SQL query with JOIN for job details
+// Fetch selected job details with company logo from job_table and partner_table
 $sql = "SELECT job_table.job_title, job_table.job_location, job_table.job_candidates, job_table.company_name, job_table.job_description, job_table.date_posted, partner_table.logo
         FROM job_table
         JOIN partner_table ON job_table.company_name = partner_table.company_name
@@ -122,8 +121,46 @@ if ($result_skills->num_rows > 0) {
         $skills[] = $row['skill_name'];
     }
 }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Handle the form submission
+    $userid = $user_info['userid'];
+    $full_name = $user_name;
+    $job_title = $job['job_title'];
+    $company_name = $job['company_name'];
+    $job_location = $job['job_location']; // Assuming this is captured from your form
+    $job_id = $job_id; // The job ID from the GET parameter
+    $date_applied = date('Y-m-d');
+    $status = 'Pending';
+
+    // Updated SQL to include job_id
+    $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt_insert = $conn->prepare($sql_insert);
+    $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
+
+    if ($stmt_insert->execute()) {
+        // Store success message in session
+        $_SESSION['message'] = "Application submitted successfully!";
+        header("Location: Jobs.php");
+        exit; 
+    } else {
+        echo "Error deleting education record: " . $conn->error;
+    }
+    $stmt_insert->close();
+}
+
+// Display success message if available
+if (isset($_SESSION['message'])) {
+    echo "<script type='text/javascript'>
+            alert('{$_SESSION['message']}');
+            $(document).ready(function() {
+                $('#successModal').modal('show');
+            });
+          </script>";
+    unset($_SESSION['message']);  // Clear the message after displaying
+}
 
 $company_name = $job['company_name'];
+$job_title = $job['job_title'];
 $stmt->close();
 $conn->close();
 ?>
@@ -150,6 +187,7 @@ $conn->close();
         </div>
         <h3 style="color: #2C1875">Review your information:</h3>
         <p>This information will be reviewed by the employer.</p>
+        <form method="post" action="">
         <div class="candidate-container">
             <div class="candidate-header">
                 <div>
@@ -237,131 +275,67 @@ $conn->close();
             </div>
         </div>
         <div class="buttons-container">
-            <button class="button-apply" id="submitBtn">Submit</button>
-
-            <script>
-            document.getElementById('submitBtn').addEventListener('click', function() {
-                // Create an AJAX request
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', '/RCVJ-RMS/Admin Side-dev/candidates.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-
-                // Send the necessary data (you can add any additional data if needed)
-                xhr.send();
-
-                xhr.onload = function() {
-                    if (xhr.status == 200) {
-                        alert('Data submitted successfully!');
-                        // Optionally, you could update the table dynamically here
-                        // For example, by appending the new candidate row
-                        document.getElementById('candidateTableBody').innerHTML += xhr.responseText;
-                    } else {
-                        alert('An error occurred!');
-                    }
-                };
-            });
-            </script>
+            <button type="submit" class="button-apply" id="submitBtn">Submit</button>
             <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
         </div>
     </div>
+    </form>
+    
     <!--Desktop Nav-->
     <nav class="desktopnav" id="desktop-nav">
-        <div class="logo">
-            <img src="images/logo.png" alt="">
-        </div>
-        <div>
-            <ul class="nav-links">
-                <li><a href="Home.php">Home</a></li>
-                <li><a class="active" href="#">Jobs</a></li>
-                <li><a href="About.php">About</a></li>
-                <li><a href="Partner.php">Partner Companies</a></li>
-            </ul>
-        </div>
-        <div class="nav-acc">
-            <div class="notification_wrap">
-                <div class="notification_icon">
-                    <i class="fas fa-bell"></i>
-                </div>
-                <div class="dropdown">
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                    <div class="notify_item">
-                        <div class="notify_info">
-                            <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                            <span class="company_name">Company Name</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="logo">
+                <img src="images/logo.png" alt="">
             </div>
+            <div>
+                <ul class="nav-links">
+                    <li><a href="Home.php">Home</a></li>
+                    <li><a class="active" href="#">Jobs</a></li>
+                    <li><a href="About.php">About</a></li>
+                    <li><a href="Partner.php">Partner Companies</a></li>
+                </ul>
+            </div>
+            <div class="nav-acc">
                 <?php if ($profile_image): ?>
                     <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="small-profile-photo">
                 <?php else: ?>
                     <img src="images/user.svg" alt="Default Profile Picture" class="small-profile-photo">
                 <?php endif; ?>
-            <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
-        </div>
-    </nav>
-
-    <!---Burger Nav-->
-    <nav id="hamburger-nav">
-        <div class="logo">
-            <img src="images/logo.png" alt="">
-        </div>
-        <div class="hamburger-menu">
-            <div class="nav-icons">
-                <div class="notification_wrap">
-                    <div class="notification_icon">
-                        <i class="fas fa-bell"></i>
-                    </div>
-                    <div class="dropdown">
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Application on<span>[JOB TITLE]</span>was rejected.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Interview on<span>[JOB TITLE]</span>was scheduled.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                        <div class="notify_item">
-                            <div class="notify_info">
-                                <p>Deployment on<span>[JOB TITLE]</span>is on process.</p>
-                                <span class="company_name">Company Name</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hamburger-icon" onclick="toggleMenu()">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-            <div class="menu-links">
-                <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
-                <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
-                <li><a href="About.php" onclick="toggleMenu()">About</a></li>
-                <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
-                <div class="nav-acc">
-                    <img src="images/user.svg" alt="">
+                <?php if (isset($_SESSION['user'])): ?>
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php else: ?>
+                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+            </div>
+        </nav>
+
+        <!---Burger Nav-->
+        <nav id="hamburger-nav">
+            <div class="logo">
+                <img src="images/logo.png" alt="">
+            </div>
+            <div class="hamburger-menu">
+                <div class="nav-icons">
+                    <div class="hamburger-icon" onclick="toggleMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+                <div class="menu-links">
+                    <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
+                    <li><a class="active" href="#" onclick="toggleMenu()">Jobs</a></li>
+                    <li><a href="About.php" onclick="toggleMenu()">About</a></li>
+                    <li><a href="Partner.php" onclick="toggleMenu()">Partner Companies</a></li>
+                    <li>
+                        <?php if (isset($_SESSION['user'])): ?>
+                            <a href="UserProfile.php">Profile</a>
+                        <?php else: ?>
+                            <a href="../Login/Applicant.php"><?php echo htmlspecialchars($user_name); ?></a>
+                        <?php endif; ?>
+                    </li>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
     
     <section class="details-section">
         <div class="main-container">
@@ -399,7 +373,7 @@ $conn->close();
                     <?php else: ?>
                         <li>At least a <strong><?php echo htmlspecialchars($qualifications['educational_attainment']); ?></strong></li>
                     <?php endif; ?>
-                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "0"): ?>
+                    <?php if (htmlspecialchars($qualifications['years_of_experience']) === "-"): ?>
                         <li>No experience needed</li>
                     <?php else: ?>
                         <li>Preferably with <strong><?php echo htmlspecialchars($qualifications['years_of_experience']); ?> year/s</strong> of professional experience relevant to the field</li>

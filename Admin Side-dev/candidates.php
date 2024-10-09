@@ -37,9 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         VALUES (?, ?, ?, ?, ?)";
         $insertStmt = $conn->prepare($insertQuery);
 
-        // For now, use placeholders for Job Title and Company Name
-        $jobTitle = 'Job Title Placeholder';
-        $companyName = 'Company Placeholder';
+        // Get job title and company name from POST request (sent from JobDetails.php)
+        $jobTitle = isset($_POST['job_title']) ? $_POST['job_title'] : 'Job Title Placeholder';
+        $companyName = isset($_POST['company_name']) ? $_POST['company_name'] : 'Company Placeholder';
 
         $insertStmt->bind_param("sssss", $fullName, $jobTitle, $companyName, $dateApplied, $status);
         $insertStmt->execute();
@@ -50,9 +50,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
 }
 
-// Fetch candidates from candidate_list table
-$query = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list";
-$result = $conn->query($query); // Execute the query
+// Pagination Logic
+$limit = 5; // Number of records per page
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+
+// Fetch total number of candidates
+$totalQuery = "SELECT COUNT(*) as total FROM candidate_list";
+$totalResult = $conn->query($totalQuery);
+$totalRow = $totalResult->fetch_assoc();
+$totalCandidates = $totalRow['total'];
+$totalPages = ceil($totalCandidates / $limit);
+
+// Fetch candidates from candidate_list table with pagination
+$query = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list LIMIT ?, ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ii", $offset, $limit);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 
 
@@ -64,7 +79,7 @@ $result = $conn->query($query); // Execute the query
     <title>Admin Side RCVJ</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
     <script src="script.js"></script>
       
@@ -78,7 +93,7 @@ $result = $conn->query($query); // Execute the query
             </button>
         </div>
             <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
-            <a href="smartsearch.html"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
+            <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php" class="active"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" ><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.html"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
@@ -125,8 +140,14 @@ $result = $conn->query($query); // Execute the query
                 <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
 
-            <div>
-                    <table>
+            <div class="tabs">
+                <div class="tab active" onclick="openTab('pending')">Pending</div>
+                <div class="tab" onclick="openTab('scheduled')">Scheduled</div>
+                <div class="tab" onclick="openTab('interviewed')">Interviewed</div>
+                <div class="tab" onclick="openTab('deployed')">Deployed</div>
+            </div>
+            <div id="pending" class="tab-content active">
+                    <table style="margin-bottom: 1rem">
                         <thead>
                             <tr class="th1">
                                 <th>Candidate</th>
@@ -139,23 +160,170 @@ $result = $conn->query($query); // Execute the query
                             </tr>
                         </thead>
                         <tbody>
-                            <?php
-                            if ($result && $result->num_rows > 0) { // Check if $result is set and has rows
-                                while($row = $result->fetch_assoc()) {
-                                    echo "<tr>";
-                                    echo "<td>" . htmlspecialchars($row['full_name']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['job_title']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['company_name']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['date_applied']) . "</td>";
-                                    echo "<td>" . htmlspecialchars($row['status']) . "</td>";
-                                    echo "</tr>";
-                                }
-                            } else {
-                                echo "<tr><td colspan='5'>No candidates found.</td></tr>";
-                            }
-                            ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr class="tr1">
+                                <td id="fullname" class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td id="job-title"><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td id="company-name"><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td id="date"><?php echo htmlspecialchars($row['date_applied']); ?></td>
+                                <td>
+                                    <select class="status-dropdown">
+                                        <option value="Interview" <?php echo ($row['status'] === 'Interview') ? 'selected' : ''; ?>>Interview</option>
+                                        <option value="Pending" <?php echo ($row['status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Rejected" <?php echo ($row['status'] === 'Rejected') ? 'selected' : ''; ?>>Rejected</option>
+                                        <option value="Deployed" <?php echo ($row['status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    </select>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                                    <span class="tooltip-text">Candidate Information</span>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Delete Candidate</span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
                         </tbody>
                     </table>
+                    <!-- Pagination Controls -->
+                    <div id="pagination">
+                        <?php if ($totalPages > 1): ?>
+                            <nav>
+                                <ul class="pagination">
+                                    <?php if ($page > 1): ?>
+                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
+                                    <?php endif; ?>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <?php if ($page < $totalPages): ?>
+                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <div id="scheduled" class="tab-content">
+                <table style="margin-bottom: 1rem">
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                        </tbody>
+                    </table>
+                    <!-- Pagination Controls -->
+                    <div id="pagination">
+                        <?php if ($totalPages > 1): ?>
+                            <nav>
+                                <ul class="pagination">
+                                    <?php if ($page > 1): ?>
+                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
+                                    <?php endif; ?>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <?php if ($page < $totalPages): ?>
+                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div id="interviewed" class="tab-content">
+                <table style="margin-bottom: 1rem">
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                        </tbody>
+                    </table>
+                    <!-- Pagination Controls -->
+                    <div id="pagination">
+                        <?php if ($totalPages > 1): ?>
+                            <nav>
+                                <ul class="pagination">
+                                    <?php if ($page > 1): ?>
+                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
+                                    <?php endif; ?>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <?php if ($page < $totalPages): ?>
+                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div id="deployed" class="tab-content">
+                <table style="margin-bottom: 1rem">
+                        <thead>
+                            <tr class="th1">
+                                <th>Candidate</th>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Date Applied</th>
+                                <th>Status</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        
+                        </tbody>
+                    </table>
+                    <!-- Pagination Controls -->
+                    <div id="pagination">
+                        <?php if ($totalPages > 1): ?>
+                            <nav>
+                                <ul class="pagination">
+                                    <?php if ($page > 1): ?>
+                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
+                                    <?php endif; ?>
+                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
+                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                        </li>
+                                    <?php endfor; ?>
+                                    <?php if ($page < $totalPages): ?>
+                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
+                                    <?php endif; ?>
+                                </ul>
+                            </nav>
+                        <?php endif; ?>
+                    </div>
+                </div>
             </div>
 
 

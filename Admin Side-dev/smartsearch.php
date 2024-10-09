@@ -270,6 +270,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     });
 
     mysqli_close($conn);
+    header('Content-Type: application/json'); // Set header to application/json
     echo json_encode($candidates);
     exit();
 }

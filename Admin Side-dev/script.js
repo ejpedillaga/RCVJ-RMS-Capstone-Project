@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_candidates.php', populateCandidatesTable);
     } else if (currentPage.includes('smartsearch.php')) {
         fetchData('fetch_smartsearch.php', populateSmartSearchTable);
-    } else */if (currentPage.includes('rejected.html')) {
+    } else*/ if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
         fetchData('fetch_employees.php', populateEmployeesTable)

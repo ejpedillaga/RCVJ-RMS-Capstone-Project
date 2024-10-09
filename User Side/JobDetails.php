@@ -122,41 +122,25 @@ if ($result_skills->num_rows > 0) {
     }
 }
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Handle the form submission
     $userid = $user_info['userid'];
     $full_name = $user_name;
     $job_title = $job['job_title'];
     $company_name = $job['company_name'];
-    $job_location = $job['job_location']; // Assuming this is captured from your form
-    $job_id = $job_id; // The job ID from the GET parameter
+    $job_location = $job['job_location'];
+    $job_id = $job_id; 
     $date_applied = date('Y-m-d');
     $status = 'Pending';
 
-    // Updated SQL to include job_id
     $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt_insert = $conn->prepare($sql_insert);
     $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
 
     if ($stmt_insert->execute()) {
-        // Store success message in session
-        $_SESSION['message'] = "Application submitted successfully!";
-        header("Location: Jobs.php");
-        exit; 
+        echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully!']);
     } else {
-        echo "Error deleting education record: " . $conn->error;
+        echo json_encode(['status' => 'error', 'message' => 'There was an error processing your application.']);
     }
-    $stmt_insert->close();
-}
-
-// Display success message if available
-if (isset($_SESSION['message'])) {
-    echo "<script type='text/javascript'>
-            alert('{$_SESSION['message']}');
-            $(document).ready(function() {
-                $('#successModal').modal('show');
-            });
-          </script>";
-    unset($_SESSION['message']);  // Clear the message after displaying
+    exit;
 }
 
 $company_name = $job['company_name'];
@@ -187,7 +171,7 @@ $conn->close();
         </div>
         <h3 style="color: #2C1875">Review your information:</h3>
         <p>This information will be reviewed by the employer.</p>
-        <form method="post" action="">
+        <form id="applyForm" method="post" action="">
         <div class="candidate-container">
             <div class="candidate-header">
                 <div>
@@ -436,5 +420,30 @@ $conn->close();
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
+    <script>
+                $(document).ready(function() {
+            $('#applyForm').submit(function(e) {
+                e.preventDefault(); // Prevent form from submitting normally
+                $.ajax({
+                    type: 'POST',
+                    url: '', // Same PHP file
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        const res = JSON.parse(response);
+                        if (res.status === 'success') {
+                            alert(res.message);
+                            window.location.href = 'Jobs.php';
+                        } else {
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('There was an error processing your request.');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

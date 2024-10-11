@@ -71,10 +71,91 @@ function toggle(element) {
     closedOption.classList.toggle('closed');
 }
 
-function showInfo() {
+function showInfo(candidate) {
+    // Display the popup
     document.getElementById('info').style.display = 'block';
     document.getElementById('info').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+
+    // Populate the popup fields with candidate information
+    document.querySelector('.candidate-header h2').textContent = `${candidate.fname} ${candidate.lname}`;
+    document.querySelector('.locationemail i.fa-map-pin + h4').textContent = candidate.location || 'Location not available';
+    document.querySelector('.locationemail i.fa-envelope + h4').textContent = candidate.email || 'Email not available';
+    document.querySelector('.locationemail i.fa-venus-mars + h4').textContent = candidate.gender || 'Gender not available';
+    document.querySelector('.locationemail i.fa-phone + h4').textContent = candidate.phone || 'Phone not available';
+    document.querySelector('.locationemail i.fa-birthday-cake + h4').textContent = candidate.birthday || 'Birthday not available';
+    
+    // Personal information
+    document.getElementById('personal-desc').textContent = candidate.personal_description || 'No personal description available';
+
+    // Profile picture
+    const profileImage = document.querySelector('.large-profile-photo');
+    if (candidate.profile_image) {
+        // Assuming profile_image is stored as Base64 or a URL
+        profileImage.src = `data:image/jpeg;base64,${candidate.profile_image}`; // or just `${candidate.profile_image}` if it's a URL
+    } else {
+        profileImage.src = 'img/user.svg'; // Default profile picture
+    }
+
+     // Populate past job experience
+     const pastJobsContainer = document.getElementById('past-jobs-list');
+     pastJobsContainer.innerHTML = ''; // Clear any previous job entries
+ 
+     if (candidate.past_jobs && candidate.past_jobs.length > 0) {
+         candidate.past_jobs.forEach(job => {
+             const jobItem = document.createElement('li');
+             jobItem.innerHTML = `${job.job_title} at ${job.company_name} (${job.year_started} - ${job.year_ended})`;
+             pastJobsContainer.appendChild(jobItem);
+         });
+     } else {
+         const noJobsItem = document.createElement('li');
+         noJobsItem.textContent = 'No past jobs record available';
+         pastJobsContainer.appendChild(noJobsItem);
+     }
+
+     // Populate education information
+    const educationContainer = document.getElementById('education-list');
+    educationContainer.innerHTML = ''; // Clear any previous education entries
+
+    if (candidate.education && (candidate.educational_attainment || candidate.education.course || candidate.education.school || candidate.education.sy_started || candidate.education.sy_ended)) {
+        const educationItem = document.createElement('li');
+        educationItem.innerHTML = `${candidate.education.educational_attainment} in ${candidate.education.course} from ${candidate.education.school} (${candidate.education.sy_started} - ${candidate.education.sy_ended})`;
+        educationContainer.appendChild(educationItem);
+    } else {
+        const noEducationItem = document.createElement('li');
+        noEducationItem.textContent = 'No education information available';
+        educationContainer.appendChild(noEducationItem);
+    }
+
+    // Populate vocational training information
+    const vocationalContainer = document.getElementById('vocational-list');
+    vocationalContainer.innerHTML = ''; // Clear any previous vocational entries
+
+    if (candidate.vocational && (candidate.vocational.course || candidate.vocational.school || candidate.vocational.year_started || candidate.vocational.year_ended)) {
+        const vocationalItem = document.createElement('li');
+        vocationalItem.innerHTML = `${candidate.vocational.course} from ${candidate.vocational.school || 'N/A'} (${candidate.vocational.year_started || 'N/A'} - ${candidate.vocational.year_ended || 'N/A'})`;
+        vocationalContainer.appendChild(vocationalItem);
+    } else {
+        const noVocationalItem = document.createElement('li');
+        noVocationalItem.textContent = 'No vocational information available';
+        vocationalContainer.appendChild(noVocationalItem);
+    }
+
+    // Populate skills information
+    const skillsContainer = document.getElementById('skills-list');
+    skillsContainer.innerHTML = ''; // Clear any previous skills entries
+
+    if (candidate.skills && candidate.skills.length > 0) {
+        candidate.skills.forEach(skill => {
+            const skillItem = document.createElement('li');
+            skillItem.textContent = skill; // Each skill is displayed as text
+            skillsContainer.appendChild(skillItem);
+        });
+    } else {
+        const noSkillsItem = document.createElement('li');
+        noSkillsItem.textContent = 'No skills available';
+        skillsContainer.appendChild(noSkillsItem);
+    }
 }
 
 function hideInfo() {

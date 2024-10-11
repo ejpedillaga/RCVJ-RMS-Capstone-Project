@@ -2750,8 +2750,12 @@ input[type="number"] {
   padding: 1.5rem 5rem;
   margin: auto;
   border-radius: 20px;
-  overflow: auto;
   height: 90%;
+}
+
+#applyForm {
+  overflow-y: scroll;
+  height: 75%;
 }
 
 .popup.show {
@@ -2791,8 +2795,6 @@ input[type="number"] {
 
 .popup .candidate-container {
   padding: 0rem 5rem;
-  overflow-y: scroll;
-  height: 70%;
   margin: 1rem 0rem;
 }
 .popup .candidate-header {
@@ -2828,20 +2830,20 @@ input[type="number"] {
 }
 
 /* Custom Scrollbar for WebKit browsers (Chrome, Safari) */
-.candidate-container::-webkit-scrollbar {
+#applyForm::-webkit-scrollbar {
   width: 8px; /* Width of the scrollbar */
 }
 
-.candidate-container::-webkit-scrollbar-track {
+#applyForm::-webkit-scrollbar-track {
   background: #f1f1f1; /* Track color */
 }
 
-.candidate-container::-webkit-scrollbar-thumb {
+#applyForm::-webkit-scrollbar-thumb {
   background: #2c1875; /* Scrollbar color */
   border-radius: 10px; /* Rounded corners */
 }
 
-.candidate-container::-webkit-scrollbar-thumb:hover {
+#applyForm::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
 }
 
@@ -2926,5 +2928,12 @@ input[type="number"] {
 .pastjobs-list,
 .education-list,
 .skills-list {
-  padding-left: 20px; /* Indent the list */
+  padding-left: 45px; /* Indent the list */
+}
+
+.vocational-list li,
+.pastjobs-list li,
+.education-list li,
+.skills-list li {
+  margin-bottom: 0.5rem;
 }

@@ -400,7 +400,10 @@ $result = $stmt->get_result();
                 <button class="rejected-save-button">Confirm</button>
             </div>
         </div>
-
+        <div class="shape-container2">
+            <div class="rectangle-4"></div>
+            <div class="rectangle-5"></div>
+        </div>                                   
     </div>
 </body>
 

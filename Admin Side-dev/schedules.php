@@ -164,6 +164,10 @@ mysqli_close($conn);
         </div>
     </div>
 </div>
+<div class="shape-container2">
+    <div class="rectangle-4"></div>
+    <div class="rectangle-5"></div>
+</div>    
 <script>
                 // Define an array to store events
         let events = [];

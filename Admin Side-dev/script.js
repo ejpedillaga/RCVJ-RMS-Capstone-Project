@@ -140,6 +140,17 @@ function hideDialogDelete() {
     document.getElementById('overlay').classList.remove('show');
 }
 
+function showDialogDeleteJob(delJobId) {
+    deleteJobId = delJobId; // Store the job ID for later use
+    document.getElementById('dialogBox-delete-job').style.display = 'block'; // Show the dialog
+    document.getElementById('overlay').classList.add('show'); // Show overlay
+}
+
+function hideDialogDeleteJob() {
+    document.getElementById('dialogBox-delete-job').style.display = 'none'; // Hide the dialog
+    document.getElementById('overlay').classList.remove('show'); // Hide overlay
+}
+
 function showDialogDeletePartner(partnerId) {
     deletePartnerId = partnerId;
     document.getElementById('dialogBox-delete').style.display = 'block';
@@ -756,6 +767,11 @@ function populateJobsTable(containerSelector, data) {
                 <span class="tooltip-text">Edit Job Listing</span>
             </div>
         </td>
+        ${job.job_status === 'Closed' ? `
+        <td>
+            <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDeleteJob(${job.id})"></i>
+        </td>
+        ` : ''} <!-- Only include this for Closed jobs -->
     `;
 
     const tableBody = document.querySelector(containerSelector + ' table tbody');

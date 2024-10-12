@@ -109,8 +109,8 @@ nav a.active {
   padding: 5px 0;
   position: absolute;
   z-index: 1;
-  top: -5px;
-  left: 120%;
+  top: 15%;
+  left: -2em;
 }
 
 .profile-edit:hover .tooltiptext {
@@ -120,13 +120,15 @@ nav a.active {
 .profile-edit .tooltiptext::after {
   content: " ";
   position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
+  top: -25%; 
+  left: 40%; 
+  margin-left: -5px; 
   border-width: 5px;
   border-style: solid;
-  border-color: transparent rgb(255, 254, 254) transparent transparent;
+  border-color: transparent transparent rgb(255, 254, 254) transparent; /* Arrow points upward */
 }
+
+
 
 .delete-icon .tooltiptext {
   visibility: hidden;
@@ -140,9 +142,9 @@ nav a.active {
   z-index: 2;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%; /* Changed from bottom to top */
   left: 50%;
-  margin-left: -15px;
+  margin-left: -35px; /* Adjusted margin-left to center the tooltip */
 }
 
 .delete-icon:hover .tooltiptext {
@@ -152,12 +154,12 @@ nav a.active {
 .delete-icon .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
-  left: 50%;
+  bottom: 100%; /* Changed from top to bottom */
+  left: 80%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent; /* Changed border-color to match the new position */
 }
 
 #ic2 .tooltiptext {
@@ -172,9 +174,10 @@ nav a.active {
   z-index: 999;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%; 
   left: 50%;
-  margin-left: -35px;
+  margin-left: -35px; 
+
 }
 
 #ic2:hover .tooltiptext {
@@ -184,12 +187,12 @@ nav a.active {
 #ic2 .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%; 
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent; 
 }
 
 .edit-icon .tooltiptext {
@@ -203,7 +206,7 @@ nav a.active {
   font-size: 14px;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%; 
   left: 30%;
   margin-left: -38px;
   z-index: 999;
@@ -216,12 +219,12 @@ nav a.active {
 .edit-icon .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%; 
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent; 
 }
 
 /*nav nav-acc button*/

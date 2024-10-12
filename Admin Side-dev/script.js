@@ -156,6 +156,68 @@ function showInfo(candidate) {
         noSkillsItem.textContent = 'No skills available';
         skillsContainer.appendChild(noSkillsItem);
     }
+
+    // Clean license name before displaying
+    const cleanLicenseName = (name) => {
+        return name.replace(/\\'/g, "'").replace(/\\\\/g, ""); // Replace backslashes and escaped quotes
+    };
+
+   // Populate licenses information
+    const licensesContainer = document.getElementById('licenses-list');
+    licensesContainer.innerHTML = '';
+
+    if (candidate.licenses && candidate.licenses.length > 0) {
+        candidate.licenses.forEach(license => {
+            const licenseItem = document.createElement('li');
+
+            // Create a description for the license
+            const licenseDetails = `${cleanLicenseName(license.license_name)} (${license.month_issued || 'N/A'} ${license.year_issued || ''} - ${license.month_expired || 'N/A'} ${license.year_expired || ''})`;
+
+            // Add the details to the list item
+            licenseItem.innerHTML = licenseDetails;
+
+            // If there's an attachment, display it as an image
+            if (license.attachment) {
+                const img = document.createElement('img');
+                img.style.display = 'block';
+                img.src = `data:image/png;base64,${license.attachment}`;
+                img.alt = `${license.license_name} attachment`;
+                img.style.width = 'auto'; 
+                img.style.maxHeight = '250px'; 
+                img.style.objectFit = 'contain'; 
+                img.style.marginTop = '10px';
+                img.style.marginBottom = '10px';
+                img.style.borderRadius = '10px'; 
+                img.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+
+                licenseItem.appendChild(img);
+            } else {
+                const noAttachmentMessage = document.createElement('p');
+                noAttachmentMessage.textContent = 'No attachment available';
+                licenseItem.appendChild(noAttachmentMessage);
+            }
+
+            licensesContainer.appendChild(licenseItem);
+        });
+    } else {
+        const noLicensesItem = document.createElement('li');
+        noLicensesItem.textContent = 'No licenses available';
+        licensesContainer.appendChild(noLicensesItem);
+    }
+
+    // Display resume
+    const resumeDisplay = document.getElementById('resume-display');
+    const noResumeMessage = document.getElementById('no-resume-message');
+
+    if (candidate.resume) {
+        resumeDisplay.src = `data:application/pdf;base64,${candidate.resume}`;
+        resumeDisplay.style.display = 'block';
+        noResumeMessage.style.display = 'none'; 
+    } else {
+        resumeDisplay.src = ''; 
+        resumeDisplay.style.display = 'none';
+        noResumeMessage.style.display = 'block';
+    }
 }
 
 function hideInfo() {

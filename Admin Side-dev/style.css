@@ -336,52 +336,52 @@ table td:last-child {
 }
 
 .status-label-identical {
-  font-size: 17px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.2rem 0.5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: #45cf04;
+  background-color: #008000;
   color: #ffffff;
   display: inline-block;
   width: 70%;
 }
 
 .status-label-underqualified {
-  font-size: 17px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.2rem 0.5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: #34aaff;
+  background-color: #02a5ff;
   color: #ffffff;
   display: inline-block;
   width: 70%;
 }
 
 .status-label-unqualified {
-  font-size: 17px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.2rem 0.5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: #ff8934;
+  background-color: #f37324;
   color: #ffffff;
   display: inline-block;
   width: 70%;
 }
 
 .status-label-not {
-  font-size: 17px;
+  font-size: 16px;
   border: 1px solid #ccc;
   border-radius: 10px;
   padding: 0.2rem 0.5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  background-color: red;
+  background-color: #e12729;
   color: #ffffff;
   display: inline-block;
   width: 70%;
@@ -1622,7 +1622,7 @@ input {
   padding: 5px 2px;
   position: absolute;
   z-index: 1;
-  bottom: 150%;
+  bottom: 100%;
   left: 50%;
   margin-left: -60px;
   opacity: 0;
@@ -2022,4 +2022,31 @@ input[type="radio"]:checked::before {
   height: 100%;
   z-index: -1; /* Ensure it is behind other elements */
   pointer-events: none;
+}
+
+.matched {
+  background-color: #008000;
+  color: white;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.not-matched {
+  background-color: #e12729;
+  color: white;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.near-matched {
+  background-color: #f37324;
+  color: white;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.match-column {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5px;
 }

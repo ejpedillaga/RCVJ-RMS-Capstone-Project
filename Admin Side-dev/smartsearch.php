@@ -256,36 +256,46 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Fetch applicant's licenses
     $licenses_query = "SELECT license_name, month_issued, year_issued, month_expired, year_expired, attachment 
-                   FROM certification_license_table 
-                   WHERE userid = '".$row['userid']."'";
+    FROM certification_license_table 
+    WHERE userid = '".$row['userid']."'";
     $licenses_result = mysqli_query($conn, $licenses_query);
     $applicant_licenses = [];
-    while ($license_row = mysqli_fetch_assoc($licenses_result)) {
-       // Clean the license name for SQL
-        $clean_license = mysqli_real_escape_string($conn, $license_row['license_name']);
 
-        // Convert the blob to base64 for frontend display if needed
-        $attachment_base64 = $license_row['attachment'] ? base64_encode($license_row['attachment']) : null;
-        
-        // Store the cleaned license name and additional details
-        $applicant_licenses[] = [
-            'license_name' => htmlspecialchars($clean_license, ENT_QUOTES), // Clean for HTML display
-            'month_issued' => $license_row['month_issued'], // Assuming it's safe to use directly
-            'year_issued' => $license_row['year_issued'], // Assuming it's safe to use directly
-            'month_expired' => $license_row['month_expired'], // Assuming it's safe to use directly
-            'year_expired' => $license_row['year_expired'], // Assuming it's safe to use directly
-            'attachment' => $attachment_base64, // Convert to base64 if needed
-        ];
+    // Store licenses without cleaning for matching
+    while ($license_row = mysqli_fetch_assoc($licenses_result)) {
+    // Use the license name as it is for matching
+    $license_name = $license_row['license_name']; 
+
+    // Convert the blob to base64 for frontend display if needed
+    $attachment_base64 = $license_row['attachment'] ? base64_encode($license_row['attachment']) : null;
+
+    // Store the license details
+    $applicant_licenses[] = [
+    'license_name' => $license_name, // Store raw license name
+    'month_issued' => $license_row['month_issued'], 
+    'year_issued' => $license_row['year_issued'], 
+    'month_expired' => $license_row['month_expired'], 
+    'year_expired' => $license_row['year_expired'], 
+    'attachment' => $attachment_base64, 
+    ];
     }
 
     // Check if any license matches the job's cert_license
-    if (in_array($job_details['cert_license'], $applicant_licenses)) {
-        $score += 1; // Add point if there's a match
-        $matchingDetails[] = '<div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div>';
+    $license_names = array_column($applicant_licenses, 'license_name'); // Get all license names
+
+    // Perform the matching check
+    if (in_array($job_details['cert_license'], $license_names)) {
+    $score += 1; // Add point if there's a match
+    $matchingDetails[] = '<div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div>';
+    $matchingDetails[] = '<div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
+
+    // Clean license names for HTML display
+    foreach ($applicant_licenses as &$license) {
+    $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
+    }
 
     // Store candidate data
     $candidates[] = [

@@ -2150,15 +2150,30 @@ function populatePartnerJobTitles() {
 document.addEventListener('DOMContentLoaded', populateJobTitles);
 
 function openTab(tabName) {
-    var i, tabcontent, tabs;
-    tabcontent = document.getElementsByClassName('tab-content');
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].classList.remove('active');
-    }
-    tabs = document.getElementsByClassName('tab');
-    for (i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    // Show the selected tab content
     document.getElementById(tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
-    }
+
+    // Remove 'active' from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    // Add 'active' to the clicked tab
+    const activeTab = document.querySelector(`.tab[onclick="openTab('${tabName}')"]`);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Update the URL with the selected tab
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.pushState({}, '', url);
+}
+
+// Load the correct tab on page load based on the URL parameter
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabName = urlParams.get('tab') || 'pending'; // Default to 'pending' if no tab is specified
+    openTab(tabName);
+});

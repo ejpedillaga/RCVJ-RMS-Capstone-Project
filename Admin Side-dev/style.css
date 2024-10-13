@@ -1850,7 +1850,7 @@ input[type="radio"]:checked::before {
 }
 
 .tabs {
-  margin-top: 3rem;
+  margin-top: 0rem;
   display: flex;
   border-bottom: 2px solid #ddd;
   transition: 0.3s ease;
@@ -1939,7 +1939,7 @@ input[type="radio"]:checked::before {
   justify-content: center;
 }
 
-.pagination li {
+.pagination-link li {
   margin: 0 5px;
 }
 
@@ -1951,12 +1951,16 @@ input[type="radio"]:checked::before {
   border-radius: 4px;
 }
 
-.pagination a:hover {
+.pagination-link {
+  color: #2c1875;
+}
+
+.pagination-link:hover {
   background-color: var(--secondary-color);
   color: white;
 }
 
-.pagination .active a {
+.pagination-link.active {
   background-color: var(--secondary-color);
   color: white;
   border: 1px solid var(--secondary-color);

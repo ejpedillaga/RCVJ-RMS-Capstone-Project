@@ -12,66 +12,69 @@ if (!$conn) {
     die("Database connection failed.");
 }
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the current user's email from session
-    $email = $_SESSION['user'];
+// Set pagination variables
+$limit = 5; // Number of candidates per page
+$pagePending = isset($_GET['pagePending']) ? (int)$_GET['pagePending'] : 1;
+$pageScheduled = isset($_GET['pageScheduled']) ? (int)$_GET['pageScheduled'] : 1;
+$pageInterviewed = isset($_GET['pageInterviewed']) ? (int)$_GET['pageInterviewed'] : 1;
+$pageDeployed = isset($_GET['pageDeployed']) ? (int)$_GET['pageDeployed'] : 1;
 
-    // Fetch full name from applicant_table
-    $query = "SELECT fname, lname FROM applicant_table WHERE email = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+$offsetPending = ($pagePending - 1) * $limit;
+$offsetScheduled = ($pageScheduled - 1) * $limit;
+$offsetInterviewed = ($pageInterviewed - 1) * $limit;
+$offsetDeployed = ($pageDeployed - 1) * $limit;
 
-    if ($result->num_rows > 0) {
-        $row = $result->fetch_assoc();
-        $fullName = $row['fname'] . ' ' . $row['lname'];
+$currentTab = isset($_GET['tab']) ? $_GET['tab'] : 'pending';
 
-        // Set current date and default status
-        $dateApplied = date('Y-m-d');
-        $status = 'Pending';
+// Fetch candidates for each deployment status
+$queryPending = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
+                 FROM candidate_list 
+                 WHERE status = 'Approved' AND deployment_status = 'Pending' 
+                 LIMIT ?, ?";
+$stmtPending = $conn->prepare($queryPending);
+$stmtPending->bind_param("ii", $offsetPending, $limit);
+$stmtPending->execute();
+$resultPending = $stmtPending->get_result();
 
-        // Insert data into candidate_list table
-        $insertQuery = "INSERT INTO candidate_list (full_name, job_title, company_name, date_applied, status) 
-                        VALUES (?, ?, ?, ?, ?)";
-        $insertStmt = $conn->prepare($insertQuery);
+$queryScheduled = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
+                   FROM candidate_list 
+                   WHERE status = 'Approved' AND deployment_status = 'Scheduled' 
+                   LIMIT ?, ?";
+$stmtScheduled = $conn->prepare($queryScheduled);
+$stmtScheduled->bind_param("ii", $offsetScheduled, $limit);
+$stmtScheduled->execute();
+$resultScheduled = $stmtScheduled->get_result();
 
-        // Get job title and company name from POST request (sent from JobDetails.php)
-        $jobTitle = isset($_POST['job_title']) ? $_POST['job_title'] : 'Job Title Placeholder';
-        $companyName = isset($_POST['company_name']) ? $_POST['company_name'] : 'Company Placeholder';
+$queryInterviewed = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
+                     FROM candidate_list 
+                     WHERE status = 'Approved' AND deployment_status = 'Interviewed' 
+                     LIMIT ?, ?";
+$stmtInterviewed = $conn->prepare($queryInterviewed);
+$stmtInterviewed->bind_param("ii", $offsetInterviewed, $limit);
+$stmtInterviewed->execute();
+$resultInterviewed = $stmtInterviewed->get_result();
 
-        $insertStmt->bind_param("sssss", $fullName, $jobTitle, $companyName, $dateApplied, $status);
-        $insertStmt->execute();
-        $insertStmt->close();
-    } else {
-        echo "No user found.";
-    }
-    $stmt->close();
-}
+$pageForDeployment = isset($_GET['pageForDeployment']) ? (int)$_GET['pageForDeployment'] : 1;
+$offsetForDeployment = ($pageForDeployment - 1) * $limit;
 
-// Pagination Logic
-$limit = 5; // Number of records per page
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-$offset = ($page - 1) * $limit;
+$queryForDeployment = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
+                       FROM candidate_list 
+                       WHERE status = 'Approved' AND deployment_status = 'For Deployment' 
+                       LIMIT ?, ?";
+$stmtForDeployment = $conn->prepare($queryForDeployment);
+$stmtForDeployment->bind_param("ii", $offsetForDeployment, $limit);
+$stmtForDeployment->execute();
+$resultForDeployment = $stmtForDeployment->get_result();
 
-// Fetch total number of candidates
-$totalQuery = "SELECT COUNT(*) as total FROM candidate_list";
-$totalResult = $conn->query($totalQuery);
-$totalRow = $totalResult->fetch_assoc();
-$totalCandidates = $totalRow['total'];
-$totalPages = ceil($totalCandidates / $limit);
-
-// Fetch candidates from candidate_list table with pagination
-$query = "SELECT full_name, job_title, company_name, date_applied, status FROM candidate_list LIMIT ?, ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ii", $offset, $limit);
-$stmt->execute();
-$result = $stmt->get_result();
+$queryDeployed = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
+                  FROM candidate_list 
+                  WHERE status = 'Approved' AND deployment_status = 'Deployed' 
+                  LIMIT ?, ?";
+$stmtDeployed = $conn->prepare($queryDeployed);
+$stmtDeployed->bind_param("ii", $offsetDeployed, $limit);
+$stmtDeployed->execute();
+$resultDeployed = $stmtDeployed->get_result();
 ?>
-
-
-
 
 <head>
     <meta charset="UTF-8">
@@ -82,7 +85,6 @@ $result = $stmt->get_result();
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
     <script src="script.js"></script>
-      
 </head>
 <body>
     <div id="mySidebar" class="sidebar closed">
@@ -109,7 +111,7 @@ $result = $stmt->get_result();
         </div>
 
         <div id="main">
-            <h2 style="font-size: 36px;">Candidates</h2>
+            <h2 style="font-size: 36px; margin-bottom: 0rem;">Candidates</h2>
 
             <div class="filter-container-candidates">
                 <div class="search-wrapper">
@@ -131,47 +133,193 @@ $result = $stmt->get_result();
                     <option>Descending</option>
                 </select>
 
-                <select class="status-sort">
-                    <option>Status: Interview</option>
-                    <option>Status: Pending</option>
-                    <option>Status: Deployed</option>
-                </select>
-
                 <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
 
             <div class="tabs">
-                <div class="tab active" onclick="openTab('pending')">Pending</div>
-                <div class="tab" onclick="openTab('scheduled')">Scheduled</div>
-                <div class="tab" onclick="openTab('interviewed')">Interviewed</div>
-                <div class="tab" onclick="openTab('deployed')">Deployed</div>
+                <div class="tab <?php echo ($currentTab === 'pending') ? 'active' : ''; ?>" onclick="openTab('pending')">Pending</div>
+                <div class="tab <?php echo ($currentTab === 'scheduled') ? 'active' : ''; ?>" onclick="openTab('scheduled')">Scheduled</div>
+                <div class="tab <?php echo ($currentTab === 'interviewed') ? 'active' : ''; ?>" onclick="openTab('interviewed')">Interviewed</div>
+                <div class="tab <?php echo ($currentTab === 'forDeployment') ? 'active' : ''; ?>" onclick="openTab('forDeployment')">For Deployment</div>
+                <div class="tab <?php echo ($currentTab === 'deployed') ? 'active' : ''; ?>" onclick="openTab('deployed')">Deployed</div>
             </div>
-            <div id="pending" class="tab-content active">
-                    <table style="margin-bottom: 1rem">
-                        <thead>
-                            <tr class="th1">
-                                <th>Candidate</th>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Date Applied</th>
-                                <th>Status</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        <?php while ($row = $result->fetch_assoc()): ?>
+            <!-- Pending Candidates Tab -->
+            <div id="pending" class="tab-content <?php echo ($currentTab === 'pending') ? 'active' : ''; ?>">
+                <table style="margin-bottom: 1rem">
+                    <thead>
+                        <tr class="th1">
+                            <th>Candidate</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($resultPending->num_rows > 0): ?>
+                        <?php while ($row = $resultPending->fetch_assoc()): ?>
                             <tr class="tr1">
-                                <td id="fullname" class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
-                                <td id="job-title"><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
-                                <td id="company-name"><?php echo htmlspecialchars($row['company_name']); ?></td>
-                                <td id="date"><?php echo htmlspecialchars($row['date_applied']); ?></td>
+                                <td class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td><?php echo (new DateTime($row['date_applied']))->format('m/d/Y'); ?></td>
                                 <td>
-                                    <select class="status-dropdown">
-                                        <option value="Interview" <?php echo ($row['status'] === 'Interview') ? 'selected' : ''; ?>>Interview</option>
-                                        <option value="Pending" <?php echo ($row['status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                                        <option value="Rejected" <?php echo ($row['status'] === 'Rejected') ? 'selected' : ''; ?>>Rejected</option>
-                                        <option value="Deployed" <?php echo ($row['status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    <select class="status-dropdown" onchange="updateStatus(this, <?php echo json_encode($row['id']); ?>)">
+                                        <option value="Pending" <?php echo ($row['deployment_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Scheduled" <?php echo ($row['deployment_status'] === 'Scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                        <option value="Interviewed" <?php echo ($row['deployment_status'] === 'Interviewed') ? 'selected' : ''; ?>>Interviewed</option>
+                                        <option value="For Deployment" <?php echo ($row['deployment_status'] === 'For Deployment') ? 'selected' : ''; ?>>For Deployment</option>
+                                        <option value="Deployed" <?php echo ($row['deployment_status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    </select>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <span class="tooltip-text">Candidate Information</span>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Delete Candidate</span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #2C1875; font-weight: bold;">No candidates found</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+                
+                <!-- Pending Pagination -->
+                <div class="pagination">
+                    <?php
+                    // Calculate the total number of pages needed for Pending
+                    $resultCountPending = $conn->query("SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'Pending'");
+                    $rowCountPending = $resultCountPending->fetch_assoc();
+                    $totalPagesPending = ceil($rowCountPending['total'] / $limit);
+                   
+                    if ($totalPagesPending > 1): // Only show pagination if more than one page
+                        ?>
+                        <a href="?pagePending=1&tab=pending" class="pagination-link <?php echo ($pagePending === 1) ? 'disabled' : ''; ?>">First</a>
+                        <?php for ($i = 1; $i <= $totalPagesPending; $i++): ?>
+                            <a href="?pagePending=<?php echo $i; ?>&tab=pending" class="pagination-link <?php echo ($i === (int)$pagePending) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        <a href="?pagePending=<?php echo $totalPagesPending; ?>&tab=pending" class="pagination-link <?php echo ($pagePending === $totalPagesPending) ? 'disabled' : ''; ?>">Last</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Scheduled Candidates Tab -->
+            <div id="scheduled" class="tab-content <?php echo ($currentTab === 'scheduled') ? 'active' : ''; ?>">
+                <table style="margin-bottom: 1rem">
+                    <thead>
+                        <tr class="th1">
+                            <th>Candidate</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($resultScheduled->num_rows > 0): ?>
+                        <?php while ($row = $resultScheduled->fetch_assoc()): ?>
+                            <tr class="tr1">
+                                <td class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td><?php echo (new DateTime($row['date_applied']))->format('m/d/Y'); ?></td>
+                                <td>
+                                    <select class="status-dropdown" onchange="updateStatus(this, <?php echo json_encode($row['id']); ?>)">
+                                        <option value="Pending" <?php echo ($row['deployment_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Scheduled" <?php echo ($row['deployment_status'] === 'Scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                        <option value="Interviewed" <?php echo ($row['deployment_status'] === 'Interviewed') ? 'selected' : ''; ?>>Interviewed</option>
+                                        <option value="For Deployment" <?php echo ($row['deployment_status'] === 'For Deployment') ? 'selected' : ''; ?>>For Deployment</option>
+                                        <option value="Deployed" <?php echo ($row['deployment_status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    </select>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <span class="tooltip-text">Candidate Information</span>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Delete Candidate</span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #2C1875; font-weight: bold;">No candidates found</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+
+                <!-- Scheduled Pagination -->
+                <div class="pagination">
+                    <?php
+                    // Calculate the total number of pages needed for Scheduled
+                    $resultCountScheduled = $conn->query("SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'Scheduled'");
+                    $rowCountScheduled = $resultCountScheduled->fetch_assoc();
+                    $totalPagesScheduled = ceil($rowCountScheduled['total'] / $limit);
+                   
+                    if ($totalPagesScheduled > 1): // Only show pagination if more than one page
+                        ?>
+                        <a href="?pageScheduled=1&tab=scheduled" class="pagination-link <?php echo ($pageScheduled === 1) ? 'disabled' : ''; ?>">First</a>
+                        <?php for ($i = 1; $i <= $totalPagesScheduled; $i++): ?>
+                            <a href="?pageScheduled=<?php echo $i; ?>&tab=scheduled" class="pagination-link <?php echo ($i === $pageScheduled) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        <a href="?pageScheduled=<?php echo $totalPagesScheduled; ?>&tab=scheduled" class="pagination-link <?php echo ($pageScheduled === $totalPagesScheduled) ? 'disabled' : ''; ?>">Last</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Interviewed Candidates Tab -->
+            <div id="interviewed" class="tab-content <?php echo ($currentTab === 'interviewed') ? 'active' : ''; ?>">
+                <table style="margin-bottom: 1rem">
+                    <thead>
+                        <tr class="th1">
+                            <th>Candidate</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($resultInterviewed->num_rows > 0): ?>
+                        <?php while ($row = $resultInterviewed->fetch_assoc()): ?>
+                            <tr class="tr1">
+                                <td class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td>
+                                    <?php 
+                                        // Create a DateTime object from the date_applied string
+                                        $dateApplied = new DateTime($row['date_applied']); 
+                                        // Format the date into MM/DD/YYYY
+                                        echo htmlspecialchars($dateApplied->format('m/d/Y')); 
+                                    ?>
+                                </td>
+                                <td>
+                                    <select class="status-dropdown" 
+                                            onchange="updateStatus(this, <?php echo json_encode($row['id']); ?>)">
+                                        <option value="Pending" <?php echo ($row['deployment_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Scheduled" <?php echo ($row['deployment_status'] === 'Scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                        <option value="Interviewed" <?php echo ($row['deployment_status'] === 'Interviewed') ? 'selected' : ''; ?>>Interviewed</option>
+                                        <option value="For Deployment" <?php echo ($row['deployment_status'] === 'For Deployment') ? 'selected' : ''; ?>>For Deployment</option>
+                                        <option value="Deployed" <?php echo ($row['deployment_status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
@@ -184,149 +332,181 @@ $result = $stmt->get_result();
                                 </td>
                             </tr>
                         <?php endwhile; ?>
-                        </tbody>
-                    </table>
-                    <!-- Pagination Controls -->
-                    <div id="pagination">
-                        <?php if ($totalPages > 1): ?>
-                            <nav>
-                                <ul class="pagination">
-                                    <?php if ($page > 1): ?>
-                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
-                                    <?php endif; ?>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
-                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <?php if ($page < $totalPages): ?>
-                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                
-                <div id="scheduled" class="tab-content">
-                <table style="margin-bottom: 1rem">
-                        <thead>
-                            <tr class="th1">
-                                <th>Candidate</th>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Date Applied</th>
-                                <th>Status</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        
-                        </tbody>
-                    </table>
-                    <!-- Pagination Controls -->
-                    <div id="pagination">
-                        <?php if ($totalPages > 1): ?>
-                            <nav>
-                                <ul class="pagination">
-                                    <?php if ($page > 1): ?>
-                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
-                                    <?php endif; ?>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
-                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <?php if ($page < $totalPages): ?>
-                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
-                    </div>
-                </div>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #2C1875; font-weight: bold;">No candidates found</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
 
-                <div id="interviewed" class="tab-content">
-                <table style="margin-bottom: 1rem">
-                        <thead>
-                            <tr class="th1">
-                                <th>Candidate</th>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Date Applied</th>
-                                <th>Status</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        
-                        </tbody>
-                    </table>
-                    <!-- Pagination Controls -->
-                    <div id="pagination">
-                        <?php if ($totalPages > 1): ?>
-                            <nav>
-                                <ul class="pagination">
-                                    <?php if ($page > 1): ?>
-                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
-                                    <?php endif; ?>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
-                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <?php if ($page < $totalPages): ?>
-                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
-                    </div>
+                <!-- Interviewed Pagination -->
+                <div class="pagination">
+                    <?php
+                    // Calculate the total number of pages needed for Interviewed
+                    $resultCountInterviewed = $conn->query("SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'Interviewed'");
+                    $rowCountInterviewed = $resultCountInterviewed->fetch_assoc();
+                    $totalPagesInterviewed = ceil($rowCountInterviewed['total'] / $limit);
+                   
+                    if ($totalPagesInterviewed > 1): // Only show pagination if more than one page
+                        ?>
+                        <a href="?pageInterviewed=1&tab=interviewed" class="pagination-link <?php echo ($pageInterviewed === 1) ? 'disabled' : ''; ?>">First</a>
+                        <?php for ($i = 1; $i <= $totalPagesInterviewed; $i++): ?>
+                            <a href="?pageInterviewed=<?php echo $i; ?>&tab=interviewed" class="pagination-link <?php echo ($i === $pageInterviewed) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        <a href="?pageInterviewed=<?php echo $totalPagesInterviewed; ?>&tab=interviewed" class="pagination-link <?php echo ($pageInterviewed === $totalPagesInterviewed) ? 'disabled' : ''; ?>">Last</a>
+                    <?php endif; ?>
                 </div>
-
-                <div id="deployed" class="tab-content">
+            </div>
+            
+            <!-- For Deployment Candidates Tab -->
+            <div id="forDeployment" class="tab-content <?php echo ($currentTab === 'forDeployment') ? 'active' : ''; ?>">
                 <table style="margin-bottom: 1rem">
-                        <thead>
-                            <tr class="th1">
-                                <th>Candidate</th>
-                                <th>Job Title</th>
-                                <th>Company</th>
-                                <th>Date Applied</th>
-                                <th>Status</th>
-                                <th></th>
-                                <th></th>
+                    <thead>
+                        <tr class="th1">
+                            <th>Candidate</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($resultForDeployment->num_rows > 0): ?>
+                        <?php while ($row = $resultForDeployment->fetch_assoc()): ?>
+                            <tr class="tr1">
+                                <td class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td><?php echo (new DateTime($row['date_applied']))->format('m/d/Y'); ?></td>
+                                <td>
+                                    <select class="status-dropdown" 
+                                            onchange="updateStatus(this, <?php echo json_encode($row['id']); ?>)">
+                                        <option value="Pending" <?php echo ($row['deployment_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Scheduled" <?php echo ($row['deployment_status'] === 'Scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                        <option value="Interviewed" <?php echo ($row['deployment_status'] === 'Interviewed') ? 'selected' : ''; ?>>Interviewed</option>
+                                        <option value="For Deployment" <?php echo ($row['deployment_status'] === 'For Deployment') ? 'selected' : ''; ?>>For Deployment</option>
+                                        <option value="Deployed" <?php echo ($row['deployment_status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    </select>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <span class="tooltip-text">Candidate Information</span>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Delete Candidate</span>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                        
-                        </tbody>
-                    </table>
-                    <!-- Pagination Controls -->
-                    <div id="pagination">
-                        <?php if ($totalPages > 1): ?>
-                            <nav>
-                                <ul class="pagination">
-                                    <?php if ($page > 1): ?>
-                                        <li><a href="?page=<?php echo $page - 1; ?>">&laquo;</a></li>
-                                    <?php endif; ?>
-                                    <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                                        <li class="<?php echo ($i == $page) ? 'active' : ''; ?>">
-                                            <a href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
-                                        </li>
-                                    <?php endfor; ?>
-                                    <?php if ($page < $totalPages): ?>
-                                        <li><a href="?page=<?php echo $page + 1; ?>">&raquo;</a></li>
-                                    <?php endif; ?>
-                                </ul>
-                            </nav>
-                        <?php endif; ?>
-                    </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #2C1875; font-weight: bold;">No candidates found</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
+
+                <!-- For Deployment Pagination -->
+                <div class="pagination">
+                    <?php
+                    $resultCountForDeployment = $conn->query("SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'For Deployment'");
+                    $rowCountForDeployment = $resultCountForDeployment->fetch_assoc();
+                    $totalPagesForDeployment = ceil($rowCountForDeployment['total'] / $limit);
+
+                    if ($totalPagesForDeployment > 1): 
+                    ?>
+                        <a href="?pageForDeployment=1&tab=forDeployment" class="pagination-link <?php echo ($pageForDeployment === 1) ? 'disabled' : ''; ?>">First</a>
+                        <?php for ($i = 1; $i <= $totalPagesForDeployment; $i++): ?>
+                            <a href="?pageForDeployment=<?php echo $i; ?>&tab=forDeployment" class="pagination-link <?php echo ($i === $pageForDeployment) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        <a href="?pageForDeployment=<?php echo $totalPagesForDeployment; ?>&tab=forDeployment" class="pagination-link <?php echo ($pageForDeployment === $totalPagesForDeployment) ? 'disabled' : ''; ?>">Last</a>
+                    <?php endif; ?>
                 </div>
             </div>
 
+            <!-- Deployed Candidates Tab -->
+            <div id="deployed" class="tab-content <?php echo ($currentTab === 'deployed') ? 'active' : ''; ?>">
+                <table style="margin-bottom: 1rem">
+                    <thead>
+                        <tr class="th1">
+                            <th>Candidate</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Date Applied</th>
+                            <th>Status</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php if ($resultDeployed->num_rows > 0): ?>
+                        <?php while ($row = $resultDeployed->fetch_assoc()): ?>
+                            <tr class="tr1">
+                                <td class="fullname"><?php echo htmlspecialchars($row['full_name']); ?></td>
+                                <td><strong><?php echo htmlspecialchars($row['job_title']); ?></strong></td>
+                                <td><?php echo htmlspecialchars($row['company_name']); ?></td>
+                                <td>
+                                    <?php 
+                                        // Create a DateTime object from the date_applied string
+                                        $dateApplied = new DateTime($row['date_applied']); 
+                                        // Format the date into MM/DD/YYYY
+                                        echo htmlspecialchars($dateApplied->format('m/d/Y')); 
+                                    ?>
+                                </td>
+                                <td>
+                                    <select class="status-dropdown" 
+                                            onchange="updateStatus(this, <?php echo json_encode($row['id']); ?>)">
+                                        <option value="Pending" <?php echo ($row['deployment_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Scheduled" <?php echo ($row['deployment_status'] === 'Scheduled') ? 'selected' : ''; ?>>Scheduled</option>
+                                        <option value="Interviewed" <?php echo ($row['deployment_status'] === 'Interviewed') ? 'selected' : ''; ?>>Interviewed</option>
+                                        <option value="For Deployment" <?php echo ($row['deployment_status'] === 'For Deployment') ? 'selected' : ''; ?>>For Deployment</option>
+                                        <option value="Deployed" <?php echo ($row['deployment_status'] === 'Deployed') ? 'selected' : ''; ?>>Deployed</option>
+                                    </select>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                                    <span class="tooltip-text">Candidate Information</span>
+                                </td>
+                                <td class="candidates-tooltip-container">
+                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Delete Candidate</span>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" style="text-align: center; color: #2C1875; font-weight: bold;">No candidates found</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+                </table>
 
+                <!-- Deployed Pagination -->
+                <div class="pagination">
+                    <?php
+                    // Calculate the total number of pages needed for Deployed
+                    $resultCountDeployed = $conn->query("SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'Deployed'");
+                    $rowCountDeployed = $resultCountDeployed->fetch_assoc();
+                    $totalPagesDeployed = ceil($rowCountDeployed['total'] / $limit);
+                    if ($totalPagesDeployed > 1): // Only show pagination if more than one page
+                    ?>
+                        <a href="?pageDeployed=1&tab=deployed" class="pagination-link <?php echo ($pageDeployed === 1) ? 'disabled' : ''; ?>">First</a>
+                        <?php for ($i = 1; $i <= $totalPagesDeployed; $i++): ?>
+                            <a href="?pageDeployed=<?php echo $i; ?>&tab=deployed" class="pagination-link <?php echo ($i === $pageDeployed) ? 'active' : ''; ?>">
+                                <?php echo $i; ?>
+                            </a>
+                        <?php endfor; ?>
+                        <a href="?pageDeployed=<?php echo $totalPagesDeployed; ?>&tab=deployed" class="pagination-link <?php echo ($pageDeployed === $totalPagesDeployed) ? 'disabled' : ''; ?>">Last</a>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <!-- Overlay -->
@@ -406,4 +586,25 @@ $result = $stmt->get_result();
         </div>                                   
     </div>
 </body>
+<script>
+    function updateStatus(selectElement, candidateId) {
+    const newStatus = selectElement.value;
+
+    fetch('update_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: candidateId, status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Status updated successfully!');
+            location.reload();
+        } else {
+            alert('Failed to update status.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
 

@@ -464,10 +464,8 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             // Check if there are any candidates
             if (data.length === 0) {
                 const noCandidatesRow = `
-                    <tr class="tr1">
-                        <td colspan="7" style="text-align: center; font-weight: bold; color: #999;">
-                            No candidates found.
-                        </td>
+                    <tr>
+                        <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875; ">No candidates found</td>
                     </tr>
                 `;
                 tableBody.innerHTML = noCandidatesRow; // Insert the message row

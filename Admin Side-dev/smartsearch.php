@@ -301,6 +301,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $candidates[] = [
         'candidate' => [
             'userid' => $row['userid'],
+            'job_id' => $job_id,
             'fname' => $row['fname'],
             'lname' => $row['lname'],
             'location' => $row['location'],
@@ -446,7 +447,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         </div>
                     </td>
                     <td class="candidates-tooltip-container">
-                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick='showInfo(${JSON.stringify(candidate.candidate)})'></i>
+                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick='showInfo(${JSON.stringify(candidate.candidate)}, ${candidate.candidate.job_id})'></i>
                         <span class="tooltip-text">Candidate Information</span>
                     </td>
                     <td class="candidates-tooltip-container">
@@ -504,6 +505,38 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText, candidate.matchingDetails);
             });
         }
+
+        function approveApplication(userId, jobId) { 
+        
+        fetch('approve_candidate.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                userid: userId,
+                jobid: jobId 
+            })
+        })
+        .then(response => {
+            return response.text().then(text => {
+                console.log('Raw response:', text); 
+                return JSON.parse(text);
+            });
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Applicant has been approved.');
+                hideInfo();
+                location.reload();
+            } else {
+                console.error('Error updating candidate status:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
     </script>
 </head>
 <body>
@@ -652,8 +685,8 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     </div>
                 </div>
 
-                <div class="buttons-container">
-                    <button class="button-apply">Approve Application</button>
+                <div class="buttons-container" id="buttons-container">
+                    
                 </div>
             </div>
         </div>

@@ -258,7 +258,6 @@ $conn->close();
                 </ul>
             </div>
         </div>
-        </form>
         <div class="buttons-container">
             <button type="submit" class="button-apply" id="submitBtn">Submit</button>
             <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>

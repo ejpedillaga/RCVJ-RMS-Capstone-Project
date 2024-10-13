@@ -218,6 +218,18 @@ function showInfo(candidate) {
         resumeDisplay.style.display = 'none';
         noResumeMessage.style.display = 'block';
     }
+
+    // Create the Approve Application button
+    const approveButton = document.createElement('button');
+    approveButton.className = 'button-apply';
+    approveButton.textContent = 'Approve Application';
+
+    approveButton.onclick = () => approveApplication(candidate.userid, candidate.job_id);
+
+    
+    const buttonsContainer = document.getElementById('buttons-container');
+    buttonsContainer.innerHTML = ''; 
+    buttonsContainer.appendChild(approveButton);
 }
 
 function hideInfo() {

@@ -125,10 +125,14 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                     <input type="text" class="search-candidates" placeholder="Search Candidates">
                 </div>
                 <select class="company-sort">
-                    <option>All Companies</option>
-                    <option>WalterMart</option>
-                    <option>Jabile</option>
-                </select>
+                <option value="All Companies">All Companies</option>
+                <?php
+                $resultCompanies = $conn->query("SELECT DISTINCT company_name FROM candidate_list");
+                while ($company = $resultCompanies->fetch_assoc()) {
+                    echo '<option value="' . htmlspecialchars($company['company_name']) . '">' . htmlspecialchars($company['company_name']) . '</option>';
+                }
+                ?>
+            </select>
                 <select class="sort-by">
                     <option>Date Applied</option>
                     <option>Company Name</option>

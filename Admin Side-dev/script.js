@@ -232,6 +232,142 @@ function showInfo(candidate) {
     buttonsContainer.appendChild(approveButton);
 }
 
+function showInfoCandidate(candidate) {
+    // Display the popup
+    console.log(candidate);
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('info').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+
+    // Populate the candidate's basic information
+    document.querySelector(".candidate-header h2").innerText = candidate.full_name || "No name available";
+    document.querySelector(".locationemail:nth-of-type(1) h4").innerText = candidate.location || "No location available";
+    document.querySelector(".locationemail:nth-of-type(2) h4").innerText = candidate.email || "No email available";
+    document.querySelector(".locationemail:nth-of-type(3) h4").innerText = candidate.gender || "No gender specified";
+    document.querySelector(".locationemail:nth-of-type(4) h4").innerText = candidate.phone || "No phone number available";
+    document.querySelector(".locationemail:nth-of-type(5) h4").innerText = candidate.birthday || "No birthday specified";
+
+    // Populate the personal description
+    document.getElementById("personal-desc").innerText = candidate.personal_description || "No description available";
+
+    // Display the profile image
+    const profileImageDiv = document.getElementById("profile-image");
+    profileImageDiv.innerHTML = ''; // Clear previous image
+
+    const defaultImageUrl = 'img/user.svg'; // Set the path to your default image
+    const profileImage = candidate.profile_image ? `data:image/jpeg;base64,${candidate.profile_image}` : defaultImageUrl;
+
+    const imgElement = document.createElement('img');
+    imgElement.src = profileImage;
+    imgElement.alt = "Profile Image";
+    imgElement.style.height = '200px'; // Set fixed height
+    imgElement.style.objectFit = 'cover'; // Maintain aspect ratio
+    profileImageDiv.appendChild(imgElement);
+
+
+    // Populate Past Jobs
+    const pastJobsList = document.getElementById("past-jobs-list");
+    pastJobsList.innerHTML = ''; // Clear previous entries
+
+    if (candidate.past_jobs && candidate.past_jobs.length > 0) {
+        // Split the concatenated string into individual job entries
+        const pastJobsArray = candidate.past_jobs.split('; '); // Split based on the separator used in the query
+
+        pastJobsArray.forEach(job => {
+            const pastJobItem = document.createElement('li');
+            pastJobItem.innerText = job; // Set the inner text to the individual job entry
+            pastJobsList.appendChild(pastJobItem); // Append the item to the list
+        });
+    } else {
+        pastJobsList.innerHTML = '<li>No past job information available</li>';
+    }   
+
+    // Populate Education
+    const educationList = document.getElementById("education-list");
+    educationList.innerHTML = ''; // Clear previous entries
+    if (candidate.educational_attainment) {
+        const educationItem = document.createElement('li');
+        educationItem.innerText = `${candidate.educational_attainment} in ${candidate.educational_course} from ${candidate.educational_school} (${candidate.sy_started} - ${candidate.sy_ended})`;
+        educationList.appendChild(educationItem);
+    } else {
+        educationList.innerHTML = '<li>No educational information available</li>';
+    }
+
+    // Populate Vocational
+    const vocationalList = document.getElementById("vocational-list");
+    vocationalList.innerHTML = ''; // Clear previous entries
+    if (candidate.vocational_course) {
+        const vocationalItem = document.createElement('li');
+        vocationalItem.innerText = `${candidate.vocational_course} from ${candidate.vocational_school} (${candidate.vocational_year_started} - ${candidate.vocational_year_ended})`;
+        vocationalList.appendChild(vocationalItem);
+    } else {
+        vocationalList.innerHTML = 'No vocational information available</li>';
+    }
+
+    // Populate Skills
+    const skillsList = document.getElementById("skills-list");
+    skillsList.innerHTML = ''; // Clear previous entries
+    if (candidate.skills) {
+        // Use a Set to avoid duplicates
+        const uniqueSkills = new Set(candidate.skills.split(', '));
+        uniqueSkills.forEach(skill => {
+            const skillItem = document.createElement('li');
+            skillItem.innerText = skill;
+            skillsList.appendChild(skillItem);
+        });
+    } else {
+        skillsList.innerHTML = '<li>No skills available</li>';
+    }
+
+    // Populate Licenses
+    const licensesList = document.getElementById("licenses-list");
+    licensesList.innerHTML = ''; // Clear previous entries
+
+    if (candidate.licenses && candidate.licenses.length > 0) {
+        const licensesArray = candidate.licenses.split('; '); 
+
+        licensesArray.forEach((license, index) => {
+            const licenseItem = document.createElement('li');
+            
+            // Create a span to hold the license text
+            const licenseText = document.createElement('span');
+            licenseText.innerText = license;
+            licenseItem.appendChild(licenseText); 
+
+            // Create a clickable icon for viewing
+            const viewIcon = document.createElement('a');
+            viewIcon.href = `view_license.php?userid=${candidate.userid}&licenseIndex=${index}`; 
+            viewIcon.target = '_blank'; // Open in a new tab
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-eye'; 
+            icon.style.fontSize = '1.2em'; 
+            icon.style.marginLeft = '10px'; 
+            icon.title = 'View License'; 
+            icon.style.color = '#2c1875'
+
+            viewIcon.appendChild(icon);
+            licenseItem.appendChild(viewIcon); 
+
+            licensesList.appendChild(licenseItem);
+        });
+    } else {
+        licensesList.innerHTML = '<li>No licenses available</li>';
+    }
+    
+   // Populate Resume
+   const resumeDisplay = document.getElementById("resume-display");
+   const noResumeMessage = document.getElementById("no-resume-message");
+   if (candidate.resume) {
+       resumeDisplay.src = `data:application/pdf;base64,${candidate.resume}`; 
+       resumeDisplay.style.display = 'block';
+       noResumeMessage.style.display = 'none';
+   } else {
+       resumeDisplay.style.display = 'none';
+       noResumeMessage.style.display = 'block';
+   }
+}
+
 function hideInfo() {
     document.getElementById('info').style.display = 'none';
     document.getElementById('info').classList.remove('show');

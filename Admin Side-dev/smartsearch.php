@@ -578,6 +578,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <div id="candidateResults">
                     <!-- Candidates who applied will be displayed here -->
                 </div>
+                <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
             
             <div>
@@ -687,6 +688,24 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     
                 </div>
             </div>
+
+            <!-- Dialog Box -->
+            <div class="rejected-dialog-box" id="dialogBox">
+            <div class="rejected-back-button" onclick="hideDialog()">
+                <i class="fas fa-chevron-left"></i> Back
+            </div>
+            
+            <h2 style="text-align: center;">Are you sure you want to reject this candidate?</h2>
+            <div class="rejected-form-group">
+                <label for="rejected-firstname">Remarks:</label>
+                <input type="text" id="rejected-firstname">
+                <button class="rejected-save-button">Confirm</button>
+            </div>
+        </div>
+        <div class="shape-container2">
+            <div class="rectangle-4"></div>
+            <div class="rectangle-5"></div>
+        </div>    
         </div>
     </div>
     <div class="shape-container2">

@@ -17,63 +17,69 @@ $limit = 5; // Number of candidates per page
 $pagePending = isset($_GET['pagePending']) ? (int)$_GET['pagePending'] : 1;
 $pageScheduled = isset($_GET['pageScheduled']) ? (int)$_GET['pageScheduled'] : 1;
 $pageInterviewed = isset($_GET['pageInterviewed']) ? (int)$_GET['pageInterviewed'] : 1;
+$pageForDeployment = isset($_GET['pageForDeployment']) ? (int)$_GET['pageForDeployment'] : 1;
 $pageDeployed = isset($_GET['pageDeployed']) ? (int)$_GET['pageDeployed'] : 1;
 
 $offsetPending = ($pagePending - 1) * $limit;
 $offsetScheduled = ($pageScheduled - 1) * $limit;
 $offsetInterviewed = ($pageInterviewed - 1) * $limit;
+$offsetForDeployment = ($pageForDeployment - 1) * $limit;
 $offsetDeployed = ($pageDeployed - 1) * $limit;
 
 $currentTab = isset($_GET['tab']) ? $_GET['tab'] : 'pending';
 
-// Fetch candidates for each deployment status
-$queryPending = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
-                 FROM candidate_list 
-                 WHERE status = 'Approved' AND deployment_status = 'Pending' 
-                 LIMIT ?, ?";
-$stmtPending = $conn->prepare($queryPending);
-$stmtPending->bind_param("ii", $offsetPending, $limit);
-$stmtPending->execute();
-$resultPending = $stmtPending->get_result();
+function fetchCandidates($conn, $status, $offset, $limit) {
+    $query = "
+    SELECT 
+        c.id, c.userid, CONCAT(a.fname, ' ', a.lname) AS full_name, c.job_title, c.company_name, c.date_applied, c.deployment_status, 
+        a.email, a.gender, DATE_FORMAT(a.birthday, '%m/%d/%y') AS birthday, a.location, a.phone, a.personal_description, 
+        e.educational_attainment, e.school AS educational_school, e.course AS educational_course, e.sy_started,e.sy_ended,
+        v.school AS vocational_school, v.course AS vocational_course, v.year_started AS vocational_year_started, v.year_ended AS vocational_year_ended, 
+        GROUP_CONCAT(DISTINCT CONCAT(cl.license_name, ' (Issued: ', cl.month_issued, ' ', cl.year_issued, ' - Expired: ', cl.month_expired, ' ', cl.year_expired, ')') ORDER BY cl.year_issued DESC SEPARATOR '; ') AS licenses, 
+        GROUP_CONCAT(DISTINCT CONCAT(j.job_title, ' at ', j.company_name, ' (', j.month_started, ' ', j.year_started, ' - ', j.month_ended, ' ', j.year_ended, ')') ORDER BY j.year_started DESC SEPARATOR '; ') AS past_jobs,
+        TO_BASE64(a.profile_image) AS profile_image,
+        TO_BASE64(r.resume) AS resume,
+        GROUP_CONCAT(DISTINCT s.skill_name SEPARATOR ', ') AS skills
+    FROM 
+        candidate_list c
+    JOIN 
+        applicant_table a ON c.userid = a.userid
+    LEFT JOIN 
+        education_table e ON a.userid = e.userid
+    LEFT JOIN 
+        vocational_table v ON a.userid = v.userid
+    LEFT JOIN 
+        job_experience_table j ON a.userid = j.userid
+    LEFT JOIN 
+        certification_license_table cl ON a.userid = cl.userid
+    LEFT JOIN 
+        user_skills_table us ON a.userid = us.userid
+    LEFT JOIN 
+        skill_table s ON us.skill_id = s.skill_id
+    LEFT JOIN 
+        resume_table r ON a.userid = r.userid -- Join with resume_table
+    WHERE 
+        c.status = 'Approved' AND c.deployment_status = ? 
+    GROUP BY 
+        c.id, a.fname, a.lname, c.job_title, c.company_name, c.date_applied, c.deployment_status, 
+        a.email, a.gender, a.birthday, a.location, a.phone, a.personal_description, 
+        e.educational_attainment, e.school, e.course, 
+        e.sy_started, e.sy_ended, v.school, v.course, 
+        v.year_started, v.year_ended
+    LIMIT ?, ?";
 
-$queryScheduled = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
-                   FROM candidate_list 
-                   WHERE status = 'Approved' AND deployment_status = 'Scheduled' 
-                   LIMIT ?, ?";
-$stmtScheduled = $conn->prepare($queryScheduled);
-$stmtScheduled->bind_param("ii", $offsetScheduled, $limit);
-$stmtScheduled->execute();
-$resultScheduled = $stmtScheduled->get_result();
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("sii", $status, $offset, $limit);
+    $stmt->execute();
+    return $stmt->get_result();
+}
 
-$queryInterviewed = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
-                     FROM candidate_list 
-                     WHERE status = 'Approved' AND deployment_status = 'Interviewed' 
-                     LIMIT ?, ?";
-$stmtInterviewed = $conn->prepare($queryInterviewed);
-$stmtInterviewed->bind_param("ii", $offsetInterviewed, $limit);
-$stmtInterviewed->execute();
-$resultInterviewed = $stmtInterviewed->get_result();
-
-$pageForDeployment = isset($_GET['pageForDeployment']) ? (int)$_GET['pageForDeployment'] : 1;
-$offsetForDeployment = ($pageForDeployment - 1) * $limit;
-
-$queryForDeployment = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
-                       FROM candidate_list 
-                       WHERE status = 'Approved' AND deployment_status = 'For Deployment' 
-                       LIMIT ?, ?";
-$stmtForDeployment = $conn->prepare($queryForDeployment);
-$stmtForDeployment->bind_param("ii", $offsetForDeployment, $limit);
-$stmtForDeployment->execute();
-$resultForDeployment = $stmtForDeployment->get_result();
-
-$queryDeployed = "SELECT id, full_name, job_title, company_name, date_applied, deployment_status 
-                  FROM candidate_list 
-                  WHERE status = 'Approved' AND deployment_status = 'Deployed' 
-                  LIMIT ?, ?";
-$stmtDeployed = $conn->prepare($queryDeployed);
-$stmtDeployed->bind_param("ii", $offsetDeployed, $limit);
-$stmtDeployed->execute();
-$resultDeployed = $stmtDeployed->get_result();
+// Fetch candidates for different statuses
+$resultPending = fetchCandidates($conn, 'Pending', $offsetPending, $limit);
+$resultScheduled = fetchCandidates($conn, 'Scheduled', $offsetScheduled, $limit);
+$resultInterviewed = fetchCandidates($conn, 'Interviewed', $offsetInterviewed, $limit);
+$resultForDeployment = fetchCandidates($conn, 'For Deployment', $offsetForDeployment, $limit);
+$resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
 ?>
 
 <head>
@@ -84,7 +90,7 @@ $resultDeployed = $stmtDeployed->get_result();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
-    <script src="script.js"></script>
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 </head>
 <body>
     <div id="mySidebar" class="sidebar closed">
@@ -119,21 +125,19 @@ $resultDeployed = $stmtDeployed->get_result();
                     <input type="text" class="search-candidates" placeholder="Search Candidates">
                 </div>
                 <select class="company-sort">
-                    <option>Sort by: All</option>
-                    <option>Sort by: WalterMart</option>
-                    <option>Sort by: Jabile</option>
+                    <option>All Companies</option>
+                    <option>WalterMart</option>
+                    <option>Jabile</option>
                 </select>
                 <select class="sort-by">
-                    <option>Sort by: Date Applied</option>
-                    <option>Sort by: Company Name</option>
-                    <option>Sort by: Job Title</option>
+                    <option>Date Applied</option>
+                    <option>Company Name</option>
+                    <option>Job Title</option>
                 </select>
                 <select class="order-sort">
                     <option>Ascending</option>
                     <option>Descending</option>
                 </select>
-
-                <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
 
             <div class="tabs">
@@ -175,12 +179,12 @@ $resultDeployed = $stmtDeployed->get_result();
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfoCandidate(<?php echo htmlspecialchars(json_encode($row)); ?>)"></i>
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
-                                    <span class="tooltip-text">Delete Candidate</span>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -245,12 +249,12 @@ $resultDeployed = $stmtDeployed->get_result();
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfoCandidate(<?php echo htmlspecialchars(json_encode($row)); ?>)"></i>
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
-                                    <span class="tooltip-text">Delete Candidate</span>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -323,12 +327,12 @@ $resultDeployed = $stmtDeployed->get_result();
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfoCandidate(<?php echo htmlspecialchars(json_encode($row)); ?>)"></i>
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                                    <span class="tooltip-text">Delete Candidate</span>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -394,12 +398,12 @@ $resultDeployed = $stmtDeployed->get_result();
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfo()"></i>
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfoCandidate(<?php echo htmlspecialchars(json_encode($row)); ?>)"></i>
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50;" onclick="showDialog()"></i>
-                                    <span class="tooltip-text">Delete Candidate</span>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -471,12 +475,12 @@ $resultDeployed = $stmtDeployed->get_result();
                                     </select>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo()"></i>
+                                    <i class="fa fa-info-circle fa-2xl" style="color: #2C1875;" onclick="showInfoCandidate(<?php echo htmlspecialchars(json_encode($row)); ?>)"></i>
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
-                                    <span class="tooltip-text">Delete Candidate</span>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -512,60 +516,83 @@ $resultDeployed = $stmtDeployed->get_result();
         <!-- Overlay -->
         <div class="overlay" id="overlay"></div>
 
-        <!--Candidate Info Popup-->
-        <div class="popup" style="background-color: white;" id="info">
-            <!-- Back Button -->
-            <div class="addpartners-back-button" onclick="hideInfo()">
-                <i class="fas fa-chevron-left"></i> Back
-            </div>
-
-            <div class="candidate-container">
-                <div class="candidate-header">
-                    <div>
-                        <h2>Candidate</h2>
-                        <div class="locationemail">
-                            <i class="fa fa-map-pin" aria-hidden="true"></i><h3>Location</h3>
+       <!--Candidate Info Popup-->
+       <div class="popup" id="info">
+                <!-- Back Button -->
+                <div class="addpartners-back-button" onclick="hideInfo()">
+                    <i class="fas fa-chevron-left"></i> Back
+                </div>
+                <h3 style="color: #2C1875">Review applicant information:</h3>
+                <p>This information was provided by the applicant.</p>
+                <div class="candidate-container">
+                    <div class="candidate-header">
+                        <div>
+                            <h2><?php echo htmlspecialchars($user_name); ?></h2>
+                            <div class="locationemail">
+                                <i class="fa fa-map-pin" aria-hidden="true"></i><h4>Location</h4>
+                            </div>
+                            <div class="locationemail">
+                                <i class="fa fa-envelope" aria-hidden="true"></i><h4>Email</h4>
+                            </div>
+                            <div class="locationemail">
+                                <i class="fa fa-venus-mars" aria-hidden="true"></i><h4>gender</h4>
+                            </div>
+                            <div class="locationemail">
+                                <i class="fa fa-phone" aria-hidden="true"></i><h4>phone</h4>
+                            </div>
+                            <div class="locationemail">
+                                <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4>birthday</h4>
+                            </div>
                         </div>
-                        <div class="locationemail">
-                            <i class="fa fa-envelope" aria-hidden="true"></i><h3>Email</h3>
+                        <div id="profile-image">
+                            
                         </div>
                     </div>
-                    <div><!--pic goes here--></div>
-                </div>
-                <div class="candidate-body">
                     <div id="personal-info">
                         <h3>Personal Information</h3>
-                        <p id="personal-desc">lorem ipsum</p>
-                        <ul>
-                            <li>Gender:</li>
-                            <li>Birthday:</li>
-                            <li>Contact Number:</li>
-                        </ul>
+                        <p id="personal-desc">personal description</p>
                     </div>
-                    <div id="past-jobs">
+                    <!-- Past Jobs Information -->
+                    <div id="past-jobs-container">
                         <h3>Past Jobs</h3>
-                        <ul>
-                            <li>Job</li>
-                            <li>job</li>
+                        <ul class="past-jobs-list" id="past-jobs-list">
+                            
                         </ul>
                     </div>
+                    <!-- Education Information -->
                     <div id="education">
-                        <h3>Education</h3>
-                        <ul>
-                            <li>Education</li>
-                            <li>Education</li>
+                        <h3>Educational Attainment</h3>
+                        <ul class="education-list" id="education-list">
+                            
+                        </ul>
+                    </div>
+
+                    <!-- Vocational Education Information -->
+                    <div id="vocational">
+                        <h3>Vocational</h3>
+                        <ul class="vocational-list" id="vocational-list">
+                            
                         </ul>
                     </div>
                     <div id="skills">
                         <h3>Skills</h3>
-                        <ul>
-                            <li>Skills</li>
-                            <li>Education</li>
+                        <ul class="skills-list" id="skills-list">
+                            
                         </ul>
-                    </div>          
+                    </div>
+                    <div id="licenses-container">
+                        <h3>Licenses</h3>
+                        <ul id="licenses-list"></ul>
+                    </div>
+                    <div id="resume-container">
+                        <h3>Resume</h3>
+                        <div id="resume-content">
+                            <iframe id="resume-display" style="display: none; width: 100%; height: 400px;" frameborder="0"></iframe>
+                            <div id="no-resume-message" style="display: none;">No resume available</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
 
         <!-- Dialog Box -->
         <div class="rejected-dialog-box" id="dialogBox">
@@ -573,10 +600,8 @@ $resultDeployed = $stmtDeployed->get_result();
                 <i class="fas fa-chevron-left"></i> Back
             </div>
             
-            <h2 style="text-align: center;">Are you sure you want to reject this candidate?</h2>
+            <h2 style="text-align: center;">Are you sure you want to unapprove this candidate?</h2>
             <div class="rejected-form-group">
-                <label for="rejected-firstname">Remarks:</label>
-                <input type="text" id="rejected-firstname">
                 <button class="rejected-save-button">Confirm</button>
             </div>
         </div>

@@ -1677,7 +1677,7 @@ input {
 .candidates-tooltip-container:hover .tooltip-text {
   visibility: visible;
   opacity: 1;
-  margin-bottom: -35px;
+  margin-bottom: -10px;
 }
 
 /*Employees Tooltip*/

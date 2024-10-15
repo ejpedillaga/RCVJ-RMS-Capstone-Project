@@ -1268,21 +1268,26 @@ input {
   overflow: auto;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   border-radius: 20px;
+  gap: 3rem;
 }
 
 #right {
-  width: 45%;
+  width: 33%;
   height: 50%;
   margin-top: 2%;
 }
 
+#left {
+  width: 33%;
+  height: 50%;
+}
+
 /* Event section styling */
 #event-section {
-  padding: 10px;
+  padding: 1.5rem;
   margin: 20px 0;
-  height: 60%;
   border-radius: 10px;
   background: #f5f5f547;
   border: 2px solid #cccccc40;
@@ -1308,20 +1313,22 @@ input {
 #event-section input[type="text"] {
   margin: 10px 12px;
   padding: 5px 5px 5px 7px;
+  border: 1px solid #000000;
   width: 90%;
   border-radius: 10px;
   height: 30px;
-  background: #97959e11;
+  background: #ffffff;
   font-size: 15px;
 }
 
 #event-section select {
   margin: 10px 12px;
   padding: 5px 5px 5px 7px;
+  border: 1px solid #000000;
   width: 90%;
   border-radius: 10px;
   height: 30px;
-  background: #97959e11;
+  background: #ffffff;
   font-size: 15px;
 }
 
@@ -1384,11 +1391,12 @@ input {
 
 /* Reminder section styling */
 #reminder-section {
-  padding: 10px;
+  padding: 1.5rem;
   background: #f5f5f547;
   margin: 20px 0;
   border: 2px solid #cccccc40;
   border-radius: 10px;
+  width: 40%;
 }
 
 #reminder-section h3 {
@@ -1406,11 +1414,14 @@ input {
 #reminderList li {
   margin: 5px 0;
   font-size: 16px;
+  padding: 1rem;
+  background-color: #ef9b50;
+  border-radius: 10px;
 }
 
 /* Style for the delete buttons */
 .delete-event {
-  background: var(--primary-color);
+  background: #2c1875;
   color: white;
   border: none;
   padding: 5px 10px;
@@ -1419,7 +1430,6 @@ input {
   align-items: right;
   border-radius: 10px;
   height: 30px;
-  width: 30%;
 }
 
 .delete-event:hover {
@@ -1622,7 +1632,7 @@ input {
   padding: 5px 2px;
   position: absolute;
   z-index: 1;
-  bottom: 100%;
+  bottom: 85%;
   left: 50%;
   margin-left: -60px;
   opacity: 0;
@@ -2053,4 +2063,74 @@ input[type="radio"]:checked::before {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 5px;
+}
+
+/* Popup dialog styling */
+.popup-schedule {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: 40%;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0;
+  padding: 1.5rem 5rem;
+  margin: auto;
+  border-radius: 20px;
+  height: 60%;
+}
+
+.popup-schedule.show {
+  display: flex;
+  flex-direction: column;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.candidate-item {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  padding: 1rem 3rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.candidate-details {
+  margin-left: 3rem;
+  align-self: center;
+}
+
+#candidateList {
+  padding: 0rem 2rem;
+  height: 70%;
+  overflow: auto;
+}
+
+#candidateList::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+#candidateList::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+#candidateList::-webkit-scrollbar-thumb {
+  background: #2c1875; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+#candidateList::-webkit-scrollbar-thumb:hover {
+  background: #1e0f5c; /* Darker shade on hover */
+}
+
+#candidateList li {
+  list-style: none;
 }

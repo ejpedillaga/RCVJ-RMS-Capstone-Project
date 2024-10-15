@@ -120,15 +120,13 @@ nav a.active {
 .profile-edit .tooltiptext::after {
   content: " ";
   position: absolute;
-  top: -25%; 
-  left: 40%; 
-  margin-left: -5px; 
+  top: -25%;
+  left: 40%;
+  margin-left: -5px;
   border-width: 5px;
   border-style: solid;
   border-color: transparent transparent rgb(255, 254, 254) transparent; /* Arrow points upward */
 }
-
-
 
 .delete-icon .tooltiptext {
   visibility: hidden;
@@ -174,10 +172,9 @@ nav a.active {
   z-index: 999;
 
   position: absolute;
-  top: 100%; 
+  top: 100%;
   left: 50%;
-  margin-left: -35px; 
-
+  margin-left: -35px;
 }
 
 #ic2:hover .tooltiptext {
@@ -187,12 +184,12 @@ nav a.active {
 #ic2 .tooltiptext::after {
   content: "";
   position: absolute;
-  bottom: 100%; 
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent black transparent; 
+  border-color: transparent transparent black transparent;
 }
 
 .edit-icon .tooltiptext {
@@ -206,7 +203,7 @@ nav a.active {
   font-size: 14px;
 
   position: absolute;
-  top: 100%; 
+  top: 100%;
   left: 30%;
   margin-left: -38px;
   z-index: 999;
@@ -219,12 +216,12 @@ nav a.active {
 .edit-icon .tooltiptext::after {
   content: "";
   position: absolute;
-  bottom: 100%; 
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent transparent black transparent; 
+  border-color: transparent transparent black transparent;
 }
 
 /*nav nav-acc button*/
@@ -2668,7 +2665,7 @@ input[type="number"] {
 .icon-group {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 20px;
   display: flex;
   flex-direction: row;
 }

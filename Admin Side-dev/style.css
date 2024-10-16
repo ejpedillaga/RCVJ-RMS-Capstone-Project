@@ -1742,6 +1742,86 @@ input[type="radio"] {
   -moz-appearance: none;
   appearance: none;
 
+  .rb-box{
+    display: flex; /* Enable flexbox layout */
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .cb-cert{
+    width: 35%;
+    display: flex;
+    align-items: center;
+  }
+
+  .cb-cert label{
+    margin-bottom: 0rem;
+  }
+
+  .cb-cert input[type="checkbox"] {
+    -webkit-appearance: none; /* Remove default browser styling */
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ccc; /* Add a border */
+    border-radius: 4px; /* Round the corners */
+    background-color: #fff; /* Set the background color */
+    cursor: pointer; /* Change the cursor to a pointer */
+    position: relative; /* Position the checkbox */
+    margin-right: 0.5rem;
+    border-color: #2C1875;
+  }
+  
+  .cb-cert input[type="checkbox"]:checked {
+    background-color: #2C1875;
+    border-color: #2C1875;
+  }
+  
+  .cb-cert input[type="checkbox"]:checked::before {
+    content: '\f00c'; /* Add a checkmark icon */
+    font-family: FontAwesome; /* Use FontAwesome font */
+    font-size: 14px;
+    color: #fff;
+    position: absolute;
+    top: 2px;
+    left: 3px;
+  }
+  
+  #add-job-title-popup .jobposting-box{
+    background-color: #ef9a5069;
+  }
+
+  .search-box{
+    width: 600px;
+    background: white;
+    margin: 10px auto 10px 0;
+    border-radius: 5px;
+  }
+
+  .row{
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+  }
+  
+#partner-jobposting-search{
+    flex: 1;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #000000;
+}
+
+#jobposting-search{
+    flex: 1;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #000000;
   /* Add a custom circle */
   width: 16px;
   height: 16px;

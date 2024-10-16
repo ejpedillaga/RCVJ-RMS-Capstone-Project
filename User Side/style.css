@@ -1019,10 +1019,6 @@ footer {
   list-style: none;
 }
 
-.jobs-main-container ul li {
-  margin: 5px;
-}
-
 .jobs-card {
   cursor: pointer;
   background-color: #ef9b50;
@@ -1031,7 +1027,7 @@ footer {
   margin: 1rem;
   width: 250px;
   height: auto;
-  transition: 0.3s ease;
+  transition: 0.1s ease;
   box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
     rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
     rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
@@ -2937,4 +2933,48 @@ input[type="number"] {
 .education-list li,
 .skills-list li {
   margin-bottom: 0.5rem;
+}
+
+.good-match-badge {
+  display: inline-block;
+  background-color: rgb(34, 6, 89);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+#rec .tooltiptext {
+  visibility: hidden;
+  width: 100%;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 999;
+
+  position: absolute;
+  top: 100%;
+  left: 11%;
+  margin-left: -35px;
+}
+
+#rec:hover .tooltiptext {
+  visibility: visible;
+}
+
+#rec .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
 }

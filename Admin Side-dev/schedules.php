@@ -90,7 +90,7 @@ mysqli_close($conn);
                 <h1>Schedules</h1>
                 <div id="event-section">
                     <h3>Add Schedule</h3>
-                    <input type="date" id="eventDate">
+                    <input type="text" placeholder="Select a date" onfocus="(this.type='date')" onblur="(this.type='text')" id="eventDate">
                     <select id="companyName" onchange="updateJobTitles()">
                         <option value="" disabled selected>Company Name</option>
                         <?php foreach ($company_names as $company_name): ?>

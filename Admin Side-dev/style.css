@@ -1408,15 +1408,35 @@ input {
 
 #reminderList {
   list-style: none;
-  padding: 0;
+  padding: 0 10px;
+  max-height: 250px;
+  overflow: auto;
+}
+
+#reminderList::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+#reminderList::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Track color */
+}
+
+#reminderList::-webkit-scrollbar-thumb {
+  background: #2c1875; /* Scrollbar color */
+  border-radius: 10px; /* Rounded corners */
+}
+
+#reminderList::-webkit-scrollbar-thumb:hover {
+  background: #1e0f5c; /* Darker shade on hover */
 }
 
 #reminderList li {
-  margin: 5px 0;
+  margin-bottom: 10px;
   font-size: 16px;
   padding: 1rem;
   background-color: #ef9b50;
   border-radius: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 /* Style for the delete buttons */
@@ -2100,7 +2120,7 @@ input[type="radio"]:checked::before {
   margin-bottom: 1rem;
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .candidate-details {

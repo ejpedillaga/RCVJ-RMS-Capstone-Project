@@ -14,6 +14,9 @@ $licenses = []; // Initialize licenses array
 $company_name = '';
 $job_title = '';
 
+$resume_exists = false; // Ensure this variable is always defined
+$resume_data = null;    // Initialize resume data variable
+
 // Check if user is logged in
 if (isset($_SESSION['user'])) {
     $user_email = $_SESSION['user']; // Fetch user's email from session
@@ -332,9 +335,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <p>You have no uploaded resume.</p>
                     <?php endif; ?>
                 </div>
-                <?php if (!$resume_exists): // Only show the button if no resume exists ?>
-                    <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
-                <?php endif; ?>
             </div>
         </div>
         </div>

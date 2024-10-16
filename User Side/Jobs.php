@@ -3,31 +3,60 @@ include 'connection.php';
 $conn = connection();
 session_start();
 
-
-// Fetch open job listings
-$sql = "SELECT id, job_title, job_location, job_candidates, company_name, job_description, date_posted FROM job_table WHERE job_status = 'open'";
-$jobs_result = $conn->query($sql); // Execute the job listing query
-
-// Initialize user name and profile image
+// Initialize user name, profile image, and user-specific data
 $user_name = 'Sign Up';
 $profile_image = null;
+$user_email = null;
+$user_data = [];
 
+// Check if the user is logged in
 if (isset($_SESSION['user'])) {
-    // Fetch user's email from the session
     $user_email = $_SESSION['user'];
 
-    // Fetch user's full name and profile image
-    $user_sql = "SELECT fname, lname, profile_image FROM applicant_table WHERE email = '$user_email'";
+    // Fetch user's information
+    $user_sql = "SELECT fname, lname, profile_image, gender, location, classi, subclassi 
+                 FROM applicant_table WHERE email = '$user_email'";
     $user_result = $conn->query($user_sql);
 
-    if ($user_result->num_rows > 0) {
-        $user = $user_result->fetch_assoc();
-        $user_name = $user['fname'] . ' ' . $user['lname'];
-        $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
+    if ($user_result && $user_result->num_rows > 0) {
+        $user_data = $user_result->fetch_assoc();
+        $user_name = $user_data['fname'] . ' ' . $user_data['lname'];
+        $profile_image = !empty($user_data['profile_image']) ? base64_encode($user_data['profile_image']) : null;
     }
 }
 
-$jobs_result = $conn->query($sql);
+// Extract user-specific data safely using null coalescing operators
+$classi = $user_data['classi'] ?? '';
+$subclassi = $user_data['subclassi'] ?? '';
+$gender = $user_data['gender'] ?? '';
+$location = $user_data['location'] ?? '';
+
+// Build the SQL query to fetch jobs with user-specific sorting if applicable
+$sql = "
+    SELECT 
+        jt.id, jt.job_title, jt.job_location, jt.job_candidates, 
+        jt.company_name, jt.job_description, jt.date_posted,
+        jtt.classification, jtt.subclassification, jtt.gender,
+        CASE
+            WHEN '$user_email' IS NOT NULL THEN (
+                (jtt.classification = '$classi') +
+                (jtt.subclassification = '$subclassi') +
+                (jtt.gender = '$gender') +
+                (jt.job_location = '$location')
+            )
+            ELSE 0
+        END AS match_score
+    FROM 
+        job_table jt
+    INNER JOIN 
+        job_title_table jtt ON jt.job_title_id = jtt.id
+    WHERE 
+        jt.job_status = 'open'
+    ORDER BY 
+        match_score DESC, jt.date_posted DESC
+";
+
+$jobs_result = $conn->query($sql); // Execute the query
 
 // Close the connection
 $conn->close();
@@ -39,7 +68,7 @@ $conn->close();
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -122,31 +151,46 @@ $conn->close();
                 
                 <!--List of Jobs-->
                 <div class="jobs-main-container">
-                <div id="no-results-message" style="display: none; color: #999; text-align: center; font-weight: bold; font-size: 1.5rem;">No result found.</div>
+                    <div id="no-results-message" style="display: none; color: #999; text-align: center; font-weight: bold; font-size: 1.5rem;">No result found.</div>
                     <ul>
-                    <?php
-                    if ($jobs_result->num_rows > 0) {
-                        while($row = $jobs_result->fetch_assoc()) {
-                            echo '<li>';
-                            echo '<div class="jobs-card" onclick="window.location.href=\'JobDetails.php?id=' . $row["id"] . '\'">';
-                            echo '<div class="job-header">';
-                            echo '<h3 id="job-title">' . $row["job_title"] . '</h3>';
-                            echo '<h4 id="available">(' . $row["job_candidates"] . ')</h4>';
-                            echo '</div>';
-                            echo '<div class="company-box">';
-                            echo '<p style="margin-top: 0.5rem; margin-bottom: 0.5rem;" id="company-name">' . $row["company_name"] . '</p>';
-                            echo '<p style="margin-top: 5px" id="location"><i class="location fas fa-map-marker-alt"></i>' . $row["job_location"] . '</p>';
-                            $datePosted = new DateTime($row["date_posted"]);
-                            $formattedDate = $datePosted->format('m/d/Y');
-                            echo '<p style="margin-top: 5px" id="date"><i class="fas fa-calendar-alt"></i> ' . $formattedDate . '</p>';
-                            echo '</div>';
-                            echo '</div>';
-                            echo '</li>';
+                        <?php
+                        if ($jobs_result->num_rows > 0) {
+                            while ($row = $jobs_result->fetch_assoc()) {
+                                // Check if the job is a good match
+                                $isGoodMatch = isset($row['match_score']) && $row['match_score'] > 2;
+
+                                echo '<li>';
+                                echo '<div class="jobs-card" onclick="window.location.href=\'JobDetails.php?id=' . $row["id"] . '\'">';
+                                
+                                // Job Header with Good Match Indicator
+                                echo '<div class="job-header">';
+                                echo '<h3 id="job-title">' . htmlspecialchars($row["job_title"]) . '</h3>';
+                                echo '<div style="display: flex; justify-content: space-between; align-items: center;">';
+                                echo '<h4 id="available">(' . $row["job_candidates"] . ')</h4>';
+                                if ($isGoodMatch) {
+                                    echo '<div id="rec" class="good-match-badge">For You<span class="tooltiptext">This job is a good match for your profile.</span></div>';
+                                }
+                                echo '</div>';
+                                echo '</div>';
+                                
+                                // Company and Location Details
+                                echo '<div class="company-box">';
+                                echo '<p style="margin-top: 0.5rem; margin-bottom: 0.5rem;" id="company-name">' . htmlspecialchars($row["company_name"]) . '</p>';
+                                echo '<p style="margin-top: 5px" id="location"><i class="location fas fa-map-marker-alt"></i>' . htmlspecialchars($row["job_location"]) . '</p>';
+                                
+                                // Date Posted
+                                $datePosted = new DateTime($row["date_posted"]);
+                                $formattedDate = $datePosted->format('m/d/Y');
+                                echo '<p style="margin-top: 5px" id="date"><i class="fas fa-calendar-alt"></i> ' . $formattedDate . '</p>';
+                                echo '</div>';
+
+                                echo '</div>';
+                                echo '</li>';
+                            }
+                        } else {
+                            echo '<li>No jobs found.</li>';
                         }
-                    } else {
-                        echo '<li>No jobs found.</li>';
-                    }
-                    ?>
+                        ?>
                     </ul>
                 </div>
             </div>

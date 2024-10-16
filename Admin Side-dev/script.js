@@ -68,10 +68,292 @@ function toggle(element) {
     closedOption.classList.toggle('closed');
 }
 
-function showInfo() {
+function showInfo(candidate) {
+    // Display the popup
     document.getElementById('info').style.display = 'block';
     document.getElementById('info').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+
+    // Populate the popup fields with candidate information
+    document.querySelector('.candidate-header h2').textContent = `${candidate.fname} ${candidate.lname}`;
+    document.querySelector('.locationemail i.fa-map-pin + h4').textContent = candidate.location || 'Location not available';
+    document.querySelector('.locationemail i.fa-envelope + h4').textContent = candidate.email || 'Email not available';
+    document.querySelector('.locationemail i.fa-venus-mars + h4').textContent = candidate.gender || 'Gender not available';
+    document.querySelector('.locationemail i.fa-phone + h4').textContent = candidate.phone || 'Phone not available';
+    document.querySelector('.locationemail i.fa-birthday-cake + h4').textContent = candidate.birthday || 'Birthday not available';
+    
+    // Personal information
+    document.getElementById('personal-desc').textContent = candidate.personal_description || 'No personal description available';
+
+    // Profile picture
+    const profileImage = document.querySelector('.large-profile-photo');
+    if (candidate.profile_image) {
+        // Assuming profile_image is stored as Base64 or a URL
+        profileImage.src = `data:image/jpeg;base64,${candidate.profile_image}`; // or just `${candidate.profile_image}` if it's a URL
+    } else {
+        profileImage.src = 'img/user.svg'; // Default profile picture
+    }
+
+     // Populate past job experience
+     const pastJobsContainer = document.getElementById('past-jobs-list');
+     pastJobsContainer.innerHTML = ''; // Clear any previous job entries
+ 
+     if (candidate.past_jobs && candidate.past_jobs.length > 0) {
+         candidate.past_jobs.forEach(job => {
+             const jobItem = document.createElement('li');
+             jobItem.innerHTML = `${job.job_title} at ${job.company_name} (${job.year_started} - ${job.year_ended})`;
+             pastJobsContainer.appendChild(jobItem);
+         });
+     } else {
+         const noJobsItem = document.createElement('li');
+         noJobsItem.textContent = 'No past jobs record available';
+         pastJobsContainer.appendChild(noJobsItem);
+     }
+
+     // Populate education information
+    const educationContainer = document.getElementById('education-list');
+    educationContainer.innerHTML = ''; // Clear any previous education entries
+
+    if (candidate.education && (candidate.educational_attainment || candidate.education.course || candidate.education.school || candidate.education.sy_started || candidate.education.sy_ended)) {
+        const educationItem = document.createElement('li');
+        educationItem.innerHTML = `${candidate.education.educational_attainment} in ${candidate.education.course} from ${candidate.education.school} (${candidate.education.sy_started} - ${candidate.education.sy_ended})`;
+        educationContainer.appendChild(educationItem);
+    } else {
+        const noEducationItem = document.createElement('li');
+        noEducationItem.textContent = 'No education information available';
+        educationContainer.appendChild(noEducationItem);
+    }
+
+    // Populate vocational training information
+    const vocationalContainer = document.getElementById('vocational-list');
+    vocationalContainer.innerHTML = ''; // Clear any previous vocational entries
+
+    if (candidate.vocational && (candidate.vocational.course || candidate.vocational.school || candidate.vocational.year_started || candidate.vocational.year_ended)) {
+        const vocationalItem = document.createElement('li');
+        vocationalItem.innerHTML = `${candidate.vocational.course} from ${candidate.vocational.school || 'N/A'} (${candidate.vocational.year_started || 'N/A'} - ${candidate.vocational.year_ended || 'N/A'})`;
+        vocationalContainer.appendChild(vocationalItem);
+    } else {
+        const noVocationalItem = document.createElement('li');
+        noVocationalItem.textContent = 'No vocational information available';
+        vocationalContainer.appendChild(noVocationalItem);
+    }
+
+    // Populate skills information
+    const skillsContainer = document.getElementById('skills-list');
+    skillsContainer.innerHTML = ''; // Clear any previous skills entries
+
+    if (candidate.skills && candidate.skills.length > 0) {
+        candidate.skills.forEach(skill => {
+            const skillItem = document.createElement('li');
+            skillItem.textContent = skill; // Each skill is displayed as text
+            skillsContainer.appendChild(skillItem);
+        });
+    } else {
+        const noSkillsItem = document.createElement('li');
+        noSkillsItem.textContent = 'No skills available';
+        skillsContainer.appendChild(noSkillsItem);
+    }
+
+    // Clean license name before displaying
+    const cleanLicenseName = (name) => {
+        return name.replace(/\\'/g, "'").replace(/\\\\/g, ""); // Replace backslashes and escaped quotes
+    };
+
+   // Populate licenses information
+   const licensesContainer = document.getElementById('licenses-list');
+   licensesContainer.innerHTML = ''; // Clear previous entries
+
+   if (candidate.licenses && candidate.licenses.length > 0) {
+       candidate.licenses.forEach((license, index) => {
+           const licenseItem = document.createElement('li');
+
+           // Create a span to hold the license text
+           const licenseText = document.createElement('span');
+           licenseText.innerText = `${cleanLicenseName(license.license_name)} (${license.month_issued || 'N/A'} ${license.year_issued || ''} - ${license.month_expired || 'N/A'} ${license.year_expired || ''})`;
+           licenseItem.appendChild(licenseText); 
+
+           // Create a clickable icon for viewing
+           const viewIcon = document.createElement('a');
+           viewIcon.href = `view_license.php?userid=${candidate.userid}&licenseIndex=${index}`; 
+           viewIcon.target = '_blank'; // Open in a new tab
+           
+           const icon = document.createElement('i');
+           icon.className = 'fas fa-eye'; 
+           icon.style.fontSize = '1.2em'; 
+           icon.style.marginLeft = '10px'; 
+           icon.title = 'View License'; 
+           icon.style.color = '#2c1875';
+
+           viewIcon.appendChild(icon);
+           licenseItem.appendChild(viewIcon); 
+
+           licensesContainer.appendChild(licenseItem);
+       });
+   } else {
+       licensesContainer.innerHTML = '<li>No licenses available</li>';
+   }
+
+    // Display resume
+    const resumeDisplay = document.getElementById('resume-display');
+    const noResumeMessage = document.getElementById('no-resume-message');
+
+    if (candidate.resume) {
+        resumeDisplay.src = `data:application/pdf;base64,${candidate.resume}`;
+        resumeDisplay.style.display = 'block';
+        noResumeMessage.style.display = 'none'; 
+    } else {
+        resumeDisplay.src = ''; 
+        resumeDisplay.style.display = 'none';
+        noResumeMessage.style.display = 'block';
+    }
+
+    // Create the Approve Application button
+    const approveButton = document.createElement('button');
+    approveButton.className = 'button-apply';
+    approveButton.textContent = 'Approve Application';
+
+    approveButton.onclick = () => approveApplication(candidate.userid, candidate.job_id);
+
+    
+    const buttonsContainer = document.getElementById('buttons-container');
+    buttonsContainer.innerHTML = ''; 
+    buttonsContainer.appendChild(approveButton);
+}
+
+function showInfoCandidate(candidate) {
+    // Display the popup
+    console.log(candidate);
+    document.getElementById('info').style.display = 'block';
+    document.getElementById('info').classList.add('show');
+    document.getElementById('overlay').classList.add('show');
+
+    // Populate the candidate's basic information
+    document.querySelector(".candidate-header h2").innerText = candidate.full_name || "No name available";
+    document.querySelector(".locationemail:nth-of-type(1) h4").innerText = candidate.location || "No location available";
+    document.querySelector(".locationemail:nth-of-type(2) h4").innerText = candidate.email || "No email available";
+    document.querySelector(".locationemail:nth-of-type(3) h4").innerText = candidate.gender || "No gender specified";
+    document.querySelector(".locationemail:nth-of-type(4) h4").innerText = candidate.phone || "No phone number available";
+    document.querySelector(".locationemail:nth-of-type(5) h4").innerText = candidate.birthday || "No birthday specified";
+
+    // Populate the personal description
+    document.getElementById("personal-desc").innerText = candidate.personal_description || "No description available";
+
+    // Display the profile image
+    const profileImageDiv = document.getElementById("profile-image");
+    profileImageDiv.innerHTML = ''; // Clear previous image
+
+    const defaultImageUrl = 'img/user.svg'; // Set the path to your default image
+    const profileImage = candidate.profile_image ? `data:image/jpeg;base64,${candidate.profile_image}` : defaultImageUrl;
+
+    const imgElement = document.createElement('img');
+    imgElement.src = profileImage;
+    imgElement.alt = "Profile Image";
+    imgElement.style.height = '200px'; // Set fixed height
+    imgElement.style.objectFit = 'cover'; // Maintain aspect ratio
+    profileImageDiv.appendChild(imgElement);
+
+
+    // Populate Past Jobs
+    const pastJobsList = document.getElementById("past-jobs-list");
+    pastJobsList.innerHTML = ''; // Clear previous entries
+
+    if (candidate.past_jobs && candidate.past_jobs.length > 0) {
+        // Split the concatenated string into individual job entries
+        const pastJobsArray = candidate.past_jobs.split('; '); // Split based on the separator used in the query
+
+        pastJobsArray.forEach(job => {
+            const pastJobItem = document.createElement('li');
+            pastJobItem.innerText = job; // Set the inner text to the individual job entry
+            pastJobsList.appendChild(pastJobItem); // Append the item to the list
+        });
+    } else {
+        pastJobsList.innerHTML = '<li>No past job information available</li>';
+    }   
+
+    // Populate Education
+    const educationList = document.getElementById("education-list");
+    educationList.innerHTML = ''; // Clear previous entries
+    if (candidate.educational_attainment) {
+        const educationItem = document.createElement('li');
+        educationItem.innerText = `${candidate.educational_attainment} in ${candidate.educational_course} from ${candidate.educational_school} (${candidate.sy_started} - ${candidate.sy_ended})`;
+        educationList.appendChild(educationItem);
+    } else {
+        educationList.innerHTML = '<li>No educational information available</li>';
+    }
+
+    // Populate Vocational
+    const vocationalList = document.getElementById("vocational-list");
+    vocationalList.innerHTML = ''; // Clear previous entries
+    if (candidate.vocational_course) {
+        const vocationalItem = document.createElement('li');
+        vocationalItem.innerText = `${candidate.vocational_course} from ${candidate.vocational_school} (${candidate.vocational_year_started} - ${candidate.vocational_year_ended})`;
+        vocationalList.appendChild(vocationalItem);
+    } else {
+        vocationalList.innerHTML = 'No vocational information available</li>';
+    }
+
+    // Populate Skills
+    const skillsList = document.getElementById("skills-list");
+    skillsList.innerHTML = ''; // Clear previous entries
+    if (candidate.skills) {
+        // Use a Set to avoid duplicates
+        const uniqueSkills = new Set(candidate.skills.split(', '));
+        uniqueSkills.forEach(skill => {
+            const skillItem = document.createElement('li');
+            skillItem.innerText = skill;
+            skillsList.appendChild(skillItem);
+        });
+    } else {
+        skillsList.innerHTML = '<li>No skills available</li>';
+    }
+
+    // Populate Licenses
+    const licensesList = document.getElementById("licenses-list");
+    licensesList.innerHTML = ''; // Clear previous entries
+
+    if (candidate.licenses && candidate.licenses.length > 0) {
+        const licensesArray = candidate.licenses.split('; '); 
+
+        licensesArray.forEach((license, index) => {
+            const licenseItem = document.createElement('li');
+            
+            // Create a span to hold the license text
+            const licenseText = document.createElement('span');
+            licenseText.innerText = license;
+            licenseItem.appendChild(licenseText); 
+
+            // Create a clickable icon for viewing
+            const viewIcon = document.createElement('a');
+            viewIcon.href = `view_license.php?userid=${candidate.userid}&licenseIndex=${index}`; 
+            viewIcon.target = '_blank'; // Open in a new tab
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-eye'; 
+            icon.style.fontSize = '1.2em'; 
+            icon.style.marginLeft = '10px'; 
+            icon.title = 'View License'; 
+            icon.style.color = '#2c1875'
+
+            viewIcon.appendChild(icon);
+            licenseItem.appendChild(viewIcon); 
+
+            licensesList.appendChild(licenseItem);
+        });
+    } else {
+        licensesList.innerHTML = '<li>No licenses available</li>';
+    }
+    
+   // Populate Resume
+   const resumeDisplay = document.getElementById("resume-display");
+   const noResumeMessage = document.getElementById("no-resume-message");
+   if (candidate.resume) {
+       resumeDisplay.src = `data:application/pdf;base64,${candidate.resume}`; 
+       resumeDisplay.style.display = 'block';
+       noResumeMessage.style.display = 'none';
+   } else {
+       resumeDisplay.style.display = 'none';
+       noResumeMessage.style.display = 'block';
+   }
 }
 
 function hideInfo() {
@@ -331,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_candidates.php', populateCandidatesTable);
     } else if (currentPage.includes('smartsearch.php')) {
         fetchData('fetch_smartsearch.php', populateSmartSearchTable);
-    } else */if (currentPage.includes('rejected.html')) {
+    } else*/ if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
         fetchData('fetch_employees.php', populateEmployeesTable)
@@ -866,11 +1148,11 @@ function handleStatusChange(jobId) {
     const selectedValue = dropdown.value;
     const originalValue = dropdown.getAttribute('data-original-value');
 
-    const confirmation = confirm(`Are you sure you want to change the job status for job ID ${jobId} to: ${selectedValue}?`);
+    const confirmation = confirm(`Are you sure you want to change the job status to: ${selectedValue}?`);
 
     if (confirmation) {
         // User confirmed the change
-        console.log(`Job status for job ID ${jobId} changed to: ${selectedValue}`);
+        console.log(`Job status changed to: ${selectedValue}`);
         // Update the original value with the new selection
         dropdown.setAttribute('data-original-value', selectedValue);
 
@@ -879,7 +1161,7 @@ function handleStatusChange(jobId) {
     } else {
         // User canceled the change, revert to the original value
         dropdown.value = originalValue;
-        console.log('Job status change canceled. Reverted to original value.');
+        console.log('Job status change canceled.');
     }
 }
 
@@ -898,6 +1180,8 @@ function updateJobStatusInDatabase(jobId, status) {
     .then(data => {
         if (data.success) {
             console.log('Job status updated successfully in the database.');
+            // Refresh the page after successful update
+            location.reload();
         } else {
             console.error('Failed to update job status in the database.');
             // Revert the dropdown to its original value if the update fails
@@ -2362,15 +2646,30 @@ function populatePartnerJobTitles() {
 document.addEventListener('DOMContentLoaded', populateJobTitles);
 
 function openTab(tabName) {
-    var i, tabcontent, tabs;
-    tabcontent = document.getElementsByClassName('tab-content');
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].classList.remove('active');
-    }
-    tabs = document.getElementsByClassName('tab');
-    for (i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-    }
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(content => content.classList.remove('active'));
+
+    // Show the selected tab content
     document.getElementById(tabName).classList.add('active');
-    event.currentTarget.classList.add('active');
-    }
+
+    // Remove 'active' from all tabs
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => tab.classList.remove('active'));
+
+    // Add 'active' to the clicked tab
+    const activeTab = document.querySelector(`.tab[onclick="openTab('${tabName}')"]`);
+    if (activeTab) activeTab.classList.add('active');
+
+    // Update the URL with the selected tab
+    const url = new URL(window.location);
+    url.searchParams.set('tab', tabName);
+    window.history.pushState({}, '', url);
+}
+
+// Load the correct tab on page load based on the URL parameter
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabName = urlParams.get('tab') || 'pending'; // Default to 'pending' if no tab is specified
+    openTab(tabName);
+});

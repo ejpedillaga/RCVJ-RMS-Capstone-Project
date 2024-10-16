@@ -109,8 +109,8 @@ nav a.active {
   padding: 5px 0;
   position: absolute;
   z-index: 1;
-  top: -5px;
-  left: 120%;
+  top: 15%;
+  left: -2em;
 }
 
 .profile-edit:hover .tooltiptext {
@@ -120,12 +120,12 @@ nav a.active {
 .profile-edit .tooltiptext::after {
   content: " ";
   position: absolute;
-  top: 50%;
-  right: 100%;
-  margin-top: -5px;
+  top: -25%;
+  left: 40%;
+  margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: transparent rgb(255, 254, 254) transparent transparent;
+  border-color: transparent transparent rgb(255, 254, 254) transparent; /* Arrow points upward */
 }
 
 .delete-icon .tooltiptext {
@@ -140,9 +140,9 @@ nav a.active {
   z-index: 2;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%; /* Changed from bottom to top */
   left: 50%;
-  margin-left: -15px;
+  margin-left: -35px; /* Adjusted margin-left to center the tooltip */
 }
 
 .delete-icon:hover .tooltiptext {
@@ -152,12 +152,12 @@ nav a.active {
 .delete-icon .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
-  left: 50%;
+  bottom: 100%; /* Changed from top to bottom */
+  left: 80%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent; /* Changed border-color to match the new position */
 }
 
 #ic2 .tooltiptext {
@@ -172,7 +172,7 @@ nav a.active {
   z-index: 999;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 50%;
   margin-left: -35px;
 }
@@ -184,12 +184,12 @@ nav a.active {
 #ic2 .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent;
 }
 
 .edit-icon .tooltiptext {
@@ -203,7 +203,7 @@ nav a.active {
   font-size: 14px;
 
   position: absolute;
-  bottom: 100%;
+  top: 100%;
   left: 30%;
   margin-left: -38px;
   z-index: 999;
@@ -216,12 +216,12 @@ nav a.active {
 .edit-icon .tooltiptext::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent;
 }
 
 /*nav nav-acc button*/
@@ -903,7 +903,7 @@ footer {
   height: 100vh;
 }
 
-.main-container-jobs{
+.main-container-jobs {
   width: 100em;
 }
 
@@ -1019,10 +1019,6 @@ footer {
   list-style: none;
 }
 
-.jobs-main-container ul li {
-  margin: 5px;
-}
-
 .jobs-card {
   cursor: pointer;
   background-color: #ef9b50;
@@ -1031,7 +1027,7 @@ footer {
   margin: 1rem;
   width: 250px;
   height: auto;
-  transition: 0.3s ease;
+  transition: 0.1s ease;
   box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
     rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
     rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
@@ -1273,7 +1269,7 @@ footer {
   box-shadow: rgba(0.15, 0.15, 0.15, 0.15) 0px 1px 2px,
     rgba(0, 0, 0, 0.15) 0px 2px 4px, rgba(0, 0, 0, 0.15) 0px 4px 8px,
     rgba(0, 0, 0, 0.15) 0px 8px 16px, rgba(0, 0, 0, 0.15) 0px 16px 32px,
-    rgba(0, 0, 0, 0.15) 0px 32px 64px; 
+    rgba(0, 0, 0, 0.15) 0px 32px 64px;
 }
 
 .partner-card img {
@@ -2191,7 +2187,7 @@ body.overlay-active .overlay {
 }
 
 .result-box {
-  max-height: 300px;
+  max-height: 200px;
   overflow-y: scroll;
 }
 
@@ -2665,7 +2661,7 @@ input[type="number"] {
 .icon-group {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 20px;
   display: flex;
   flex-direction: row;
 }
@@ -2750,8 +2746,12 @@ input[type="number"] {
   padding: 1.5rem 5rem;
   margin: auto;
   border-radius: 20px;
-  overflow: auto;
   height: 90%;
+}
+
+#applyForm {
+  overflow-y: scroll;
+  height: 75%;
 }
 
 .popup.show {
@@ -2791,8 +2791,6 @@ input[type="number"] {
 
 .popup .candidate-container {
   padding: 0rem 5rem;
-  overflow-y: scroll;
-  height: 70%;
   margin: 1rem 0rem;
 }
 .popup .candidate-header {
@@ -2828,20 +2826,20 @@ input[type="number"] {
 }
 
 /* Custom Scrollbar for WebKit browsers (Chrome, Safari) */
-.candidate-container::-webkit-scrollbar {
+#applyForm::-webkit-scrollbar {
   width: 8px; /* Width of the scrollbar */
 }
 
-.candidate-container::-webkit-scrollbar-track {
+#applyForm::-webkit-scrollbar-track {
   background: #f1f1f1; /* Track color */
 }
 
-.candidate-container::-webkit-scrollbar-thumb {
+#applyForm::-webkit-scrollbar-thumb {
   background: #2c1875; /* Scrollbar color */
   border-radius: 10px; /* Rounded corners */
 }
 
-.candidate-container::-webkit-scrollbar-thumb:hover {
+#applyForm::-webkit-scrollbar-thumb:hover {
   background: #1e0f5c; /* Darker shade on hover */
 }
 
@@ -2925,6 +2923,58 @@ input[type="number"] {
 .vocational-list,
 .pastjobs-list,
 .education-list,
-.skills-list {
-  padding-left: 20px; /* Indent the list */
+.skills-list,
+.licenses-list {
+  padding-left: 45px; /* Indent the list */
+}
+
+.vocational-list li,
+.pastjobs-list li,
+.education-list li,
+.skills-list li {
+  margin-bottom: 0.5rem;
+}
+
+.good-match-badge {
+  display: inline-block;
+  background-color: rgb(34, 6, 89);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+#rec .tooltiptext {
+  visibility: hidden;
+  width: 100%;
+  background-color: rgb(34, 6, 89);
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  font-size: 14px;
+  z-index: 999;
+
+  position: absolute;
+  top: 100%;
+  left: 11%;
+  margin-left: -35px;
+}
+
+#rec:hover .tooltiptext {
+  visibility: visible;
+}
+
+#rec .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
 }

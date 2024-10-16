@@ -10,18 +10,41 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $candidate_name = $_POST['candidate_name'];
     $scheduled_date = $_POST['scheduled_date'];
 
-    // Prepare and execute the insert query
-    $query = "INSERT INTO schedule_table (job_title, company_name, candidate_name, scheduled_date) VALUES (?, ?, ?, ?)";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, 'ssss', $job_title, $company_name, $candidate_name, $scheduled_date);
+    // Begin transaction to ensure both operations (insert and update) are successful
+    mysqli_begin_transaction($conn);
 
-    if (mysqli_stmt_execute($stmt)) {
+    try {
+        // Insert the new schedule into the schedule_table
+        $query = "INSERT INTO schedule_table (job_title, company_name, candidate_name, scheduled_date) VALUES (?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, 'ssss', $job_title, $company_name, $candidate_name, $scheduled_date);
+
+        if (!mysqli_stmt_execute($stmt)) {
+            throw new Exception(mysqli_error($conn));
+        }
+        mysqli_stmt_close($stmt);
+
+        // Update the deployment_status to 'Scheduled' in candidate_list
+        $updateQuery = "UPDATE candidate_list SET deployment_status = 'Scheduled' 
+                        WHERE full_name = ? AND job_title = ? AND company_name = ?";
+        $updateStmt = mysqli_prepare($conn, $updateQuery);
+        mysqli_stmt_bind_param($updateStmt, 'sss', $candidate_name, $job_title, $company_name);
+
+        if (!mysqli_stmt_execute($updateStmt)) {
+            throw new Exception(mysqli_error($conn));
+        }
+        mysqli_stmt_close($updateStmt);
+
+        // Commit the transaction
+        mysqli_commit($conn);
         echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => mysqli_error($conn)]);
+    } catch (Exception $e) {
+        // Rollback on failure
+        mysqli_rollback($conn);
+        echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
     }
 
-    mysqli_stmt_close($stmt);
+    // Close the database connection
     mysqli_close($conn);
 }
 ?>

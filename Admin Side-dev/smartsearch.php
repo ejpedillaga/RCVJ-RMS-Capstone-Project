@@ -22,70 +22,6 @@ $skills = [];
 $company_name = '';
 $job_title = '';
 
-// Assuming $passed_userid is the userid you want to use
-$passed_userid = '';
-
-// Check if the passed_userid is set and is valid
-if (isset($passed_userid)) {
-    // Fetch user information from applicant_table based on passed userid
-    $sql = "SELECT userid, email, fname, lname, gender, birthday, location, phone, personal_description, profile_image FROM applicant_table WHERE userid = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $passed_userid);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        $user_info = $result->fetch_assoc();
-        $user_name = $user_info['fname'] . ' ' . $user_info['lname']; // Get full name
-        $userid = $user_info['userid']; // Get user ID
-        $profile_image = !empty($user_info['profile_image']) ? base64_encode($user_info['profile_image']) : null;
-
-        // Fetch education details
-        $sql = "SELECT educational_attainment, school, course, sy_started, sy_ended FROM education_table WHERE userid = ?";
-        $stmt_edu = $conn->prepare($sql);
-        $stmt_edu->bind_param("i", $userid);
-        $stmt_edu->execute();
-        $result_edu = $stmt_edu->get_result();
-
-        if ($result_edu->num_rows > 0) {
-            while ($row = $result_edu->fetch_assoc()) {
-                $education_list[] = $row;
-            }
-        }
-        $stmt_edu->close();
-
-        // Fetch vocational education details
-        $sql = "SELECT school, course, year_started, year_ended FROM vocational_table WHERE userid = ?";
-        $stmt_voc = $conn->prepare($sql);
-        $stmt_voc->bind_param("i", $userid);
-        $stmt_voc->execute();
-        $result_voc = $stmt_voc->get_result();
-
-        if ($result_voc->num_rows > 0) {
-            while ($row = $result_voc->fetch_assoc()) {
-                $vocational_list[] = $row;
-            }
-        }
-        $stmt_voc->close();
-
-        // Fetch job experience details
-        $sql = "SELECT job_title, company_name, month_started, year_started, month_ended, year_ended FROM job_experience_table WHERE userid = ?";
-        $stmt_job = $conn->prepare($sql);
-        $stmt_job->bind_param("i", $userid);
-        $stmt_job->execute();
-        $result_job = $stmt_job->get_result();
-
-        if ($result_job->num_rows > 0) {
-            while ($row = $result_job->fetch_assoc()) {
-                $job_experience_list[] = $row;
-            }
-        }
-        $stmt_job->close();
-    }
-    $stmt->close();
-} else {
-    echo "User ID is not set.";
-}
 
 //JOB MATCHING ALGORITHM HERE
 
@@ -152,12 +88,15 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $job_details = mysqli_fetch_assoc($job_result);
 
    // Fetch candidates with "Pending" status that applied for the job by job_id
-    $query = "SELECT c.id, a.userid, a.fname, a.lname, a.gender, e.educational_attainment, 
+    $query = "SELECT c.id, a.userid, a.fname, a.lname, a.gender, a.email, a.phone, a.birthday, a.personal_description, 
+    e.educational_attainment, e.course, e.school, e.sy_started, e.sy_ended, 
+    v.school AS vocational_school, v.course AS vocational_course, v.year_started AS vocational_year_started, v.year_ended AS vocational_year_ended, 
     a.classi, a.subclassi, a.location, c.date_applied, 
-    j.job_title, p.company_name, SUM(je.year_ended - je.year_started) AS total_years_experience
+    j.job_title, p.company_name, a.profile_image, SUM(je.year_ended - je.year_started) AS total_years_experience
     FROM candidate_list c
     JOIN applicant_table a ON c.userid = a.userid
     LEFT JOIN education_table e ON a.userid = e.userid
+    LEFT JOIN vocational_table v ON a.userid = v.userid
     LEFT JOIN job_experience_table je ON a.userid = je.userid
     LEFT JOIN job_table j ON c.job_id = j.id
     LEFT JOIN partner_table p ON j.company_name = p.company_name
@@ -169,98 +108,233 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $candidates = [];
 
     while ($row = mysqli_fetch_assoc($result)) {
+        // Convert the binary image data to base64
+    $profile_image = base64_encode($row['profile_image']);
+         // Fetch past jobs for each candidate
+    $past_jobs_query = "SELECT je.job_title, je.company_name, je.year_started, je.year_ended 
+                        FROM job_experience_table je
+                        WHERE je.userid = '".$row['userid']."'";
+    $past_jobs_result = mysqli_query($conn, $past_jobs_query);
+    $past_jobs = [];
+    while ($job_row = mysqli_fetch_assoc($past_jobs_result)) {
+        $past_jobs[] = [
+        'job_title' => $job_row['job_title'],
+        'company_name' => $job_row['company_name'],
+        'year_started' => $job_row['year_started'],
+        'year_ended' => $job_row['year_ended'],
+        ];
+    }
+
+    // Fetch applicant's resume from the resume_table
+    $resume_query = "SELECT resume FROM resume_table WHERE userid = '".$row['userid']."'";
+    $resume_result = mysqli_query($conn, $resume_query);
+    $resume_blob = null;
+    if ($resume_row = mysqli_fetch_assoc($resume_result)) {
+        $resume_blob = $resume_row['resume']; // Store the resume blob
+    }
+
+    // Convert the binary resume data to base64 (if needed for frontend display)
+    $resume_base64 = $resume_blob ? base64_encode($resume_blob) : null;
+
     // Score applicants based on matching criteria
     $score = 0;
     $max_score = 0; // Initialize max score
 
+    // Create an array to hold matching details
+    $matchingDetails = [];
+
     // Match classification
     if ($row['classi'] == $job_details['classification']) {
-    $score += 1;
+        $score += 1;
+        $matchingDetails[] = '<div class="matched">Classification <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Classification <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
 
     // Match subclassification
     if ($row['subclassi'] == $job_details['subclassification']) {
-    $score += 1;
+        $score += 1;
+        $matchingDetails[] = '<div class="matched">Sub-classification <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Sub-classification <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
 
     // Match gender
     if ($row['gender'] == $job_details['gender']) {
-    $score += 1;
+        $score += 1;
+        $matchingDetails[] = '<div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Gender <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
 
     // Match educational attainment
     if ($row['educational_attainment'] == $job_details['educational_attainment']) {
-    $score += 1;
+        $score += 1;
+        $matchingDetails[] = '<div class="matched">Education <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Education <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
 
     // Check if the total years of experience fall within the required range
     if ($job_details['years_of_experience'] !== '-') { // Check if years_of_experience is not "-"
-    list($min_exp, $max_exp) = explode('-', $job_details['years_of_experience']);
-    if ($row['total_years_experience'] >= (int)$min_exp && $row['total_years_experience'] <= (int)$max_exp) {
-    $score += 1; // Add point for matching experience range
-    }
-    $max_score += 1; // Increment max score
+        list($min_exp, $max_exp) = explode('-', $job_details['years_of_experience']);
+        if ($row['total_years_experience'] >= (int)$min_exp && $row['total_years_experience'] <= (int)$max_exp) {
+            $score += 1; // Add point for matching experience range
+            $matchingDetails[] = '<div class="matched">Experience <i class="fa fa-check" aria-hidden="true"></i></div>';
+        } else {
+            $matchingDetails[] = '<div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div>';
+        }
+        $max_score += 1; // Increment max score
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $max_score += 1; // Increment max score
     }
 
     // Match job location
     if ($row['location'] == $job_details['job_location']) { // Assuming job_details has job_location
-    $score += 1; // Add point if location matches
+        $score += 1; // Add point if location matches
+        $matchingDetails[] = '<div class="matched">Location <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Location <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score for location match
 
     // Fetch skills of the applicant
-    $skills_query = "SELECT skill_id FROM user_skills_table WHERE userid = '".$row['userid']."'";
-    $skills_result = mysqli_query($conn, $skills_query);
+    $skills_query = "SELECT skill_table.skill_name 
+                     FROM user_skills_table 
+                     JOIN skill_table ON user_skills_table.skill_id = skill_table.skill_id 
+                     WHERE user_skills_table.userid = ?";
+    
+    $stmt_skills = $conn->prepare($skills_query);
+    $stmt_skills->bind_param("s", $row['userid']);
+    $stmt_skills->execute();
+    $skills_result = $stmt_skills->get_result();
+
     $applicant_skills = [];
-    while ($skill_row = mysqli_fetch_assoc($skills_result)) {
-    $applicant_skills[] = $skill_row['skill_id'];
+    while ($skill_row = $skills_result->fetch_assoc()) {
+        $applicant_skills[] = $skill_row['skill_name']; // Store the skill names instead of IDs
     }
 
     // Fetch required skills for the job
-    $required_skills_query = "SELECT skill_id 
-                          FROM job_skills_table 
-                          WHERE job_title_id = (SELECT id FROM job_title_table WHERE job_title = (
-                              SELECT job_title FROM job_table WHERE id = $job_id
-                          ))";
-    $required_skills_result = mysqli_query($conn, $required_skills_query);
-    while ($req_skill_row = mysqli_fetch_assoc($required_skills_result)) {
-    if (in_array($req_skill_row['skill_id'], $applicant_skills)) {
-    $score += 1; // Increase score for each matching skill
-    }
-    $max_score += 1; // Increment max score
+    $required_skills_query = "SELECT skill_table.skill_name 
+                              FROM job_skills_table 
+                              JOIN job_title_table ON job_skills_table.job_title_id = job_title_table.id
+                              JOIN skill_table ON job_skills_table.skill_id = skill_table.skill_id
+                              WHERE job_title_table.job_title = ?";
+    
+    $stmt_required_skills = $conn->prepare($required_skills_query);
+    $stmt_required_skills->bind_param("s", $row['job_title']);
+    $stmt_required_skills->execute();
+    $required_skills_result = $stmt_required_skills->get_result();
+    
+    $required_skills = [];
+    while ($req_skill_row = $required_skills_result->fetch_assoc()) {
+        $required_skills[] = $req_skill_row['skill_name'];
     }
 
-    // Match certifications and licenses
+    // Calculate skill matching
+    $matched_skills = array_intersect($applicant_skills, $required_skills);
+    $total_matched_skills = count($matched_skills);
+    $total_required_skills = count($required_skills);
+
+    // Add individual skill matches to the score
+    $score += $total_matched_skills;
+    $max_score += $total_required_skills; // Increment max score by total required skills
+
+    // Determine the collective matching class for $matchingDetails
+    if ($total_matched_skills === $total_required_skills) {
+        $matchingDetails[] = '<div class="matched">Skills <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } elseif ($total_matched_skills > 0) {
+        $matchingDetails[] = '<div class="near-matched">Skills <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div>';
+    } else {
+        $matchingDetails[] = '<div class="not-matched">Skills <i class="fa fa-times" aria-hidden="true"></i></div>';
+    }
+
     // Fetch applicant's licenses
-    $licenses_query = "SELECT license_name FROM certification_license_table WHERE userid = '".$row['userid']."'";
+    $licenses_query = "SELECT license_name, month_issued, year_issued, month_expired, year_expired, attachment 
+    FROM certification_license_table 
+    WHERE userid = '".$row['userid']."'";
     $licenses_result = mysqli_query($conn, $licenses_query);
     $applicant_licenses = [];
+
+    // Store licenses without cleaning for matching
     while ($license_row = mysqli_fetch_assoc($licenses_result)) {
-    $applicant_licenses[] = $license_row['license_name'];
+    // Use the license name as it is for matching
+    $license_name = $license_row['license_name']; 
+
+    // Convert the blob to base64 for frontend display if needed
+    $attachment_base64 = $license_row['attachment'] ? base64_encode($license_row['attachment']) : null;
+
+    // Store the license details
+    $applicant_licenses[] = [
+    'license_name' => $license_name, // Store raw license name
+    'month_issued' => $license_row['month_issued'], 
+    'year_issued' => $license_row['year_issued'], 
+    'month_expired' => $license_row['month_expired'], 
+    'year_expired' => $license_row['year_expired'], 
+    'attachment' => $attachment_base64, 
+    ];
     }
 
     // Check if any license matches the job's cert_license
-    if (in_array($job_details['cert_license'], $applicant_licenses)) {
+    $license_names = array_column($applicant_licenses, 'license_name'); // Get all license names
+
+    // Perform the matching check
+    if (in_array($job_details['cert_license'], $license_names)) {
     $score += 1; // Add point if there's a match
+    $matchingDetails[] = '<div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div>';
+    } else {
+    $matchingDetails[] = '<div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div>';
     }
     $max_score += 1; // Increment max score
 
-    // Add candidate to array with all required fields
+    // Clean license names for HTML display
+    foreach ($applicant_licenses as &$license) {
+    $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
+    }
+
+    // Store candidate data
     $candidates[] = [
         'candidate' => [
             'userid' => $row['userid'],
+            'job_id' => $job_id,
             'fname' => $row['fname'],
             'lname' => $row['lname'],
+            'location' => $row['location'],
+            'gender' => $row['gender'],
+            'phone' => $row['phone'],
+            'birthday' => (new DateTime($row['birthday']))->format('m/d/y'),
+            'email' => $row['email'],
+            'personal_description' => $row['personal_description'],
             'job_title' => $row['job_title'],
             'company_name' => $row['company_name'], 
-            'date_applied' => $row['date_applied'], 
+            'date_applied' => (new DateTime($row['date_applied']))->format('m/d/y'), 
+            'profile_image' => $profile_image,
+            'past_jobs' => $past_jobs,
+            'education' => [
+                'educational_attainment' => $row['educational_attainment'],
+                'course' => $row['course'],
+                'school' => $row['school'],
+                'sy_started' => $row['sy_started'],
+                'sy_ended' => $row['sy_ended'],
+            ],
+            'vocational' => [
+                'course' => $row['vocational_course'],
+                'school' => $row['vocational_school'],
+                'year_started' => $row['vocational_year_started'],
+                'year_ended' => $row['vocational_year_ended'],
+            ],
+            'skills' => $applicant_skills, 
+            'licenses' => $applicant_licenses,
+            'resume' => $resume_base64,
         ],
         'score' => $score,
         'max_score' => $max_score,
+        'matchingDetails' => $matchingDetails, 
     ];
     }
 
@@ -270,6 +344,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     });
 
     mysqli_close($conn);
+    header('Content-Type: application/json'); // Set header to application/json
     echo json_encode($candidates);
     exit();
 }
@@ -283,7 +358,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
-    <link rel="stylesheet" href="mediaqueries.css">
+    <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
     <script>
         // Fetch job postings for a selected company
@@ -355,9 +430,8 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             showInitialMessage();
         };
 
-        // Populate the candidates table with the fetched data
         function populateSmartSearchTable(data) {
-            const rowTemplate = (candidate, statusClass, statusText) => `
+            const rowTemplate = (candidate, statusClass, statusText, matchDetails) => `
                 <tr class="tr1">
                     <td class="fullname">${candidate.candidate.fname} ${candidate.candidate.lname}</td>
                     <td><strong>${candidate.candidate.job_title}</strong></td>
@@ -367,12 +441,17 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         <span class="${statusClass}">${statusText}</span>
                         <span class="tooltip-text">${tooltipText}</span>
                     </td>
+                     <td>
+                        <div class="match-column">
+                            ${matchDetails.map(match => match).join('')}
+                        </div>
+                    </td>
                     <td class="candidates-tooltip-container">
-                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick="showInfo(${candidate.candidate.userid})"></i>
+                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick='showInfo(${JSON.stringify(candidate.candidate)}, ${candidate.candidate.job_id})'></i>
                         <span class="tooltip-text">Candidate Information</span>
                     </td>
                     <td class="candidates-tooltip-container">
-                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i>
                         <span class="tooltip-text">Delete Candidate</span>
                     </td>
                 </tr>
@@ -384,12 +463,9 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
             // Check if there are any candidates
             if (data.length === 0) {
-                // Add a row to display a message
                 const noCandidatesRow = `
-                    <tr class="tr1">
-                        <td colspan="7" style="text-align: center; font-weight: bold; color: #999;">
-                            No candidates found.
-                        </td>
+                    <tr>
+                        <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875; ">No candidates found</td>
                     </tr>
                 `;
                 tableBody.innerHTML = noCandidatesRow; // Insert the message row
@@ -409,11 +485,11 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     statusClass = 'status-label-identical';
                     statusText = 'Identical';
                     tooltipText = 'Perfect fit for the role';
-                } else if (score > (maxScore / 2)) {
+                } else if (score > (0.6 * maxScore)) {
                     statusClass = 'status-label-Underqualified';
                     statusText = 'Underqualified';
                     tooltipText = 'Great qualifications, but not the best fit for role';
-                } else if (score > 0) {
+                } else if (score > 1) {
                     statusClass = 'status-label-unqualified';
                     statusText = 'Unqualified';
                     tooltipText = 'Limited qualities, skills, and experience';
@@ -424,7 +500,39 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 }
 
                 // Append row to the table
-                tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText);
+                tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText, candidate.matchingDetails);
+            });
+        }
+
+        function approveApplication(userId, jobId) { 
+        
+            fetch('approve_candidate.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userid: userId,
+                    jobid: jobId 
+                })
+            })
+            .then(response => {
+                return response.text().then(text => {
+                    console.log('Raw response:', text); 
+                    return JSON.parse(text);
+                });
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Applicant has been approved.');
+                    hideInfo();
+                    location.reload();
+                } else {
+                    console.error('Error updating candidate status:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
         }
     </script>
@@ -470,6 +578,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <div id="candidateResults">
                     <!-- Candidates who applied will be displayed here -->
                 </div>
+                <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
             </div>
             
             <div>
@@ -481,6 +590,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         <th>Company</th>
                         <th>Date Applied</th>
                         <th>Status</th>
+                        <th>Matching</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -501,101 +611,106 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <div class="addpartners-back-button" onclick="hideInfo()">
                     <i class="fas fa-chevron-left"></i> Back
                 </div>
-                <h3 style="color: #2C1875">Review your information:</h3>
-                <p>This information will be reviewed by the employer.</p>
+                <h3 style="color: #2C1875">Review applicant information:</h3>
+                <p>This information was provided by the applicant.</p>
                 <div class="candidate-container">
                     <div class="candidate-header">
                         <div>
                             <h2><?php echo htmlspecialchars($user_name); ?></h2>
                             <div class="locationemail">
-                                <i class="fa fa-map-pin" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['location']); ?></h4>
+                                <i class="fa fa-map-pin" aria-hidden="true"></i><h4>Location</h4>
                             </div>
                             <div class="locationemail">
-                                <i class="fa fa-envelope" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['email']); ?></h4>
+                                <i class="fa fa-envelope" aria-hidden="true"></i><h4>Email</h4>
                             </div>
                             <div class="locationemail">
-                                <i class="fa fa-venus-mars" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['gender']); ?></h4>
+                                <i class="fa fa-venus-mars" aria-hidden="true"></i><h4>gender</h4>
                             </div>
                             <div class="locationemail">
-                                <i class="fa fa-phone" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['phone']); ?></h4>
+                                <i class="fa fa-phone" aria-hidden="true"></i><h4>phone</h4>
                             </div>
                             <div class="locationemail">
-                                <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['birthday']); ?></h4>
+                                <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4>birthday</h4>
                             </div>
                         </div>
                         <div>
                             <?php if ($profile_image): ?>
                             <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
                             <?php else: ?>
-                                <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
+                                <img src="img/user.svg" alt="Default Profile Picture" class="large-profile-photo" style="background-color: #d4d6ff00;">
                             <?php endif; ?>
                         </div>
                     </div>
                     <div id="personal-info">
                         <h3>Personal Information</h3>
-                        <p id="personal-desc"><?php echo nl2br(htmlspecialchars($user_info['personal_description'])); ?></p>
+                        <p id="personal-desc">personal description</p>
                     </div>
                     <!-- Past Jobs Information -->
-                    <div id="past-jobs">
+                    <div id="past-jobs-container">
                         <h3>Past Jobs</h3>
-                        <ul class="pastjobs-list">
-                            <?php if (!empty($job_experience_list)): ?>
-                                <?php foreach ($job_experience_list as $job_exp): ?>
-                                    <li>
-                                        <?php echo htmlspecialchars($job_exp['job_title']) . " at " . htmlspecialchars($job_exp['company_name']) . " (" . htmlspecialchars($job_exp['month_started']) . " " . htmlspecialchars($job_exp['year_started']) . " - " . (!empty($job_exp['month_ended']) ? htmlspecialchars($job_exp['month_ended']) . " " . htmlspecialchars($job_exp['year_ended']) : 'Present') . ")"; ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li>No past job experience records found.</li>
-                            <?php endif; ?>
+                        <ul class="past-jobs-list" id="past-jobs-list">
+                            
                         </ul>
                     </div>
                     <!-- Education Information -->
                     <div id="education">
                         <h3>Educational Attainment</h3>
-                        <ul class="education-list">
-                            <?php if (!empty($education_list)): ?>
-                                <?php foreach ($education_list as $education): ?>
-                                    <li>
-                                        <?php echo htmlspecialchars($education['educational_attainment']) . " in " . htmlspecialchars($education['course']) . " from " . htmlspecialchars($education['school']) . " (" . htmlspecialchars($education['sy_started']) . " - " . htmlspecialchars($education['sy_ended']) . ")"; ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li>No education records found.</li>
-                            <?php endif; ?>
+                        <ul class="education-list" id="education-list">
+                            
                         </ul>
                     </div>
 
                     <!-- Vocational Education Information -->
                     <div id="vocational">
                         <h3>Vocational</h3>
-                        <ul class="vocational-list">
-                            <?php if (!empty($vocational_list)): ?>
-                                <?php foreach ($vocational_list as $vocational): ?>
-                                    <li>
-                                        <?php echo htmlspecialchars($vocational['course']) . " from " . htmlspecialchars($vocational['school']) . " (" . htmlspecialchars($vocational['year_started']) . " - " . htmlspecialchars($vocational['year_ended']) . ")"; ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <li>No vocational education records found.</li>
-                            <?php endif; ?>
+                        <ul class="vocational-list" id="vocational-list">
+                            
                         </ul>
                     </div>
                     <div id="skills">
                         <h3>Skills</h3>
-                        <ul class="skills-list">
-                            <li>Skills</li>
-                            <li>Education</li>
+                        <ul class="skills-list" id="skills-list">
+                            
                         </ul>
+                    </div>
+                    <div id="licenses-container">
+                        <h3>Licenses</h3>
+                        <ul id="licenses-list"></ul>
+                    </div>
+                    <div id="resume-container">
+                        <h3>Resume</h3>
+                        <embed id="resume-display" style="display: block;" src="" type="application/pdf" width="100%" height="500px" />
+                        <p id="no-resume-message" style="display: none;">No resume available</p>
                     </div>
                 </div>
 
-                <div class="buttons-container">
-                    <button class="button-apply">Approve Application</button>
+                <div class="buttons-container" id="buttons-container">
+                    
                 </div>
             </div>
+
+            <!-- Dialog Box -->
+            <div class="rejected-dialog-box" id="dialogBox">
+            <div class="rejected-back-button" onclick="hideDialog()">
+                <i class="fas fa-chevron-left"></i> Back
+            </div>
+            
+            <h2 style="text-align: center;">Are you sure you want to reject this candidate?</h2>
+            <div class="rejected-form-group">
+                <label for="rejected-firstname">Remarks:</label>
+                <input type="text" id="rejected-firstname">
+                <button class="rejected-save-button">Confirm</button>
+            </div>
+        </div>
+        <div class="shape-container2">
+            <div class="rectangle-4"></div>
+            <div class="rectangle-5"></div>
+        </div>    
         </div>
     </div>
-
+    <div class="shape-container2">
+        <div class="rectangle-4"></div>
+        <div class="rectangle-5"></div>
+    </div>                            
 </body>
 

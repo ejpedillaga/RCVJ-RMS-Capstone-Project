@@ -36,8 +36,7 @@
         </div>
 
         <div id="main">
-                <h2 style="font-size: 36px;">Jobs</h2>
-
+            <h2 style="font-size: 36px;">Jobs</h2>
                 <div class="btnGrp">
                     <div class="toggle-button">
                         <div class="toggle-option open" id="tab1" onclick="toggle(this)">Open (<span id="open">2</span>)</div>
@@ -327,6 +326,21 @@
 
                     </div>
                 </div>
+                
+                <!-- Dialog Box Delete Employees-->
+                <div class="delete-employees-dialog-box" id="dialogBox-delete-job">
+                    <div class="addpartners-back-button" onclick="hideDialogDeleteJob()">
+                        <i class="fas fa-chevron-left"></i> Back
+                    </div>
+            
+                    <h2 style="text-align: center;">Are you sure you want to delete this job?</h1>
+                    <div class="delete-employees-form-group">
+                        <label for="delete-job-admin-pw">Admin Password:</label>
+                        <input type="text" id="delete-job-admin-pw">
+                    </div>
+        
+                    <button class="delete-employees-save-button" onclick="confirmDeleteJob()">Delete</button>
+                </div>
 
                 <!--Add Job Title popup-->
                 <div class="popup" id="add-job-title-popup">
@@ -441,19 +455,10 @@
                                 <button id="saveAndPostBtn3" class="jobposting-button jobposting-button-save" onclick="saveJobTitle()">Save</button>
                                 <button class="jobposting-button jobposting-button-cancel" onclick="hideJobTitle('add-job-title-popup')">Cancel</button>
                             </div>
-                        </div>
-                        
+                        </div>                
                 </div>
-
-                <!-- Dialog Box Delete Employees-->
-                <div class="delete-employees-dialog-box" id="dialogBox-delete">
-                    <div class="addpartners-back-button" onclick="hideDialogDelete()">
-                        <i class="fas fa-chevron-left"></i> Back
-                    </div>
-
-                    <h2 style="text-align: center; margin-bottom: 2rem;">Are you sure you want to delete this Job?</h1>
-                    <button class="delete-employees-save-button">Delete</button>
-                </div>
+                
+    
         </div>
     </div>
     <script>
@@ -532,7 +537,7 @@
         const inputBox = document.getElementById('jobposting-search');
 
         // Fetch skill names from the PHP script
-        fetch('fetch_SkillList.php')  // replace with the path to your PHP script
+        fetch('fetch_SkillList.php')  
             .then(response => response.json())  // Parse the JSON response
             .then(data => {
                 availableKeywords = data;  // Assign the fetched data to the availableKeywords array

@@ -1788,6 +1788,16 @@ input[type="radio"] {
     align-items: center;
     padding: 10px 20px;
   }
+  
+#partner-jobposting-search{
+    flex: 1;
+    height: 20px;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 18px;
+    color: #000000;
+}
 
 #jobposting-search{
     flex: 1;

@@ -175,19 +175,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $job_title = $job['job_title'];
     $company_name = $job['company_name'];
     $job_location = $job['job_location'];
-    $job_id = $job_id; 
+    $job_id = $job_id;
     $date_applied = date('Y-m-d');
     $status = 'Pending';
 
-    $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    $stmt_insert = $conn->prepare($sql_insert);
-    $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
+    // Check if the user has already applied for the same job
+    $sql_check = "SELECT COUNT(*) AS count FROM candidate_list WHERE userid = ? AND job_id = ?";
+    $stmt_check = $conn->prepare($sql_check);
+    $stmt_check->bind_param("ii", $userid, $job_id);
+    $stmt_check->execute();
+    $result = $stmt_check->get_result();
+    $row = $result->fetch_assoc();
 
-    if ($stmt_insert->execute()) {
-        echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully!']);
+    if ($row['count'] > 0) {
+        // If the user already applied, block the submission
+        echo json_encode(['status' => 'error', 'message' => 'You have already applied for this job.']);
     } else {
-        echo json_encode(['status' => 'error', 'message' => 'There was an error processing your application.']);
+        // Proceed with inserting the new application
+        $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt_insert = $conn->prepare($sql_insert);
+        $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
+
+        if ($stmt_insert->execute()) {
+            echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully!']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'There was an error processing your application.']);
+        }
     }
+
     exit;
 }
 ?>

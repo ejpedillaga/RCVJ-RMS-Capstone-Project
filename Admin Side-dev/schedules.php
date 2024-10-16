@@ -553,7 +553,8 @@ mysqli_close($conn);
                                     <div class="candidate-details">
                                         <strong>${candidate.full_name}</strong><br>
                                         <span>Location: ${candidate.location}</span><br>
-                                        <span>Phone: ${candidate.phone}</span>
+                                        <span>Phone: ${candidate.phone}</span><br>
+                                        <span>Email: ${candidate.email}</span>
                                     </div>
                                 </div>
                             `;

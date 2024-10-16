@@ -90,7 +90,7 @@ mysqli_close($conn);
                 <h1>Schedules</h1>
                 <div id="event-section">
                     <h3>Add Schedule</h3>
-                    <input type="date" id="eventDate">
+                    <input type="text" placeholder="Select a date" onfocus="(this.type='date')" onblur="(this.type='text')" id="eventDate">
                     <select id="companyName" onchange="updateJobTitles()">
                         <option value="" disabled selected>Company Name</option>
                         <?php foreach ($company_names as $company_name): ?>
@@ -553,7 +553,8 @@ mysqli_close($conn);
                                     <div class="candidate-details">
                                         <strong>${candidate.full_name}</strong><br>
                                         <span>Location: ${candidate.location}</span><br>
-                                        <span>Phone: ${candidate.phone}</span>
+                                        <span>Phone: ${candidate.phone}</span><br>
+                                        <span>Email: ${candidate.email}</span>
                                     </div>
                                 </div>
                             `;

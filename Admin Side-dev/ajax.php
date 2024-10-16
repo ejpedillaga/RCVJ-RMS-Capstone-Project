@@ -37,7 +37,8 @@ function fetchCandidates($jobTitle) {
             cl.full_name, 
             at.profile_image, 
             at.location, 
-            at.phone 
+            at.phone, 
+            at.email 
         FROM 
             candidate_list cl
         JOIN 
@@ -61,6 +62,7 @@ function fetchCandidates($jobTitle) {
             'profile_image' => base64_encode($row['profile_image']), // Encode BLOB to base64
             'location' => htmlspecialchars($row['location']),
             'phone' => htmlspecialchars($row['phone']),
+            'email' => htmlspecialchars($row['email']),
         ];
     }
 

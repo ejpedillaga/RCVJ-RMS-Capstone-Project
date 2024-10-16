@@ -10,6 +10,7 @@ $vocational_list = [];
 $job_experience_list = [];
 $profile_image = null; // Initialize profile image
 $skills = [];
+$licenses = []; // Initialize licenses array
 $company_name = '';
 $job_title = '';
 
@@ -71,6 +72,51 @@ if (isset($_SESSION['user'])) {
             }
         }
         $stmt_job->close();
+        
+        // Fetch user-specific skills
+        $sql = "SELECT skill_table.skill_name 
+                FROM skill_table 
+                JOIN user_skills_table ON skill_table.skill_id = user_skills_table.skill_id 
+                WHERE user_skills_table.userid = ?";
+        $stmt_skills_user = $conn->prepare($sql);
+        $stmt_skills_user->bind_param("i", $userid);
+        $stmt_skills_user->execute();
+        $result_skills_user = $stmt_skills_user->get_result();
+
+        if ($result_skills_user->num_rows > 0) {
+            while ($row = $result_skills_user->fetch_assoc()) {
+                $skills[] = $row['skill_name'];
+            }
+        }
+        $stmt_skills_user->close();
+
+        // Fetch licenses
+        $sql = "SELECT license_name, month_issued, year_issued, month_expired, year_expired FROM certification_license_table WHERE userid = ?";
+        $stmt_licenses = $conn->prepare($sql);
+        $stmt_licenses->bind_param("i", $userid);
+        $stmt_licenses->execute();
+        $result_licenses = $stmt_licenses->get_result();
+
+        if ($result_licenses->num_rows > 0) {
+            while ($row = $result_licenses->fetch_assoc()) {
+                $licenses[] = $row;
+            }
+        }
+        $stmt_licenses->close();
+
+        // Fetch resume from resume_table
+        $sql_resume = "SELECT resume FROM resume_table WHERE userid = ?";
+        $stmt_resume = $conn->prepare($sql_resume);
+        $stmt_resume->bind_param("i", $userid);
+        $stmt_resume->execute();
+        $result_resume = $stmt_resume->get_result();
+
+        if ($result_resume->num_rows > 0) {
+            $row = $result_resume->fetch_assoc();
+            $resume_data = $row['resume']; // Store resume BLOB
+            $resume_exists = true; // Flag that a resume exists
+        }
+        $stmt_resume->close();
     }
     $stmt->close();
 }
@@ -121,6 +167,8 @@ if ($result_skills->num_rows > 0) {
         $skills[] = $row['skill_name'];
     }
 }
+$stmt_skills->close();
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userid = $user_info['userid'];
     $full_name = $user_name;
@@ -142,11 +190,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     exit;
 }
-
-$company_name = $job['company_name'];
-$job_title = $job['job_title'];
-$stmt->close();
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -250,13 +293,50 @@ $conn->close();
                     <?php endif; ?>
                 </ul>
             </div>
-            <div id="skills">
-                <h3>Skills</h3>
+            <div id="user-skills">
+                <h3>User Skills</h3>
                 <ul class="skills-list">
-                    <li>Skills</li>
-                    <li>Education</li>
+                    <?php if (!empty($skills)) : ?>
+                        <?php foreach ($skills as $skill) : ?>
+                            <li><?php echo htmlspecialchars($skill); ?></li>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <li>No skills found</li>
+                    <?php endif; ?>
                 </ul>
             </div>
+            <div id="licenses-container">
+            <h3>Licenses</h3>
+            <ul class="licenses-list">
+                <?php if (!empty($licenses)): ?>
+                    <?php foreach ($licenses as $license): ?>
+                        <li>
+                            <?php echo htmlspecialchars($license['license_name']) . " (" . $license['month_issued'] . " " . $license['year_issued']; ?>
+                            <?php if (!empty($license['month_expired']) && !empty($license['year_expired'])): ?>
+                                - <?php echo $license['month_expired'] . " " . $license['year_expired']; ?>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>No licenses found.</li>
+                <?php endif; ?>
+            </ul>
+            <div class="resume-container">
+                <h3>Resume</h3>
+                <div>
+                    <?php if ($resume_exists): ?>
+                        <p>Your uploaded resume:</p> <br>
+                        <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
+                                width="1000" height="800" style="border: none;"></iframe>
+                    <?php else: ?>
+                        <p>You have no uploaded resume.</p>
+                    <?php endif; ?>
+                </div>
+                <?php if (!$resume_exists): // Only show the button if no resume exists ?>
+                    <button onclick="openNav('resume_sidenav', 'profile-container')">Upload</button>
+                <?php endif; ?>
+            </div>
+        </div>
         </div>
         <div class="buttons-container">
             <button type="submit" class="button-apply" id="submitBtn">Submit</button>

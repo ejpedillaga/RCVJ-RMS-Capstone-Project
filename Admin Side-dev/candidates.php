@@ -187,7 +187,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="undoApproval(<?php echo htmlspecialchars($row['id']); ?>)"></i>
                                     <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
@@ -257,7 +257,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="undoApproval(<?php echo htmlspecialchars($row['id']); ?>)"></i>
                                     <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
@@ -335,7 +335,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="undoApproval(<?php echo json_encode($row['id']); ?>)"></i>
                                     <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
@@ -406,7 +406,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="undoApproval(<?php echo htmlspecialchars($row['id']); ?>)"></i>
                                     <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
@@ -483,7 +483,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                                     <span class="tooltip-text">Candidate Information</span>
                                 </td>
                                 <td class="candidates-tooltip-container">
-                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="showDialog()"></i>
+                                    <i class="fa fa-undo fa-2xl" aria-hidden="true" style="color: #EF9B50; cursor: pointer;" onclick="undoApproval(<?php echo htmlspecialchars($row['id']); ?>)"></i>
                                     <span class="tooltip-text">Undo Approval</span>
                                 </td>
                             </tr>
@@ -634,6 +634,35 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
         }
     })
     .catch(error => console.error('Error:', error));
+}
+
+function undoApproval(candidateId) {
+    if (confirm('Are you sure you want to undo the approval for this candidate?')) {
+        fetch('update_candidate_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `candidate_id=${candidateId}`
+        })
+        .then(response => response.text()) // Read the response as text
+        .then(text => {
+            console.log('Response Text:', text); // Log the response text
+            return JSON.parse(text); // Attempt to parse it as JSON
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Candidate status updated to Pending.');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status.');
+        });
+    }
 }
 </script>
 

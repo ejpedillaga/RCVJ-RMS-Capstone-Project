@@ -163,47 +163,38 @@ function showInfo(candidate) {
     };
 
    // Populate licenses information
-    const licensesContainer = document.getElementById('licenses-list');
-    licensesContainer.innerHTML = '';
+   const licensesContainer = document.getElementById('licenses-list');
+   licensesContainer.innerHTML = ''; // Clear previous entries
 
-    if (candidate.licenses && candidate.licenses.length > 0) {
-        candidate.licenses.forEach(license => {
-            const licenseItem = document.createElement('li');
+   if (candidate.licenses && candidate.licenses.length > 0) {
+       candidate.licenses.forEach((license, index) => {
+           const licenseItem = document.createElement('li');
 
-            // Create a description for the license
-            const licenseDetails = `${cleanLicenseName(license.license_name)} (${license.month_issued || 'N/A'} ${license.year_issued || ''} - ${license.month_expired || 'N/A'} ${license.year_expired || ''})`;
+           // Create a span to hold the license text
+           const licenseText = document.createElement('span');
+           licenseText.innerText = `${cleanLicenseName(license.license_name)} (${license.month_issued || 'N/A'} ${license.year_issued || ''} - ${license.month_expired || 'N/A'} ${license.year_expired || ''})`;
+           licenseItem.appendChild(licenseText); 
 
-            // Add the details to the list item
-            licenseItem.innerHTML = licenseDetails;
+           // Create a clickable icon for viewing
+           const viewIcon = document.createElement('a');
+           viewIcon.href = `view_license.php?userid=${candidate.userid}&licenseIndex=${index}`; 
+           viewIcon.target = '_blank'; // Open in a new tab
+           
+           const icon = document.createElement('i');
+           icon.className = 'fas fa-eye'; 
+           icon.style.fontSize = '1.2em'; 
+           icon.style.marginLeft = '10px'; 
+           icon.title = 'View License'; 
+           icon.style.color = '#2c1875';
 
-            // If there's an attachment, display it as an image
-            if (license.attachment) {
-                const img = document.createElement('img');
-                img.style.display = 'block';
-                img.src = `data:image/png;base64,${license.attachment}`;
-                img.alt = `${license.license_name} attachment`;
-                img.style.width = 'auto'; 
-                img.style.maxHeight = '250px'; 
-                img.style.objectFit = 'contain'; 
-                img.style.marginTop = '10px';
-                img.style.marginBottom = '10px';
-                img.style.borderRadius = '10px'; 
-                img.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+           viewIcon.appendChild(icon);
+           licenseItem.appendChild(viewIcon); 
 
-                licenseItem.appendChild(img);
-            } else {
-                const noAttachmentMessage = document.createElement('p');
-                noAttachmentMessage.textContent = 'No attachment available';
-                licenseItem.appendChild(noAttachmentMessage);
-            }
-
-            licensesContainer.appendChild(licenseItem);
-        });
-    } else {
-        const noLicensesItem = document.createElement('li');
-        noLicensesItem.textContent = 'No licenses available';
-        licensesContainer.appendChild(noLicensesItem);
-    }
+           licensesContainer.appendChild(licenseItem);
+       });
+   } else {
+       licensesContainer.innerHTML = '<li>No licenses available</li>';
+   }
 
     // Display resume
     const resumeDisplay = document.getElementById('resume-display');
@@ -1090,11 +1081,11 @@ function handleStatusChange(jobId) {
     const selectedValue = dropdown.value;
     const originalValue = dropdown.getAttribute('data-original-value');
 
-    const confirmation = confirm(`Are you sure you want to change the job status for job ID ${jobId} to: ${selectedValue}?`);
+    const confirmation = confirm(`Are you sure you want to change the job status to: ${selectedValue}?`);
 
     if (confirmation) {
         // User confirmed the change
-        console.log(`Job status for job ID ${jobId} changed to: ${selectedValue}`);
+        console.log(`Job status changed to: ${selectedValue}`);
         // Update the original value with the new selection
         dropdown.setAttribute('data-original-value', selectedValue);
 
@@ -1103,7 +1094,7 @@ function handleStatusChange(jobId) {
     } else {
         // User canceled the change, revert to the original value
         dropdown.value = originalValue;
-        console.log('Job status change canceled. Reverted to original value.');
+        console.log('Job status change canceled.');
     }
 }
 
@@ -1122,6 +1113,8 @@ function updateJobStatusInDatabase(jobId, status) {
     .then(data => {
         if (data.success) {
             console.log('Job status updated successfully in the database.');
+            // Refresh the page after successful update
+            location.reload();
         } else {
             console.error('Failed to update job status in the database.');
             // Revert the dropdown to its original value if the update fails

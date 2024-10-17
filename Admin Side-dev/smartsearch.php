@@ -702,10 +702,6 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <button class="rejected-save-button">Confirm</button>
             </div>
         </div>
-        <div class="shape-container2">
-            <div class="rectangle-4"></div>
-            <div class="rectangle-5"></div>
-        </div>    
         </div>
     </div>
     <div class="shape-container2">

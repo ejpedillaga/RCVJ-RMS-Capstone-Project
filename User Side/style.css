@@ -2982,3 +2982,7 @@ input[type="number"] {
   border-style: solid;
   border-color: transparent transparent black transparent;
 }
+
+.logout-btn {
+  margin-left: 50px;
+}

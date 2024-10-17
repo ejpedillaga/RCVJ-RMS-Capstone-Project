@@ -3,7 +3,7 @@ include 'connection.php';
 $conn = connection();
 
 session_start();
-$user_name = 'Sign Up'; // Default username if not logged in
+$user_name = 'Sign Up / Sign In'; // Default value
 $user_info = [];
 $education_list = [];
 $vocational_list = [];
@@ -224,144 +224,153 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <!-- Overlay --> 
-    <div class="overlay" id="overlay"></div>
+<!-- Overlay --> 
+<div class="overlay" id="overlay"></div>
 
-    <!--Candidate Info Popup-->
-    <div class="popup" id="info">
-        <!-- Back Button -->
-        <div class="addpartners-back-button" onclick="hideInfo()">
-            <i class="fas fa-chevron-left"></i> Back
-        </div>
+<!-- Candidate Info Popup -->
+<div class="popup" id="info">
+    <!-- Back Button -->
+    <div class="addpartners-back-button" onclick="hideInfo()">
+        <i class="fas fa-chevron-left"></i> Back
+    </div>
+    
+    <?php if (!isset($_SESSION['user'])): ?>
+    <div class="sign-in-message" style="text-align: center; margin-top: 200px;">
+        <img src="images/findjobs.png" alt="Placeholder Image" style="width: 300px; height: auto; margin-bottom: 20px;">
+        <h3 style="color: #2C1875">Sign Up / Sign In Required</h3>
+        <p>Don’t miss out! Sign up today and begin your career with us.</p>
+    </div>
+    <?php else: ?>
         <h3 style="color: #2C1875">Review your information:</h3>
         <p>This information will be reviewed by the employer.</p>
         <form id="applyForm" method="post" action="">
-        <div class="candidate-container">
-            <div class="candidate-header">
-                <div>
-                    <h2><?php echo htmlspecialchars($user_name); ?></h2>
-                    <div class="locationemail">
-                        <i class="fa fa-map-pin" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['location']); ?></h4>
+            <div class="candidate-container">
+                <div class="candidate-header">
+                    <div>
+                        <h2><?php echo htmlspecialchars($user_name); ?></h2>
+                        <div class="locationemail">
+                            <i class="fa fa-map-pin" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['location']); ?></h4>
+                        </div>
+                        <div class="locationemail">
+                            <i class="fa fa-envelope" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['email']); ?></h4>
+                        </div>
+                        <div class="locationemail">
+                            <i class="fa fa-venus-mars" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['gender']); ?></h4>
+                        </div>
+                        <div class="locationemail">
+                            <i class="fa fa-phone" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['phone']); ?></h4>
+                        </div>
+                        <div class="locationemail">
+                            <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['birthday']); ?></h4>
+                        </div>
                     </div>
-                    <div class="locationemail">
-                        <i class="fa fa-envelope" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['email']); ?></h4>
-                    </div>
-                    <div class="locationemail">
-                        <i class="fa fa-venus-mars" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['gender']); ?></h4>
-                    </div>
-                    <div class="locationemail">
-                        <i class="fa fa-phone" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['phone']); ?></h4>
-                    </div>
-                    <div class="locationemail">
-                        <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['birthday']); ?></h4>
+                    <div>
+                        <?php if ($profile_image): ?>
+                            <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
+                        <?php else: ?>
+                            <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div>
-                    <?php if ($profile_image): ?>
-                    <img src="data:image/jpeg;base64,<?php echo $profile_image; ?>" alt="Profile Picture" class="large-profile-photo">
-                    <?php else: ?>
-                        <img src="images/user.svg" alt="Default Profile Picture" class="large-profile-photo">
-                    <?php endif; ?>
+                <div id="personal-info">
+                    <h3>Personal Information</h3>
+                    <p id="personal-desc"><?php echo nl2br(htmlspecialchars($user_info['personal_description'])); ?></p>
                 </div>
-            </div>
-            <div id="personal-info">
-                <h3>Personal Information</h3>
-                <p id="personal-desc"><?php echo nl2br(htmlspecialchars($user_info['personal_description'])); ?></p>
-            </div>
-            <!-- Past Jobs Information -->
-            <div id="past-jobs">
-                <h3>Past Jobs</h3>
-                <ul class="pastjobs-list">
-                    <?php if (!empty($job_experience_list)): ?>
-                        <?php foreach ($job_experience_list as $job_exp): ?>
-                            <li>
-                                <?php echo htmlspecialchars($job_exp['job_title']) . " at " . htmlspecialchars($job_exp['company_name']) . " (" . htmlspecialchars($job_exp['month_started']) . " " . htmlspecialchars($job_exp['year_started']) . " - " . (!empty($job_exp['month_ended']) ? htmlspecialchars($job_exp['month_ended']) . " " . htmlspecialchars($job_exp['year_ended']) : 'Present') . ")"; ?>
-                            </li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>No past job experience records found.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-            <!-- Education Information -->
-            <div id="education">
-                <h3>Educational Attainment</h3>
-                <ul class="education-list">
-                    <?php if (!empty($education_list)): ?>
-                        <?php foreach ($education_list as $education): ?>
-                            <li>
-                                <?php echo htmlspecialchars($education['educational_attainment']) . " in " . htmlspecialchars($education['course']) . " from " . htmlspecialchars($education['school']) . " (" . htmlspecialchars($education['sy_started']) . " - " . htmlspecialchars($education['sy_ended']) . ")"; ?>
-                            </li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>No education records found.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
+                <!-- Past Jobs Information -->
+                <div id="past-jobs">
+                    <h3>Past Jobs</h3>
+                    <ul class="pastjobs-list">
+                        <?php if (!empty($job_experience_list)): ?>
+                            <?php foreach ($job_experience_list as $job_exp): ?>
+                                <li>
+                                    <?php echo htmlspecialchars($job_exp['job_title']) . " at " . htmlspecialchars($job_exp['company_name']) . " (" . htmlspecialchars($job_exp['month_started']) . " " . htmlspecialchars($job_exp['year_started']) . " - " . (!empty($job_exp['month_ended']) ? htmlspecialchars($job_exp['month_ended']) . " " . htmlspecialchars($job_exp['year_ended']) : 'Present') . ")"; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>No past job experience records found.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <!-- Education Information -->
+                <div id="education">
+                    <h3>Educational Attainment</h3>
+                    <ul class="education-list">
+                        <?php if (!empty($education_list)): ?>
+                            <?php foreach ($education_list as $education): ?>
+                                <li>
+                                    <?php echo htmlspecialchars($education['educational_attainment']) . " in " . htmlspecialchars($education['course']) . " from " . htmlspecialchars($education['school']) . " (" . htmlspecialchars($education['sy_started']) . " - " . htmlspecialchars($education['sy_ended']) . ")"; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>No education records found.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
 
-            <!-- Vocational Education Information -->
-            <div id="vocational">
-                <h3>Vocational</h3>
-                <ul class="vocational-list">
-                    <?php if (!empty($vocational_list)): ?>
-                        <?php foreach ($vocational_list as $vocational): ?>
-                            <li>
-                                <?php echo htmlspecialchars($vocational['course']) . " from " . htmlspecialchars($vocational['school']) . " (" . htmlspecialchars($vocational['year_started']) . " - " . htmlspecialchars($vocational['year_ended']) . ")"; ?>
-                            </li>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <li>No vocational education records found.</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-            <div id="user-skills">
-                <h3>User Skills</h3>
-                <ul class="skills-list">
-                    <?php if (!empty($skills)) : ?>
-                        <?php foreach ($skills as $skill) : ?>
-                            <li><?php echo htmlspecialchars($skill); ?></li>
-                        <?php endforeach; ?>
-                    <?php else : ?>
-                        <li>No skills found</li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-            <div id="licenses-container">
-            <h3>Licenses</h3>
-            <ul class="licenses-list">
-                <?php if (!empty($licenses)): ?>
-                    <?php foreach ($licenses as $license): ?>
-                        <li>
-                            <?php echo htmlspecialchars($license['license_name']) . " (" . $license['month_issued'] . " " . $license['year_issued']; ?>
-                            <?php if (!empty($license['month_expired']) && !empty($license['year_expired'])): ?>
-                                - <?php echo $license['month_expired'] . " " . $license['year_expired']; ?>
+                <!-- Vocational Education Information -->
+                <div id="vocational">
+                    <h3>Vocational</h3>
+                    <ul class="vocational-list">
+                        <?php if (!empty($vocational_list)): ?>
+                            <?php foreach ($vocational_list as $vocational): ?>
+                                <li>
+                                    <?php echo htmlspecialchars($vocational['course']) . " from " . htmlspecialchars($vocational['school']) . " (" . htmlspecialchars($vocational['year_started']) . " - " . htmlspecialchars($vocational['year_ended']) . ")"; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>No vocational education records found.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <div id="user-skills">
+                    <h3>User Skills</h3>
+                    <ul class="skills-list">
+                        <?php if (!empty($skills)) : ?>
+                            <?php foreach ($skills as $skill) : ?>
+                                <li><?php echo htmlspecialchars($skill); ?></li>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <li>No skills found</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <div id="licenses-container">
+                    <h3>Licenses</h3>
+                    <ul class="licenses-list">
+                        <?php if (!empty($licenses)): ?>
+                            <?php foreach ($licenses as $license): ?>
+                                <li>
+                                    <?php echo htmlspecialchars($license['license_name']) . " (" . $license['month_issued'] . " " . $license['year_issued']; ?>
+                                    <?php if (!empty($license['month_expired']) && !empty($license['year_expired'])): ?>
+                                        - <?php echo $license['month_expired'] . " " . $license['year_expired']; ?>
+                                    <?php endif; ?>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <li>No licenses found.</li>
+                        <?php endif; ?>
+                    </ul>
+                    <div class="resume-container">
+                        <h3>Resume</h3>
+                        <div>
+                            <?php if ($resume_exists): ?>
+                                <p>Your uploaded resume:</p> <br>
+                                <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
+                                        width="1000" height="800" style="border: none;"></iframe>
+                            <?php else: ?>
+                                <p>You have no uploaded resume.</p>
                             <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <li>No licenses found.</li>
-                <?php endif; ?>
-            </ul>
-            <div class="resume-container">
-                <h3>Resume</h3>
-                <div>
-                    <?php if ($resume_exists): ?>
-                        <p>Your uploaded resume:</p> <br>
-                        <iframe src="data:application/pdf;base64,<?php echo base64_encode($resume_data); ?>" 
-                                width="1000" height="800" style="border: none;"></iframe>
-                    <?php else: ?>
-                        <p>You have no uploaded resume.</p>
-                    <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        </div>
-        <div class="buttons-container">
-            <button type="submit" class="button-apply" id="submitBtn">Submit</button>
-            <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
-        </div>
-    </div>
-    </form>
+            <div class="buttons-container">
+                <button type="submit" class="button-apply" id="submitBtn">Submit</button>
+                <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
+            </div>
+        </form>
+    <?php endif; ?>
+</div>
     
     <!--Desktop Nav-->
     <nav class="desktopnav" id="desktop-nav">
@@ -386,6 +395,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
                 <?php endif; ?>
             </div>
         </nav>

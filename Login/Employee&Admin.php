@@ -1,56 +1,43 @@
 <?php
-
-$host="localhost";
-$user="root";
-$password="12345";
-$db="admin_database";
-
 session_start();
 
-$data=mysqli_connect($host,$user,$password,$db);
+$servername = "localhost";
+$username = "root";
+$password = "12345";
+$dbname = "admin_database";
 
-if($data===false)
-{
-	die("connection error");
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username_input = $_POST["username"];
+    $password_input = $_POST["password"];
 
-if($_SERVER["REQUEST_METHOD"]=="POST")
-{
-	$username=$_POST["username"];
-	$password=$_POST["password"];
+    $sql = "SELECT * FROM users_table WHERE username='$username_input'";
+    $result = $conn->query($sql);
 
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
 
-	$sql="select * from users_table where username='".$username."' AND password='".$password."' ";
+        // Verify the password
+        if (password_verify($password_input, $row['password'])) {
+            $_SESSION["username"] = $username_input;
 
-	$result=mysqli_query($data,$sql);
-
-	$row=mysqli_fetch_array($result);
-
-	if($row["usertype"]=="admin")
-	{	
-
-		$_SESSION["username"]=$username;
-
-		header("Location: ../Admin Side-dev/index.html");
-	}
-
-	elseif($row["usertype"]=="employee")
-	{
-
-		$_SESSION["username"]=$username;
-		
-		header("Location: ../Employee Side/index.html");
-	}
-
-	else
-	{
-		echo "username or password incorrect";
-	}
-
+            if ($row["usertype"] == "admin") {
+                header("Location: ../Admin Side-dev/index.html");
+            } elseif ($row["usertype"] == "employee") {
+                header("Location: ../Employee Side/index.html");
+            }
+        } else {
+            echo '<script>alert("Incorrect username or password. Please try again.");</script>';
+        }
+    } else {
+        echo '<script>alert("Incorrect username or password. Please try again.");</script>';
+    }
 }
-
-
 ?>
 
 <!DOCTYPE html>

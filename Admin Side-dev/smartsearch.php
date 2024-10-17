@@ -558,6 +558,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
                 <span class="name">Admin</span>
+                <!-- LOGOUT -->
+                <button class="logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt fa-lg"></i>
+                </button>
             </div>
         </div>
 

@@ -679,3 +679,12 @@ function validateForm() {
   }
   return true; // Allow form submission
 }
+
+function confirmLogout() {
+  // Ask for confirmation before logging out
+  var result = confirm("Are you sure you want to log out?");
+  if (result) {
+      // If user confirms, redirect to logout.php
+      window.location.href = 'logout.php';
+  }
+}

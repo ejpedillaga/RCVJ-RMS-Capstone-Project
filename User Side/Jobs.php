@@ -4,7 +4,7 @@ $conn = connection();
 session_start();
 
 // Initialize user name, profile image, and user-specific data
-$user_name = 'Sign Up';
+$user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null;
 $user_email = null;
 $user_data = [];
@@ -97,6 +97,13 @@ $conn->close();
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
                 <?php endif; ?>
             </div>
         </nav>
@@ -234,7 +241,7 @@ $conn->close();
         </footer>
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script defer src="script.js"></script>
+        <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
         <script>
             function searchJobs(querySelector, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`).value.toLowerCase();

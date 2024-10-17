@@ -2673,3 +2673,10 @@ window.addEventListener('DOMContentLoaded', () => {
     const tabName = urlParams.get('tab') || 'pending'; // Default to 'pending' if no tab is specified
     openTab(tabName);
 });
+
+function confirmLogout() {
+    // Use the confirm dialog
+    if (confirm("Are you sure you want to log out?")) {
+        window.location.href = 'logout.php'; // Redirect to logout script
+    }
+}

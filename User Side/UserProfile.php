@@ -51,7 +51,7 @@ $license_data = [
     'attachment' => ''
 ];
 
-$user_name = 'Sign Up';
+$user_name = 'Sign Up / Sign In'; // Default value
 $user_location = 'Unknown Location';
 
 // Check if user is logged in
@@ -661,6 +661,13 @@ if (isset($_SESSION['message'])) {
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
                 <?php endif; ?>
             </div>
         </nav>
@@ -1489,4 +1496,4 @@ if (isset($_SESSION['message'])) {
             </script>
 
         </body>
-    </html> 
+    </html>

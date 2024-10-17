@@ -4,7 +4,7 @@ $conn = connection();
 session_start();
 
 // Initialize user name and profile image
-$user_name = 'Sign Up';
+$user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null;
 $applied_jobs = $interview_jobs = $for_deployment_jobs = $current_jobs = []; // Arrays to store jobs per category
 
@@ -113,6 +113,13 @@ $conn->close();
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
                 <?php endif; ?>
             </div>
         </nav>

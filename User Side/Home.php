@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$user_name = 'Sign Up'; // Default value
+$user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null; // Initialize the profile_image variable
 
 if (isset($_SESSION['user'])) {
@@ -45,7 +45,7 @@ if (isset($_SESSION['user'])) {
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
@@ -74,7 +74,13 @@ if (isset($_SESSION['user'])) {
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php endif; ?>
-            </div>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
+                <?php endif; ?>
         </nav>
 
         <!---Burger Nav-->
@@ -195,6 +201,6 @@ if (isset($_SESSION['user'])) {
         </footer>
         
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script defer src="script.js"></script>
+        <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
     </body>
 </html>

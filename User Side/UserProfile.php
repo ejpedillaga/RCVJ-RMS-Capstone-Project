@@ -705,8 +705,8 @@ if (isset($_SESSION['message'])) {
                         <div class="upload-image-group">
                             <div class="upload-image" onclick="document.getElementById('logo-upload').click()">
                                 <input type="file" id="logo-upload" name="profile_image" accept="image/*" onchange="previewLogo(event)" style="display: none;">
-                                <img id="logo-preview" src="<?php echo isset($image_src) ? $image_src : ''; ?>" alt="Upload Logo" style="width: 100%; <?php echo isset($image_src) ? 'display: block;' : 'display: none;'; ?>">
-                                <div id="upload-placeholder" style="<?php echo isset($image_src) ? 'display: none;' : 'display: block;'; ?>">Upload Logo</div>
+                                <img id="logo-preview" src="<?php echo isset($image_src) ? $image_src : ''; ?>" alt="" style="width: 100%; <?php echo isset($image_src) ? 'display: none;' : 'display: block;'; ?>">
+                                <div id="upload-placeholder" style="<?php echo isset($image_src) ? 'display: block;' : 'display: none;'; ?>">Upload Your Photo</div>
                             </div>
                         </div>
                         <div class="form-group">

@@ -172,11 +172,13 @@ if ($result_skills->num_rows > 0) {
 }
 $stmt_skills->close();
 
+$company_name = isset($job['company_name']) ? $job['company_name'] : '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $userid = $user_info['userid'];
     $full_name = $user_name;
     $job_title = $job['job_title'];
-    $company_name = $job['company_name'];
+    $company_name = $company_name;
     $job_location = $job['job_location'];
     $job_id = $job_id;
     $date_applied = date('Y-m-d');

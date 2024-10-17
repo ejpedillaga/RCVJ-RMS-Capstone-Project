@@ -345,7 +345,7 @@ table td:last-child {
   background-color: #008000;
   color: #ffffff;
   display: inline-block;
-  width: 70%;
+  width: auto;
 }
 
 .status-label-underqualified {
@@ -358,7 +358,7 @@ table td:last-child {
   background-color: #02a5ff;
   color: #ffffff;
   display: inline-block;
-  width: 70%;
+  width: auto;
 }
 
 .status-label-unqualified {
@@ -371,7 +371,7 @@ table td:last-child {
   background-color: #f37324;
   color: #ffffff;
   display: inline-block;
-  width: 70%;
+  width: auto;
 }
 
 .status-label-not {
@@ -384,7 +384,7 @@ table td:last-child {
   background-color: #e12729;
   color: #ffffff;
   display: inline-block;
-  width: 70%;
+  width: auto;
 }
 
 .match-tag {
@@ -1741,6 +1741,7 @@ input[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
 
   .rb-box{
     display: flex; /* Enable flexbox layout */

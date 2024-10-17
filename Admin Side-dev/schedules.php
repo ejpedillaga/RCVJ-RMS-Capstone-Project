@@ -81,6 +81,10 @@ mysqli_close($conn);
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
                 <span class="name">Admin</span>
+                <!-- LOGOUT -->
+                <button class="logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt fa-lg"></i>
+                </button>
             </div>
         </div>
     <div id="main">

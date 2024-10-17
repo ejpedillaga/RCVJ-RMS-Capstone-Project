@@ -170,9 +170,20 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     }
     $max_score += 1; // Increment max score
 
-    // Match educational attainment
-    if ($row['educational_attainment'] == $job_details['educational_attainment']) {
-        $score += 1;
+    // Hierarchy of educational attainment
+    $educationHierarchy = [
+        'Undergraduate' => 1,
+        'Highschool Graduate' => 2,
+        'College Graduate' => 3
+    ];
+
+    // Get the numeric value of the candidate's and job's educational attainment
+    $candidateEducationLevel = $educationHierarchy[$row['educational_attainment']] ?? 0;
+    $jobEducationLevel = $educationHierarchy[$job_details['educational_attainment']] ?? 0;
+
+    // Match educational attainment based on the hierarchy
+    if ($candidateEducationLevel >= $jobEducationLevel) {
+        $score += 1; // Add 1 point if candidate meets or exceeds the required education
         $matchingDetails[] = '<div class="matched">Education <i class="fa fa-check" aria-hidden="true"></i></div>';
     } else {
         $matchingDetails[] = '<div class="not-matched">Education <i class="fa fa-times" aria-hidden="true"></i></div>';
@@ -185,6 +196,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         if ($row['total_years_experience'] >= (int)$min_exp && $row['total_years_experience'] <= (int)$max_exp) {
             $score += 1; // Add point for matching experience range
             $matchingDetails[] = '<div class="matched">Experience <i class="fa fa-check" aria-hidden="true"></i></div>';
+        } elseif  ($row['total_years_experience'] > (int)$max_exp){
+            $score += 2; // Add 2 points if experience exceeds the max required years
+            $matchingDetails[] = '<div class="near-matched">Experience <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div>';
+            $max_score += 0.5; // Increment max score for near-matched experience
         } else {
             $matchingDetails[] = '<div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div>';
         }
@@ -485,7 +500,11 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     statusClass = 'status-label-identical';
                     statusText = 'Identical';
                     tooltipText = 'Perfect fit for the role';
-                } else if (score > (0.6 * maxScore)) {
+                } else if (score > maxScore) {
+                    statusClass = 'status-label-overqualified';
+                    statusText = 'Overqualified';
+                    tooltipText = 'Possesses excessive qualifications'; 
+                }else if (score > (0.6 * maxScore)) {
                     statusClass = 'status-label-Underqualified';
                     statusText = 'Underqualified';
                     tooltipText = 'Great qualifications, but not the best fit for role';
@@ -558,6 +577,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
                 <span class="name">Admin</span>
+                <!-- LOGOUT -->
+                <button class="logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt fa-lg"></i>
+                </button>
             </div>
         </div>
 

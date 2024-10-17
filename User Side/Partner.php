@@ -9,7 +9,7 @@ $sql = "SELECT logo, company_name FROM partner_table";
 $result = $conn->query($sql);
 
 // Initialize user data variables
-$user_name = 'Sign Up'; // Default if not logged in
+$user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null; // Initialize profile image
 
 // Check if the user is logged in
@@ -41,7 +41,7 @@ $conn->close();
         <title>RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     </head>
@@ -69,6 +69,13 @@ $conn->close();
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
                     <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                <?php endif; ?>
+
+                <!-- LOGOUT -->
+                <?php if (isset($_SESSION['user'])): ?>
+                    <button class="logout-btn" onclick="confirmLogout()">
+                        <i class="fas fa-sign-out-alt fa-lg"></i>
+                    </button>
                 <?php endif; ?>
             </div>
         </nav>
@@ -180,7 +187,7 @@ $conn->close();
         </footer>
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script defer src="script.js"></script>
+        <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
         <script>
             function searchPartners() {
                 // Get the input value

@@ -74,6 +74,17 @@ function fetchCandidates($conn, $status, $offset, $limit) {
     return $stmt->get_result();
 }
 
+// Get counts for each tab
+$statusCounts = [];
+$statuses = ['Pending', 'Scheduled', 'Interviewed', 'For Deployment', 'Deployed'];
+
+foreach ($statuses as $status) {
+    $query = "SELECT COUNT(*) AS total FROM candidate_list WHERE status = 'Approved' AND deployment_status = '$status'";
+    $result = $conn->query($query);
+    $row = $result->fetch_assoc();
+    $statusCounts[$status] = $row['total'];
+}
+
 // Fetch candidates for different statuses
 $resultPending = fetchCandidates($conn, 'Pending', $offsetPending, $limit);
 $resultScheduled = fetchCandidates($conn, 'Scheduled', $offsetScheduled, $limit);
@@ -113,6 +124,10 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
                 <span class="name">Admin</span>
+                <!-- LOGOUT -->
+                    <button class="logout-btn" onclick="confirmLogout()">
+                    <i class="fas fa-sign-out-alt fa-lg"></i>
+                </button>
             </div>
         </div>
 
@@ -145,11 +160,26 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
             </div>
 
             <div class="tabs">
-                <div class="tab <?php echo ($currentTab === 'pending') ? 'active' : ''; ?>" onclick="openTab('pending')">Pending</div>
-                <div class="tab <?php echo ($currentTab === 'scheduled') ? 'active' : ''; ?>" onclick="openTab('scheduled')">Scheduled</div>
-                <div class="tab <?php echo ($currentTab === 'interviewed') ? 'active' : ''; ?>" onclick="openTab('interviewed')">Interviewed</div>
-                <div class="tab <?php echo ($currentTab === 'forDeployment') ? 'active' : ''; ?>" onclick="openTab('forDeployment')">For Deployment</div>
-                <div class="tab <?php echo ($currentTab === 'deployed') ? 'active' : ''; ?>" onclick="openTab('deployed')">Deployed</div>
+                <div class="tab <?php echo ($currentTab === 'pending') ? 'active' : ''; ?>" 
+                    onclick="openTab('pending')">
+                    Pending (<?php echo $statusCounts['Pending']; ?>)
+                </div>
+                <div class="tab <?php echo ($currentTab === 'scheduled') ? 'active' : ''; ?>" 
+                    onclick="openTab('scheduled')">
+                    Scheduled (<?php echo $statusCounts['Scheduled']; ?>)
+                </div>
+                <div class="tab <?php echo ($currentTab === 'interviewed') ? 'active' : ''; ?>" 
+                    onclick="openTab('interviewed')">
+                    Interviewed (<?php echo $statusCounts['Interviewed']; ?>)
+                </div>
+                <div class="tab <?php echo ($currentTab === 'forDeployment') ? 'active' : ''; ?>" 
+                    onclick="openTab('forDeployment')">
+                    For Deployment (<?php echo $statusCounts['For Deployment']; ?>)
+                </div>
+                <div class="tab <?php echo ($currentTab === 'deployed') ? 'active' : ''; ?>" 
+                    onclick="openTab('deployed')">
+                    Deployed (<?php echo $statusCounts['Deployed']; ?>)
+                </div>
             </div>
             <!-- Pending Candidates Tab -->
             <div id="pending" class="tab-content <?php echo ($currentTab === 'pending') ? 'active' : ''; ?>">

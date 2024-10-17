@@ -4,7 +4,7 @@ include 'connection.php'; // Include the database connection
 $conn = connection();
 
 // Fetch distinct company names
-$query = "SELECT DISTINCT company_name FROM candidate_list";
+$query = "SELECT DISTINCT company_name FROM candidate_list WHERE status = 'Approved' AND deployment_status = 'Pending'";
 $result = mysqli_query($conn, $query);
 $company_names = [];
 while ($row = mysqli_fetch_assoc($result)) {
@@ -56,8 +56,8 @@ mysqli_close($conn);
                 <link rel="preconnect" href="https://fonts.googleapis.com">
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
                 <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-                <link rel="stylesheet" href="style.css">
-                <link rel="stylesheet" href="mediaqueries.css">
+                <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
+                <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
 </head>
 
 <body>
@@ -90,7 +90,7 @@ mysqli_close($conn);
                 <h1>Schedules</h1>
                 <div id="event-section">
                     <h3>Add Schedule</h3>
-                    <input type="date" id="eventDate">
+                    <input type="text" placeholder="Select a date" onfocus="(this.type='date')" onblur="(this.type='text')" id="eventDate">
                     <select id="companyName" onchange="updateJobTitles()">
                         <option value="" disabled selected>Company Name</option>
                         <?php foreach ($company_names as $company_name): ?>
@@ -105,20 +105,6 @@ mysqli_close($conn);
                     </select>
                     <br>
                     <button id="addEvent" onclick="addEvent()">Add</button>
-                </div>
-                <div id="reminder-section">
-                    <h3>Upcoming Schedules</h3>
-                    <!-- List to display reminders -->
-                    <ul id="reminderList">
-                        <li data-event-id="1">
-                            <strong>Event Title</strong>
-                            - Event Description on Event Date
-                            <button class="delete-event"
-                                onclick="deleteEvent(1)">
-                                Delete
-                            </button>
-                        </li>
-                    </ul>
                 </div>
             </div>
             <div id="right">
@@ -161,7 +147,34 @@ mysqli_close($conn);
                     <select id="year" onchange="jump()"></select>
                 </div>
             </div>
+            <div id="reminder-section">
+                <h3>Upcoming Schedules</h3>
+                    <!-- List to display reminders -->
+                    <ul id="reminderList">
+                        <li data-event-id="1">
+                            <strong>Event Title</strong>
+                            - Event Description on Event Date
+                            <button class="delete-event"
+                                onclick="deleteEvent(1)">
+                                Delete
+                            </button>
+                        </li>
+                    </ul>
+            </div>
         </div>
+    </div>
+
+    <!-- Overlay --> 
+    <div class="overlay" id="overlay"></div>
+
+    <div class="popup-schedule" id="info-sched">
+        <!-- Back Button -->
+        <div class="addpartners-back-button" onclick="hideInfo()">
+            <i class="fas fa-chevron-left"></i> Back
+        </div>
+        <h2 style="margin-left: 1rem;">Candidate List</h2>
+        <ul id="candidateList"></ul>
+                
     </div>
 </div>
 <div class="shape-container2">
@@ -258,7 +271,7 @@ mysqli_close($conn);
 
             // Get the selected date from the calendar
             let selectedDate = document.querySelector(".date-picker.selected");
-            
+
             if (selectedDate) {
                 let date = parseInt(selectedDate.getAttribute("data-date"));
                 let month = parseInt(selectedDate.getAttribute("data-month")) - 1; // Adjust for zero-based month
@@ -267,30 +280,42 @@ mysqli_close($conn);
                 // Filter events for the selected date
                 let filteredEvents = events.filter(event => {
                     let eventDate = new Date(event.date);
-                    return eventDate.getDate() === date &&
+                    return (
+                        eventDate.getDate() === date &&
                         eventDate.getMonth() === month &&
-                        eventDate.getFullYear() === year;
+                        eventDate.getFullYear() === year
+                    );
                 });
 
-                // Display filtered events in the reminder list
-                filteredEvents.forEach(event => {
-                    let listItem = document.createElement("li");
-                    listItem.innerHTML =
-                        `<strong>${event.title}</strong> (<i>${event.companyName}</i>) - 
-                        ${event.description} on 
-                        ${new Date(event.date).toLocaleDateString()}`;
+                // Check if there are any events for the selected date
+                if (filteredEvents.length === 0) {
+                    // Display 'No events available' message
+                    let noEventsMessage = document.createElement("li");
+                    noEventsMessage.textContent = "No events available.";
+                    noEventsMessage.style.fontStyle = "italic"; // Optional styling
+                    reminderList.appendChild(noEventsMessage);
+                } else {
+                    // Display filtered events in the reminder list
+                    filteredEvents.forEach(event => {
+                        let listItem = document.createElement("li");
+                        listItem.innerHTML = `
+                            <strong>${event.description}</strong> <br> 
+                            ${event.title} - <i>${event.companyName}</i> <br> 
+                            ${new Date(event.date).toLocaleDateString()}
+                        `;
 
-                    // Add a delete button for each reminder item
-                    let deleteButton = document.createElement("button");
-                    deleteButton.className = "delete-event";
-                    deleteButton.textContent = "Delete";
-                    deleteButton.onclick = function () {
-                        deleteEvent(event.id);
-                    };
+                        // Add a delete button for each reminder item
+                        let deleteButton = document.createElement("button");
+                        deleteButton.className = "delete-event";
+                        deleteButton.textContent = "Delete";
+                        deleteButton.onclick = function () {
+                            deleteEvent(event.id);
+                        };
 
-                    listItem.appendChild(deleteButton);
-                    reminderList.appendChild(listItem);
-                });
+                        listItem.appendChild(deleteButton);
+                        reminderList.appendChild(listItem);
+                    });
+                }
             }
         }
 
@@ -438,9 +463,8 @@ mysqli_close($conn);
             for (let i = 0; i < eventsOnDate.length; i++) {
                 let event = eventsOnDate[i];
                 let eventDate = new Date(event.date);
-                let eventText = `<strong>${event.title}</strong> - 
-                    ${event.description} on 
-                    ${eventDate.toLocaleDateString()}`;
+                let eventText = `<strong>${event.title}</strong> <br> 
+                    ${event.description}`;
                 let eventElement = document.createElement("p");
                 eventElement.innerHTML = eventText;
                 tooltip.appendChild(eventElement);
@@ -501,31 +525,77 @@ mysqli_close($conn);
             }
         }
 
-        // Function to update candidates based on selected job title
         function updateCandidates() {
             let jobTitle = document.getElementById("eventTitle").value;
-            let eventDescription = document.getElementById("eventDescription");
 
             if (jobTitle) {
                 let xhr = new XMLHttpRequest();
                 xhr.open("GET", "ajax.php?jobTitle=" + encodeURIComponent(jobTitle), true);
-                xhr.onload = function() {
+                xhr.onload = function () {
                     if (xhr.status === 200) {
                         let candidates = JSON.parse(xhr.responseText);
-                        eventDescription.innerHTML = '<option value="" disabled selected>Candidate Name</option>';
-                        for (let i = 0; i < candidates.length; i++) {
-                            let option = document.createElement("option");
-                            option.value = candidates[i];
-                            option.text = candidates[i];
-                            eventDescription.add(option);
-                        }
+                        let candidateList = document.getElementById("candidateList");
+
+                        // Clear previous list
+                        candidateList.innerHTML = '';
+
+                        // Add new candidates with profile image and other details
+                        candidates.forEach(candidate => {
+                            let profileImage = candidate.profile_image 
+                                ? `data:image/jpeg;base64,${candidate.profile_image}` 
+                                : 'img/user.svg'; // Use default image if profile_image is null
+                            let listItem = document.createElement("li");
+
+                            listItem.innerHTML = `
+                                <div class="candidate-item">
+                                    <img src="${profileImage}" 
+                                        alt="${candidate.full_name}" width="100" height="100">
+                                    <div class="candidate-details">
+                                        <strong>${candidate.full_name}</strong><br>
+                                        <span>Location: ${candidate.location}</span><br>
+                                        <span>Phone: ${candidate.phone}</span><br>
+                                        <span>Email: ${candidate.email}</span>
+                                    </div>
+                                </div>
+                            `;
+
+                            listItem.addEventListener('click', function () {
+                                // Set the selected candidate name in the dropdown
+                                let eventDescription = document.getElementById("eventDescription");
+                                eventDescription.innerHTML = `<option value="${candidate.full_name}" selected>${candidate.full_name}</option>`;
+                                
+                                // Show the dropdown again and hide the popup
+                                eventDescription.style.display = 'block';
+                                hideInfo();
+                            });
+
+                            candidateList.appendChild(listItem);
+                        });
+
+                        // Hide the dropdown and show popup
+                        document.getElementById('eventDescription').style.display = 'none';
+                        document.getElementById('info-sched').style.display = 'block';
+                        document.getElementById('info-sched').classList.add('show');
+                        document.getElementById('overlay').classList.add('show');
                     }
                 };
                 xhr.send();
-            } else {
-                eventDescription.innerHTML = '<option value="" disabled selected>Candidate Name</option>';
             }
         }
+
+
+        function hideInfo() {
+            document.getElementById('info-sched').style.display = 'none';
+            document.getElementById('info-sched').classList.remove('show');
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('eventDescription').style.display = 'block';
+        }
+
+        // Attach click event to eventDescription dropdown to trigger the popup
+        document.getElementById('eventDescription').addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent default dropdown behavior
+            updateCandidates();
+        });
 
         // Function to fetch and display existing events
         function loadExistingEvents() {

@@ -1234,8 +1234,8 @@ footer {
 }
 
 .partner-main-container ul {
-  display: flex;
-  justify-content: space-evenly;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
   flex-wrap: wrap;
   padding: 0;
   list-style: none;
@@ -1528,9 +1528,9 @@ footer {
 }
 
 .profile-header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 
 .profile-card {
@@ -1604,13 +1604,13 @@ img#profile-picture {
 
 #my-jobs-card .content {
   flex-direction: column;
-  align-items: left;
+  align-items: center;
 }
 
 #my-jobs-card {
   padding: 1rem 2rem 0;
-  max-width: 25rem;
-  min-height: 17.5rem;
+  max-width: 50rem;
+  min-height: 18rem;
   cursor: pointer;
 }
 
@@ -1619,8 +1619,9 @@ img#profile-picture {
   font-weight: 500;
   color: white;
   font-family: "Encode Sans Semi Expanded", sans-serif;
-  margin-right: 10rem;
+  margin-right: 25rem;
 }
+
 
 .mjc-header {
   display: flex;
@@ -1638,11 +1639,11 @@ img#profile-picture {
 
 /*Profile Body*/
 .sections {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto auto;
   margin-left: 3rem;
   margin-right: 1rem;
+  margin-top: 20px;
 }
 
 .section {
@@ -2986,3 +2987,4 @@ input[type="number"] {
 .logout-btn {
   margin-left: 50px;
 }
+

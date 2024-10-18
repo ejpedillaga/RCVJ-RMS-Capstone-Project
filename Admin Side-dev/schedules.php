@@ -95,15 +95,23 @@ mysqli_close($conn);
                 <div id="event-section">
                     <h3>Add Schedule</h3>
                     <input type="text" placeholder="Select a date" onfocus="(this.type='date')" onblur="(this.type='text')" id="eventDate">
+                    
+                    <div id="time-section" style="display: flex; width: 90%; align-items: center;">
+                        <input type="time" id="eventStartTime" placeholder="Start Time"> <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                        <input type="time" id="eventEndTime" placeholder="End Time">
+                    </div>
+
                     <select id="companyName" onchange="updateJobTitles()">
                         <option value="" disabled selected>Company Name</option>
                         <?php foreach ($company_names as $company_name): ?>
                             <option value="<?= $company_name ?>"><?= $company_name ?></option>
                         <?php endforeach; ?>
                     </select>
+                    
                     <select id="eventTitle" onchange="updateCandidates()">
                         <option value="" disabled selected>Job Title</option>
                     </select>
+                    
                     <select id="eventDescription">
                         <option value="" disabled selected>Candidate Name</option>
                     </select>
@@ -204,20 +212,42 @@ mysqli_close($conn);
         // Counter to generate unique event IDs
         let eventIdCounter = 1;
 
-        // Function to add events
         function addEvent() {
+            // Get input elements by their IDs
+            let eventDateInput = document.getElementById("eventDate");
+            let eventStartTimeInput = document.getElementById("eventStartTime");
+            let eventEndTimeInput = document.getElementById("eventEndTime");
+            let eventTitleInput = document.getElementById("eventTitle");
+            let eventDescriptionInput = document.getElementById("eventDescription");
+            let companyNameInput = document.getElementById("companyName");
+
+            // Retrieve values from the inputs
             let date = eventDateInput.value;
+            let startTime = eventStartTimeInput.value; // 24-hour format
+            let endTime = eventEndTimeInput.value; // 24-hour format
             let title = eventTitleInput.value;
             let description = eventDescriptionInput.value;
             let companyName = companyNameInput.value;
 
-            if (date && title && companyName && description) {
+            if (date && startTime && endTime && title && companyName && description) {
+                // Validate time to ensure end time isn't earlier than start time
+                if (endTime <= startTime) {
+                    alert("End time cannot be earlier than or equal to start time.");
+                    return;
+                }
+
                 // Create a unique event ID
                 let eventId = eventIdCounter++;
 
                 // Add event to events array
                 events.push({
-                    id: eventId, date: date, title: title, description: description, companyName: companyName
+                    id: eventId,
+                    date: date,
+                    startTime: startTime, // Store in 24-hour format
+                    endTime: endTime, // Store in 24-hour format
+                    title: title,
+                    description: description,
+                    companyName: companyName
                 });
 
                 // Send event data to the server
@@ -231,6 +261,8 @@ mysqli_close($conn);
                             // Successfully added
                             showCalendar(currentMonth, currentYear);
                             eventDateInput.value = "";
+                            eventStartTimeInput.value = "";
+                            eventEndTimeInput.value = "";
                             eventTitleInput.value = "";
                             eventDescriptionInput.value = "";
                             companyNameInput.value = "";
@@ -241,47 +273,82 @@ mysqli_close($conn);
                         }
                     }
                 };
-                xhr.send(`job_title=${encodeURIComponent(title)}&company_name=${encodeURIComponent(companyName)}&candidate_name=${encodeURIComponent(description)}&scheduled_date=${encodeURIComponent(date)}`);
+                xhr.send(`job_title=${encodeURIComponent(title)}&company_name=${encodeURIComponent(companyName)}&candidate_name=${encodeURIComponent(description)}&scheduled_date=${encodeURIComponent(date)}&start_time=${encodeURIComponent(startTime)}&end_time=${encodeURIComponent(endTime)}`);
             }
         }
 
-        // Function to delete an event by ID
+       // Function to delete an event by ID
         function deleteEvent(eventId) {
-            // Send an AJAX request to delete the event from the database
-            let xhr = new XMLHttpRequest();
-            xhr.open("GET", "delete_events.php?eventId=" + encodeURIComponent(eventId), true);
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    let response = JSON.parse(xhr.responseText);
-                    if (response.status === "success") {
-                        // Remove the event from the events array
-                        let eventIndex = events.findIndex(event => event.id === eventId);
-                        if (eventIndex !== -1) {
-                            events.splice(eventIndex, 1);
-                            showCalendar(currentMonth, currentYear);
-                            displayReminders();
+            // Ask for confirmation before proceeding with deletion
+            if (confirm("Are you sure you want to delete this scheduled interview?")) {
+                // Send an AJAX request to delete the event from the database
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", "delete_events.php?eventId=" + encodeURIComponent(eventId), true);
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        let response = JSON.parse(xhr.responseText);
+                        if (response.status === "success") {
+                            // Remove the event from the events array
+                            let eventIndex = events.findIndex(event => event.id === eventId);
+                            if (eventIndex !== -1) {
+                                events.splice(eventIndex, 1);
+                                showCalendar(currentMonth, currentYear);
+                                displayReminders();
+                            }
+                        } else {
+                            alert("Error: " + response.message);
                         }
-                    } else {
-                        alert("Error: " + response.message);
                     }
-                }
-            };
-            xhr.send();
+                };
+                xhr.send();
+            } else {
+                // User canceled the deletion
+                console.log("Event deletion canceled.");
+            }
+        }
+
+        function handleTimeBlur(input, type) {
+            const timeValue = input.value; // This will be in HH:mm (24-hour format)
+            
+            // Format it for display in the input as 12-hour format
+            const formattedTime = formatTime(timeValue);
+
+            // Set the input value back to the formatted time for display
+            input.value = formattedTime;
+
+            // You might also want to save the original 24-hour time in a hidden field or similar
+            if (type === 'start') {
+                document.getElementById('start-time-hidden').value = timeValue; // Hidden input to store original value
+            } else if (type === 'end') {
+                document.getElementById('end-time-hidden').value = timeValue; // Hidden input to store original value
+            }
+        }
+
+        function formatTime(time) {
+            const [hour, minute] = time.split(':');
+            let hour12 = parseInt(hour);
+            const period = hour12 >= 12 ? 'PM' : 'AM';
+
+            if (hour12 > 12) {
+                hour12 -= 12;
+            } else if (hour12 === 0) {
+                hour12 = 12; // 12 AM
+            }
+
+            return `${hour12}:${minute} ${period}`;
         }
 
         // Function to display reminders
         function displayReminders() {
             reminderList.innerHTML = "";
 
-            // Get the selected date from the calendar
             let selectedDate = document.querySelector(".date-picker.selected");
 
             if (selectedDate) {
                 let date = parseInt(selectedDate.getAttribute("data-date"));
-                let month = parseInt(selectedDate.getAttribute("data-month")) - 1; // Adjust for zero-based month
+                let month = parseInt(selectedDate.getAttribute("data-month")) - 1;
                 let year = parseInt(selectedDate.getAttribute("data-year"));
 
-                // Filter events for the selected date
                 let filteredEvents = events.filter(event => {
                     let eventDate = new Date(event.date);
                     return (
@@ -291,24 +358,21 @@ mysqli_close($conn);
                     );
                 });
 
-                // Check if there are any events for the selected date
                 if (filteredEvents.length === 0) {
-                    // Display 'No events available' message
                     let noEventsMessage = document.createElement("li");
                     noEventsMessage.textContent = "No events available.";
-                    noEventsMessage.style.fontStyle = "italic"; // Optional styling
+                    noEventsMessage.style.fontStyle = "italic";
                     reminderList.appendChild(noEventsMessage);
                 } else {
-                    // Display filtered events in the reminder list
                     filteredEvents.forEach(event => {
                         let listItem = document.createElement("li");
                         listItem.innerHTML = `
                             <strong>${event.description}</strong> <br> 
                             ${event.title} - <i>${event.companyName}</i> <br> 
-                            ${new Date(event.date).toLocaleDateString()}
+                            ${new Date(event.date).toLocaleDateString()} <br>
+                            Time: ${formatTime(event.startTime)} - ${formatTime(event.endTime)}
                         `;
 
-                        // Add a delete button for each reminder item
                         let deleteButton = document.createElement("button");
                         deleteButton.className = "delete-event";
                         deleteButton.textContent = "Delete";
@@ -322,7 +386,6 @@ mysqli_close($conn);
                 }
             }
         }
-
 
         // Function to generate a range of 
         // years for the year select input
@@ -463,16 +526,19 @@ mysqli_close($conn);
         function createEventTooltip(date, month, year) {
             let tooltip = document.createElement("div");
             tooltip.className = "event-tooltip";
+
             let eventsOnDate = getEventsOnDate(date, month, year);
-            for (let i = 0; i < eventsOnDate.length; i++) {
-                let event = eventsOnDate[i];
-                let eventDate = new Date(event.date);
-                let eventText = `<strong>${event.title}</strong> <br> 
-                    ${event.description}`;
-                let eventElement = document.createElement("p");
-                eventElement.innerHTML = eventText;
-                tooltip.appendChild(eventElement);
-            }
+            let eventCount = eventsOnDate.length;
+
+            // Display the number of events on the tooltip
+            let tooltipText = eventCount === 1 
+                ? `1 interview` 
+                : `${eventCount} interviews`;
+
+            let eventCountElement = document.createElement("p");
+            eventCountElement.textContent = tooltipText;
+
+            tooltip.appendChild(eventCountElement);
             return tooltip;
         }
 
@@ -608,17 +674,17 @@ mysqli_close($conn);
             xhr.onload = function () {
                 if (xhr.status === 200) {
                     let eventsFromServer = JSON.parse(xhr.responseText);
-                    // Iterate through events and add them to the events array
                     eventsFromServer.forEach(event => {
                         events.push({
-                            id: event.id, 
-                            date: event.scheduled_date, 
-                            title: event.job_title, 
-                            description: event.candidate_name, 
+                            id: event.id,
+                            date: event.scheduled_date,
+                            startTime: event.start_time,
+                            endTime: event.end_time,
+                            title: event.job_title,
+                            description: event.candidate_name,
                             companyName: event.company_name
                         });
                     });
-                    // Update the calendar and reminders
                     showCalendar(currentMonth, currentYear);
                     displayReminders();
                 } else {

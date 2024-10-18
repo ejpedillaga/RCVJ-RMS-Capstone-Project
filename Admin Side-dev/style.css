@@ -1329,7 +1329,29 @@ input {
   border: 1px solid #000000;
   width: 90%;
   border-radius: 10px;
-  height: 30px;
+  height: 40px;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+#time-section input[type="text"] {
+  margin: 10px 12px;
+  padding: 5px 5px 5px 7px;
+  border: 1px solid #000000;
+  width: 90%;
+  border-radius: 10px;
+  height: 40px;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+#event-section input[type="time"] {
+  margin: 10px 12px;
+  padding: 5px 5px 5px 7px;
+  border: 1px solid #000000;
+  width: 90%;
+  border-radius: 10px;
+  height: 40px;
   background: #ffffff;
   font-size: 15px;
 }
@@ -1340,7 +1362,7 @@ input {
   border: 1px solid #000000;
   width: 90%;
   border-radius: 10px;
-  height: 30px;
+  height: 40px;
   background: #ffffff;
   font-size: 15px;
 }
@@ -1422,7 +1444,7 @@ input {
 #reminderList {
   list-style: none;
   padding: 0 10px;
-  max-height: 250px;
+  max-height: 300px;
   overflow: auto;
 }
 
@@ -2260,4 +2282,3 @@ input[type="radio"]:checked::before {
   cursor: pointer;
   margin-left: 50px;
 }
-

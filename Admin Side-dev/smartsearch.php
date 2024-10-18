@@ -138,7 +138,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Score applicants based on matching criteria
     $score = 0;
-    $max_score = 0; // Initialize max score
+    $max_score = 0; 
 
     // Create an array to hold matching details
     $matchingDetails = [];
@@ -146,27 +146,31 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     // Match classification
     if ($row['classi'] == $job_details['classification']) {
         $score += 1;
-        $matchingDetails[] = '<div class="matched">Classification <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Classification <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">'. $job_details['classification'] . '</span>
+    </div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Classification <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container">
+        <div class="not-matched">Classification <i class="fa fa-times" aria-hidden="true"></i></div>
+        <span class="tooltip-text">' . $job_details['classification'] . ' ≠ ' . $row['classi'] . '</span>
+    </div>';
     }
     $max_score += 1; // Increment max score
 
-    // Match subclassification
+   // Match subclassification
     if ($row['subclassi'] == $job_details['subclassification']) {
         $score += 1;
-        $matchingDetails[] = '<div class="matched">Sub-classification <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Sub-classification <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['subclassification'] . '</span></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Sub-classification <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Sub-classification <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['subclassification'] . ' ≠ ' . $row['subclassi'] . '</span></div>';
     }
     $max_score += 1; // Increment max score
 
     // Match gender
     if ($row['gender'] == $job_details['gender']) {
         $score += 1;
-        $matchingDetails[] = '<div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . '</span></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Gender <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Gender <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . ' ≠ ' . $row['gender'] . '</span></div>';
     }
     $max_score += 1; // Increment max score
 
@@ -184,9 +188,9 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     // Match educational attainment based on the hierarchy
     if ($candidateEducationLevel >= $jobEducationLevel) {
         $score += 1; // Add 1 point if candidate meets or exceeds the required education
-        $matchingDetails[] = '<div class="matched">Education <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Education <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['educational_attainment'] . '</span></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Education <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Education <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['educational_attainment'] . ' ≠ ' . $row['educational_attainment'] . '</span></div>';
     }
     $max_score += 1; // Increment max score
 
@@ -195,35 +199,35 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         list($min_exp, $max_exp) = explode('-', $job_details['years_of_experience']);
         if ($row['total_years_experience'] >= (int)$min_exp && $row['total_years_experience'] <= (int)$max_exp) {
             $score += 1; // Add point for matching experience range
-            $matchingDetails[] = '<div class="matched">Experience <i class="fa fa-check" aria-hidden="true"></i></div>';
-        } elseif  ($row['total_years_experience'] > (int)$max_exp){
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Experience <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">Meets required experience</span></div>';
+        } elseif ($row['total_years_experience'] > (int)$max_exp) {
             $score += 2; // Add 2 points if experience exceeds the max required years
-            $matchingDetails[] = '<div class="near-matched">Experience <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div>';
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="near-matched">Experience <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div><span class="tooltip-text">Exceeds required experience</span></div>';
             $max_score += 0.5; // Increment max score for near-matched experience
         } else {
-            $matchingDetails[] = '<div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div>';
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">Less than required experience</span></div>';
         }
         $max_score += 1; // Increment max score
     } else {
-        $matchingDetails[] = '<div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Experience <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">Experience not provided</span></div>';
         $max_score += 1; // Increment max score
     }
 
     // Match job location
     if ($row['location'] == $job_details['job_location']) { // Assuming job_details has job_location
         $score += 1; // Add point if location matches
-        $matchingDetails[] = '<div class="matched">Location <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Location <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['job_location'] . '</span></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Location <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Location <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['job_location'] . ' ≠ ' . $row['location'] . '</span></div>';
     }
     $max_score += 1; // Increment max score for location match
 
     // Fetch skills of the applicant
     $skills_query = "SELECT skill_table.skill_name 
-                     FROM user_skills_table 
-                     JOIN skill_table ON user_skills_table.skill_id = skill_table.skill_id 
-                     WHERE user_skills_table.userid = ?";
-    
+                    FROM user_skills_table 
+                    JOIN skill_table ON user_skills_table.skill_id = skill_table.skill_id 
+                    WHERE user_skills_table.userid = ?";
+
     $stmt_skills = $conn->prepare($skills_query);
     $stmt_skills->bind_param("s", $row['userid']);
     $stmt_skills->execute();
@@ -236,16 +240,16 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Fetch required skills for the job
     $required_skills_query = "SELECT skill_table.skill_name 
-                              FROM job_skills_table 
-                              JOIN job_title_table ON job_skills_table.job_title_id = job_title_table.id
-                              JOIN skill_table ON job_skills_table.skill_id = skill_table.skill_id
-                              WHERE job_title_table.job_title = ?";
-    
+                            FROM job_skills_table 
+                            JOIN job_title_table ON job_skills_table.job_title_id = job_title_table.id
+                            JOIN skill_table ON job_skills_table.skill_id = skill_table.skill_id
+                            WHERE job_title_table.job_title = ?";
+
     $stmt_required_skills = $conn->prepare($required_skills_query);
     $stmt_required_skills->bind_param("s", $row['job_title']);
     $stmt_required_skills->execute();
     $required_skills_result = $stmt_required_skills->get_result();
-    
+
     $required_skills = [];
     while ($req_skill_row = $required_skills_result->fetch_assoc()) {
         $required_skills[] = $req_skill_row['skill_name'];
@@ -262,11 +266,11 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Determine the collective matching class for $matchingDetails
     if ($total_matched_skills === $total_required_skills) {
-        $matchingDetails[] = '<div class="matched">Skills <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Skills <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">All required skills matched</span></div>';
     } elseif ($total_matched_skills > 0) {
-        $matchingDetails[] = '<div class="near-matched">Skills <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="near-matched">Skills <i class="fa fa-exclamation-circle" aria-hidden="true"></i></div><span class="tooltip-text">Partial skill match</span></div>';
     } else {
-        $matchingDetails[] = '<div class="not-matched">Skills <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Skills <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">No skills matched</span></div>';
     }
 
     // Fetch applicant's licenses
@@ -278,21 +282,21 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Store licenses without cleaning for matching
     while ($license_row = mysqli_fetch_assoc($licenses_result)) {
-    // Use the license name as it is for matching
-    $license_name = $license_row['license_name']; 
+        // Use the license name as it is for matching
+        $license_name = $license_row['license_name']; 
 
-    // Convert the blob to base64 for frontend display if needed
-    $attachment_base64 = $license_row['attachment'] ? base64_encode($license_row['attachment']) : null;
+        // Convert the blob to base64 for frontend display if needed
+        $attachment_base64 = $license_row['attachment'] ? base64_encode($license_row['attachment']) : null;
 
-    // Store the license details
-    $applicant_licenses[] = [
-    'license_name' => $license_name, // Store raw license name
-    'month_issued' => $license_row['month_issued'], 
-    'year_issued' => $license_row['year_issued'], 
-    'month_expired' => $license_row['month_expired'], 
-    'year_expired' => $license_row['year_expired'], 
-    'attachment' => $attachment_base64, 
-    ];
+        // Store the license details
+        $applicant_licenses[] = [
+            'license_name' => $license_name, // Store raw license name
+            'month_issued' => $license_row['month_issued'], 
+            'year_issued' => $license_row['year_issued'], 
+            'month_expired' => $license_row['month_expired'], 
+            'year_expired' => $license_row['year_expired'], 
+            'attachment' => $attachment_base64, 
+        ];
     }
 
     // Check if any license matches the job's cert_license
@@ -300,10 +304,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
     // Perform the matching check
     if (in_array($job_details['cert_license'], $license_names)) {
-    $score += 1; // Add point if there's a match
-    $matchingDetails[] = '<div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div>';
+        $score += 1; // Add point if there's a match
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . '</span></div>';
     } else {
-    $matchingDetails[] = '<div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . ' not found</span></div>';
     }
     $max_score += 1; // Increment max score
 
@@ -389,10 +393,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             .then(response => response.text())
             .then(data => {
                 document.getElementById('jobDropdownContainer').innerHTML = data;
+                document.getElementById('statusFilter').value = 'all';
             });
         }
 
-        // Fetch candidates that applied to the selected job and match them
         function fetchJobDetails(jobId, companyId) {
             let formData = new FormData();
             formData.append('fetch_job_details', true);
@@ -412,18 +416,26 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             .then(candidates => {
                 if (candidates.error) {
                     console.error(candidates.error);
-                    document.getElementById('candidateResults').innerHTML = "An error occurred: " + candidates.error;
+                    document.getElementById('candidateResults').innerHTML = 
+                        "An error occurred: " + candidates.error;
                     return;
                 }
-                // Call the function to populate the candidates table
+
+                // Populate the table with candidates
                 populateSmartSearchTable(candidates);
+
+                // Show the filter dropdown after fetching candidates
+                document.getElementById('filterContainer').style.display = 'block';
+
+                // Reset the status filter to "all"
+                document.getElementById('statusFilter').value = 'all';
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('candidateResults').innerHTML = "An error occurred: " + error.message;
+                document.getElementById('candidateResults').innerHTML = 
+                    "An error occurred: " + error.message;
             });
         }
-
         // Function to show the initial message when no search has been made
         function showInitialMessage() {
             const tableBody = document.getElementById('candidateTableBody');
@@ -445,9 +457,19 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             showInitialMessage();
         };
 
+        let currentPage = 1; 
+        const resultsPerPage = 5; 
+        let candidates = []; 
+
         function populateSmartSearchTable(data) {
-            const rowTemplate = (candidate, statusClass, statusText, matchDetails) => `
-                <tr class="tr1">
+            candidates = data; // Store the candidate data globally
+            renderTable(candidates);
+        }
+
+        // Function to render table based on candidates and current page
+        function renderTable(data) {
+            const rowTemplate = (candidate, statusClass, statusText, matchDetails, statusValue) => `
+                <tr class="tr1" data-status="${statusValue}">
                     <td class="fullname">${candidate.candidate.fname} ${candidate.candidate.lname}</td>
                     <td><strong>${candidate.candidate.job_title}</strong></td>
                     <td>${candidate.candidate.company_name}</td>
@@ -456,13 +478,15 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         <span class="${statusClass}">${statusText}</span>
                         <span class="tooltip-text">${tooltipText}</span>
                     </td>
-                     <td>
+                    <td>
                         <div class="match-column">
                             ${matchDetails.map(match => match).join('')}
                         </div>
                     </td>
                     <td class="candidates-tooltip-container">
-                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" style="color: #2C1875; cursor: pointer;" onclick='showInfo(${JSON.stringify(candidate.candidate)}, ${candidate.candidate.job_id})'></i>
+                        <i class="fa fa-info-circle fa-2xl" aria-hidden="true" 
+                        style="color: #2C1875; cursor: pointer;" 
+                        onclick='showInfo(${JSON.stringify(candidate.candidate)}, ${candidate.candidate.job_id})'></i>
                         <span class="tooltip-text">Candidate Information</span>
                     </td>
                     <td class="candidates-tooltip-container">
@@ -472,55 +496,131 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 </tr>
             `;
 
-            // Clear previous results
             const tableBody = document.getElementById('candidateTableBody');
             tableBody.innerHTML = ''; // Clear previous results
 
-            // Check if there are any candidates
-            if (data.length === 0) {
-                const noCandidatesRow = `
+            if (candidates.length === 0) {
+                tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875; ">No candidates found</td>
-                    </tr>
-                `;
-                tableBody.innerHTML = noCandidatesRow; // Insert the message row
-                return; // Exit the function early
+                        <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875;">
+                            No candidates found
+                        </td>
+                    </tr>`;
+                updatePaginationControls(0); // No pages if no candidates
+                return;
             }
 
-            // Populate table rows
-            data.forEach(candidate => {
-                // Calculate score ratio
-                const score = candidate.score;
-                const maxScore = candidate.max_score;
-                let statusClass = '';
-                let statusText = '';
+            // Pagination logic
+            const filteredCandidates = applyCurrentFilter(); // Apply the current filter
+            const totalResults = filteredCandidates.length;
+            const totalPages = Math.ceil(totalResults / resultsPerPage);
+            const startIndex = (currentPage - 1) * resultsPerPage;
+            const endIndex = Math.min(startIndex + resultsPerPage, totalResults);
 
-                // Determine status based on the score
-                if (score === maxScore) {
-                    statusClass = 'status-label-identical';
-                    statusText = 'Identical';
-                    tooltipText = 'Perfect fit for the role';
-                } else if (score > maxScore) {
-                    statusClass = 'status-label-overqualified';
-                    statusText = 'Overqualified';
-                    tooltipText = 'Possesses excessive qualifications'; 
-                }else if (score > (0.6 * maxScore)) {
-                    statusClass = 'status-label-Underqualified';
-                    statusText = 'Underqualified';
-                    tooltipText = 'Great qualifications, but not the best fit for role';
+            // Populate table rows for the current page
+            if (totalResults === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875;">
+                            No candidates found with the selected status.
+                        </td>
+                    </tr>`;
+            } else {
+                for (let i = startIndex; i < endIndex; i++) {
+                    const candidate = filteredCandidates[i];
+                    const { score, max_score } = candidate;
+                    let statusClass = '', statusText = '', statusValue = '';
+
+                    // Determine status based on the score
+                    if (score === max_score) {
+                        statusClass = 'status-label-identical';
+                        statusText = 'Identical';
+                        statusValue = 'Identical';
+                        tooltipText = 'Perfect fit for the role';
+                    } else if (score > max_score) {
+                        statusClass = 'status-label-overqualified';
+                        statusText = 'Overqualified';
+                        statusValue = 'Overqualified';
+                        tooltipText = 'Possesses excessive qualifications';
+                    } else if (score > 0.6 * max_score) {
+                        statusClass = 'status-label-underqualified';
+                        statusText = 'Underqualified';
+                        statusValue = 'Underqualified';
+                        tooltipText = 'Great qualifications, but not the best fit for role';
+                    } else if (score > 1) {
+                        statusClass = 'status-label-unqualified';
+                        statusText = 'Unqualified';
+                        statusValue = 'Unqualified';
+                        tooltipText = 'Limited qualities, skills, and experience';
+                    } else {
+                        statusClass = 'status-label-not';
+                        statusText = 'Not Qualified';
+                        statusValue = 'Not-Qualified';
+                        tooltipText = 'Does not meet any of the qualifications';
+                    }
+
+                    tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText, candidate.matchingDetails, statusValue);
+                }
+            }
+
+            // Update pagination controls
+            updatePaginationControls(totalPages);
+        }
+
+        // Function to apply the current filter and return filtered candidates
+        function applyCurrentFilter() {
+            const filterValue = document.getElementById('statusFilter').value;
+            return candidates.filter(candidate => {
+                // Determine the candidate's status based on their score
+                const { score, max_score } = candidate;
+                let statusValue = '';
+
+                if (score === max_score) {
+                    statusValue = 'Identical';
+                } else if (score > max_score) {
+                    statusValue = 'Overqualified';
+                } else if (score > 0.6 * max_score) {
+                    statusValue = 'Underqualified';
                 } else if (score > 1) {
-                    statusClass = 'status-label-unqualified';
-                    statusText = 'Unqualified';
-                    tooltipText = 'Limited qualities, skills, and experience';
+                    statusValue = 'Unqualified';
                 } else {
-                    statusClass = 'status-label-not';
-                    statusText = 'Not Qualified';
-                    tooltipText = 'Does not meet any of the qualifications';
+                    statusValue = 'Not-Qualified';
                 }
 
-                // Append row to the table
-                tableBody.innerHTML += rowTemplate(candidate, statusClass, statusText, candidate.matchingDetails);
+                return filterValue === 'all' || filterValue === statusValue;
             });
+        }
+
+        // Function to create pagination controls
+        function updatePaginationControls(totalPages) {
+            const paginationContainer = document.getElementById('paginationControls');
+            paginationContainer.innerHTML = ''; // Clear existing controls
+
+            // Create pagination links
+            if (totalPages > 1) {
+                const firstPageLink = `<a href="#" onclick="changePage(1)">First</a>`;
+                paginationContainer.innerHTML += firstPageLink;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLink = `<a href="#" onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</a>`;
+                    paginationContainer.innerHTML += pageLink;
+                }
+
+                const lastPageLink = `<a href="#" onclick="changePage(${totalPages})">Last</a>`;
+                paginationContainer.innerHTML += lastPageLink;
+            }
+        }
+
+        // Function to change page
+        function changePage(page) {
+            currentPage = page;
+            renderTable(candidates); // Use the globally stored candidates data
+        }
+
+        // Function to apply filter and update table and pagination
+        function applyFilter() {
+            currentPage = 1; // Reset to the first page when filter is applied
+            renderTable(candidates); // Render table based on the current filter and pagination
         }
 
         function approveApplication(userId, jobId) { 
@@ -596,8 +696,16 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <div id="jobDropdownContainer">
                     <!-- Job dropdown will be populated here by JS -->
                 </div>
-
-                <!-- Display Candidates -->
+                <div id="filterContainer" style="display: none;">
+                    <select id="statusFilter" class="select-company" onchange="applyFilter()">
+                        <option value="all">All</option>
+                        <option value="Identical">Identical</option>
+                        <option value="Overqualified">Overqualified</option>
+                        <option value="Underqualified">Underqualified</option>
+                        <option value="Unqualified">Unqualified</option>
+                        <option value="Not-Qualified">Not Qualified</option>
+                    </select>
+                </div>
                 <div id="candidateResults">
                     <!-- Candidates who applied will be displayed here -->
                 </div>
@@ -605,8 +713,8 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             </div>
             
             <div>
-                <table>
-                    <thead>
+            <table>
+                <thead>
                     <tr class="th1">
                         <th>Candidate</th>
                         <th>Job Title</th>
@@ -617,12 +725,14 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         <th></th>
                         <th></th>
                     </tr>
-                    <thead>
-
-                    <tbody id="candidateTableBody">
-                        <!-- Candidate results will be populated here -->
-                    </tbody>
-                </table>
+                </thead>
+                <tbody id="candidateTableBody">
+                    <!-- Candidate results will be populated here -->
+                </tbody>
+            </table>
+            
+            <!-- Pagination Controls -->
+            <div id="paginationControls" class="pagination"></div>
             </div>
 
             <!-- Overlay --> 

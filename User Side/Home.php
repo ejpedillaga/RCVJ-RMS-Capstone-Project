@@ -34,6 +34,24 @@ if (isset($_SESSION['user'])) {
         $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
 
+// Query to get the top 4 companies with the most job posts and their logos
+$sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM partner_table
+                     INNER JOIN job_table ON partner_table.company_name = job_table.company_name
+                     WHERE job_table.job_status = 'Open' -- Adjust this condition based on your actual statuses
+                     GROUP BY partner_table.company_name, partner_table.logo
+                     ORDER BY COUNT(job_table.id) DESC
+                     LIMIT 4";
+
+
+    $result_top_partners = $conn->query($sql_top_partners);
+
+    $partners = [];
+    if ($result_top_partners->num_rows > 0) {
+    while ($row = $result_top_partners->fetch_assoc()) {
+    $partners[] = $row;
+    }
+}
+
     // Close the connection
     $conn->close();
 }
@@ -143,6 +161,7 @@ if (isset($_SESSION['user'])) {
                     <h1 class="title3">Partner Companies</h1>
                     <h1 class="title4">Get started with our best clients</h1>
                 </div>
+                <!--
                 <div class="partner-container">
                     <div class="partner1" onclick="redirectTo('CompanyProfile.php')">
                         <img src="images/waltermart.png" alt="">
@@ -157,7 +176,21 @@ if (isset($_SESSION['user'])) {
                         <img src="images/lpu.jpg" alt="">
                     </div>
                 </div>
-
+                        -->
+                <div class="partner-container">
+                    <?php 
+                    $isPartner1 = true; // Flag to toggle classes
+                    foreach ($partners as $partner): 
+                        // Choose the class based on the flag
+                        $partnerClass = $isPartner1 ? 'partner1' : 'partner2';
+                        $isPartner1 = !$isPartner1; // Toggle the flag for the next iteration
+                    ?>
+                        <div class="<?php echo $partnerClass; ?>" onclick="redirectTo('CompanyProfile.php?company=<?php echo urlencode($partner['company_name']); ?>')">
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($partner['logo']); ?>" alt="<?php echo htmlspecialchars($partner['company_name']); ?>">
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
             </div>
     
            <div class="shape-container1">

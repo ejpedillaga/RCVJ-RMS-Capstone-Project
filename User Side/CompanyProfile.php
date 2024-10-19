@@ -138,7 +138,9 @@ $conn->close();
 
                 <div class="tabs">
                     <div class="tab active" onclick="openTab('about')">About</div>
-                    <div class="tab" onclick="openTab('jobs')">Jobs</div>
+                    <?php if ($result_jobs->num_rows > 0): // Check if there are job listings ?>
+                        <div class="tab" onclick="openTab('jobs')">Jobs</div>
+                    <?php endif; ?>
                 </div>
                 
                 <div id="about" class="tab-content active">

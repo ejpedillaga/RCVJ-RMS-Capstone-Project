@@ -1012,20 +1012,19 @@ function populateEmployeesTable(data) {
         }
     });
 
+    // Log counts for debugging
+    console.log(`Active Employees Count: ${activeEmployeesCount}`);
+    console.log(`Inactive Employees Count: ${inactiveEmployeesCount}`);
+
     // Show or hide "No employees found" message for active employees
-    if (activeEmployeesCount === 0) {
-        noActiveMessage.style.display = 'block'; // Show message
-    } else {
-        noActiveMessage.style.display = 'none'; // Hide message
-    }
+    noActiveMessage.style.display = activeEmployeesCount === 0 ? 'block' : 'none'; 
 
     // Show or hide "No employees found" message for inactive employees
-    if (inactiveEmployeesCount === 0) {
-        noInactiveMessage.style.display = 'block'; // Show message
-    } else {
-        noInactiveMessage.style.display = 'none'; // Hide message
-    }
+    noInactiveMessage.style.display = inactiveEmployeesCount === 0 ? 'block' : 'none'; 
 }
+
+
+
 
 
 

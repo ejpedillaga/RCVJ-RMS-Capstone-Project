@@ -14,19 +14,29 @@ try {
         exit;
     }
 
-    // Prepare the SQL delete query
-    $stmt = $conn->prepare("DELETE FROM employee_table WHERE employee_id = ?");
-    $stmt->bind_param("i", $employeeId);
+    // Prepare to delete from users_table first
+    $deleteUserStmt = $conn->prepare("DELETE FROM users_table WHERE employee_id = ?");
+    $deleteUserStmt->bind_param("i", $employeeId);
 
-    if ($stmt->execute()) {
-        echo json_encode(["message" => "Employee deleted successfully"]);
+    // Execute the deletion of the user account
+    if ($deleteUserStmt->execute()) {
+        // Now delete from employee_table
+        $deleteEmployeeStmt = $conn->prepare("DELETE FROM employee_table WHERE employee_id = ?");
+        $deleteEmployeeStmt->bind_param("i", $employeeId);
+
+        if ($deleteEmployeeStmt->execute()) {
+            echo json_encode(["message" => "Employee and associated user account deleted successfully"]);
+        } else {
+            echo json_encode(["error" => "Error deleting employee: " . $deleteEmployeeStmt->error]);
+        }
+
+        $deleteEmployeeStmt->close();
     } else {
-        echo json_encode(["error" => "Error executing query: " . $stmt->error]);
+        echo json_encode(["error" => "Error deleting user: " . $deleteUserStmt->error]);
     }
 
-    // Close the statement
-    $stmt->close();
-    
+    $deleteUserStmt->close();
+
 } catch (Exception $e) {
     error_log($e->getMessage()); // Log the error
     echo json_encode(["error" => "Exception: " . $e->getMessage()]);

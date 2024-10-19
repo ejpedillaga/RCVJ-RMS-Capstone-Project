@@ -111,7 +111,7 @@
                         </tr>
                     </thead>
                     <tbody id="inactive-employees-body">
-                        <!-- Inactive employees populated here -->
+                        <!-- Inside your inactive employee table -->
                     </tbody>
                 </table>
             </div>

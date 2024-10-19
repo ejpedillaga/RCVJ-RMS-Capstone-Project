@@ -2211,24 +2211,37 @@ function showEditJobTitlePopup(){
                 // Set readonly attribute to indicate job_title is not editable
                 document.getElementById('job_title').setAttribute('readonly', 'true');
                 document.getElementById('classification').value = jobTitleData.classification;
+                populateSubClassifications();
                 document.getElementById('subclassification').value = jobTitleData.subclassification;
                 document.getElementById('gender').value = jobTitleData.gender;
                 document.getElementById('educational_attainment').value = jobTitleData.educational_attainment;
 
                 //If cert licenses is null (i.e., not required), not required checkbox should be ticked
-                if(jobTitleData.certLicense == null){
+                if(jobTitleData.cert_license == ""){
                     //TODO
                     document.getElementById('req-cert').value=false;
+                    document.getElementById('req-cert').checked=true;
+                    document.getElementById('job-title-cert').style.display = "none";
                 }else{
-                    document.getElementById('cert_license').value = jobTitleData.cert_license;
-
+                    document.getElementById('job-title-cert').value = jobTitleData.cert_license;
+                    document.getElementById('req-cert').checked=false;
+                    document.getElementById('job-title-cert').style.display = "block";
                 }
 
-                // Populate years of experience
-                document.getElementById('min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience) || 0;
-                document.getElementById('max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience) || 0;
-
-
+                if((jobTitleData.min_years_of_experience == "0" && jobTitleData.max_years_of_experience == "0") || (jobTitleData.min_years_of_experience == "" && jobTitleData.max_years_of_experience == "")){
+                    //TODO
+                    document.getElementById('req-exp').value=false;
+                    document.getElementById('req-exp').checked=true;
+                    document.getElementById('min-job-title-exp').style.display = "none";
+                    document.getElementById('max-job-title-exp').style.display = "none";
+                }else{
+                    // Populate years of experience
+                    document.getElementById('min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience);
+                    document.getElementById('max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience);
+                    document.getElementById('req-exp').checked=false;
+                    document.getElementById('min-job-title-exp').style.display = "block";
+                    document.getElementById('max-job-title-exp').style.display = "block";
+                }
 
                 // Initialize skills input
                 initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
@@ -2533,21 +2546,37 @@ function partner_showEditJobTitlePopup() {
                 // Set readonly attribute to indicate job_title is not editable
                 document.getElementById('partner-job_title').setAttribute('readonly', 'true');
                 document.getElementById('partner-classification').value = jobTitleData.classification;
+                populateSubClassifications();
                 document.getElementById('partner-subclassification').value = jobTitleData.subclassification;
                 document.getElementById('partner-gender').value = jobTitleData.gender;
                 document.getElementById('partner-educational_attainment').value = jobTitleData.educational_attainment;
 
-                // If cert licenses is null (i.e., not required), not required checkbox should be ticked
-                if (jobTitleData.certLicense == null) {
-                    // TODO
-                    document.getElementById('partner-req-cert').checked = false;
-                } else {
-                    document.getElementById('partner-cert_license').value = jobTitleData.cert_license;
+                //If cert licenses is null (i.e., not required), not required checkbox should be ticked
+                if(jobTitleData.cert_license == ""){
+                    //TODO
+                    document.getElementById('partner-req-cert').value=false;
+                    document.getElementById('partner-req-cert').checked=true;
+                    document.getElementById('partner-job-title-cert').style.display = "none";
+                }else{
+                    document.getElementById('partner-job-title-cert').value = jobTitleData.cert_license;
+                    document.getElementById('partner-req-cert').checked=false;
+                    document.getElementById('partner-job-title-cert').style.display = "block";
                 }
 
-                // Populate years of experience
-                document.getElementById('partner-min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience) || 0;
-                document.getElementById('partner-max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience) || 0;
+                if((jobTitleData.min_years_of_experience == "0" && jobTitleData.max_years_of_experience == "0") || (jobTitleData.min_years_of_experience == "" && jobTitleData.max_years_of_experience == "")){
+                    //TODO
+                    document.getElementById('partner-req-exp').value=false;
+                    document.getElementById('partner-req-exp').checked=true;
+                    document.getElementById('partner-min-job-title-exp').style.display = "none";
+                    document.getElementById('partner-max-job-title-exp').style.display = "none";
+                }else{
+                    // Populate years of experience
+                    document.getElementById('partner-min-job-title-exp').value = parseInt(jobTitleData.min_years_of_experience);
+                    document.getElementById('partner-max-job-title-exp').value = parseInt(jobTitleData.max_years_of_experience);
+                    document.getElementById('partner-req-exp').checked=false;
+                    document.getElementById('partner-min-job-title-exp').style.display = "block";
+                    document.getElementById('partner-max-job-title-exp').style.display = "block";
+                }
 
                 // Initialize skills input
                 initializeSkillsInput('partner-add-job-title-popup', 'partner-jobposting-skills-input', 'partner-add-jobposting-skills-container');

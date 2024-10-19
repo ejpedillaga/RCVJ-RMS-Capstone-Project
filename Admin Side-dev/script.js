@@ -952,6 +952,17 @@ function populateTable(data, tableSelector, rowTemplate) {
     populateTable(data, 'table', rowTemplate);
 }*/
 
+function populateRejectsTable(data) {
+    const rowTemplate = (reject) => `
+        <td id="fullname" class="fullname">${reject.full_name}</td>
+        <td id="remarks">${reject.remarks}</td>
+        <td id="date">${reject.date_rejected}</td>
+        <td><i class="fa-solid fa-rotate-left fa-2xl" style="color: #2C1875;"></i></td>
+        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showEditDialog()"></i></td>
+    `;
+    populateTable(data, 'table', rowTemplate);
+}
+
 function populateEmployeesTable(data) {
     const activeBody = document.querySelector('#tab1-content tbody');
     const inactiveBody = document.querySelector('#tab2-content tbody');

@@ -11,10 +11,6 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-$passwords = '1234'; // Replace with the actual password
-
-// Hash the password
-$hashed_password = password_hash($passwords, PASSWORD_DEFAULT);
 
 echo "Hashed Password: " . $hashed_password;
 

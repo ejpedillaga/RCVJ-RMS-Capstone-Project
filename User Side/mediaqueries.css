@@ -26,9 +26,6 @@
   .notification_wrap .dropdown {
     width: 200px;
   }
- 
-
-
 }
 
 @media screen and (max-width: 768px) {
@@ -46,26 +43,24 @@
   .notification_wrap .dropdown .notify_item .notify_info {
     font-size: 0.9rem;
   }
-  
 }
 
 @media screen and (max-width: 1700px) {
-.jobs-main-container ul {
-  padding: 1px;
-  display: grid;
-  grid-template-columns: auto auto auto;
-}
+  .jobs-main-container ul {
+    padding: 1px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
 
-.jobs-card {
-  margin: 1rem;
-  width: 60%;
-  height: 160px;
-}
+  .jobs-card {
+    margin: 1rem;
+    width: 60%;
+    height: 160px;
+  }
 
-.shape-container1 {
-  z-index: -1;
-}
-
+  .shape-container1 {
+    z-index: -1;
+  }
 }
 
 @media screen and (max-width: 1400px) {
@@ -80,7 +75,7 @@
     margin: 0;
   }
 
-  .about-card{
+  .about-card {
     height: 80%;
   }
 
@@ -122,12 +117,12 @@
     height: 160px;
   }
 
-  .sections{
+  .sections {
     display: flex;
     flex-wrap: wrap;
     padding-right: 35px;
   }
- 
+
   .profile-header {
     display: block;
   }
@@ -138,7 +133,6 @@
     min-height: 18rem;
     cursor: pointer;
   }
-
 }
 
 @media screen and (max-width: 1300px) {
@@ -170,8 +164,8 @@
     padding: 0 15rem;
   }
 
-  .partner-header{
-    margin-left: -50px; 
+  .partner-header {
+    margin-left: -50px;
   }
 
   .partner-main-container ul {
@@ -183,8 +177,8 @@
   }
 
   .partner-card {
-    width: 100%; 
-    max-width: 100%; 
+    width: 100%;
+    max-width: 100%;
     padding: 2rem 0;
     height: auto;
   }
@@ -219,7 +213,6 @@
   .sections > * {
     flex-grow: 1;
   }
-
 }
 
 @media screen and (max-width: 1155px) {
@@ -255,7 +248,7 @@
     justify-content: space-evenly;
   }
 
-  .partner-main-container{
+  .partner-main-container {
     width: 50%;
     margin-left: 190px;
   }
@@ -275,21 +268,21 @@
   }
 
   .sections {
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-left: 3rem;
-  margin-right: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 3rem;
+    margin-right: 1rem;
   }
- 
+
   .profile-header {
-    flex-direction: column; 
-    padding: 1rem; 
+    flex-direction: column;
+    padding: 1rem;
   }
 
   #my-jobs-card .content {
-    align-items: center;  
+    align-items: center;
   }
-  
+
   #my-jobs-card {
     padding: 1rem 2rem 0;
     max-width: 55rem;
@@ -304,7 +297,6 @@
   .my-jobs p {
     margin-right: 5rem;
   }
-  
 }
 
 @media screen and (max-width: 950px) {
@@ -312,8 +304,8 @@
     font-size: 0.7em;
   }
 
-  .partner-main-container{
-    width:auto;
+  .partner-main-container {
+    width: auto;
     justify-items: center;
     margin-left: -40px;
   }
@@ -333,14 +325,13 @@
     height: auto;
   }
 
-.sections{
-  width: auto;
-}
+  .sections {
+    width: auto;
+  }
 
-.my-jobs p {
-  margin-right: 5rem;
-}
-  
+  .my-jobs p {
+    margin-right: 5rem;
+  }
 }
 
 @media screen and (max-width: 925px) {
@@ -373,7 +364,7 @@
     text-align: center;
     padding: 0 5rem;
   }
-  
+
   #desktop-nav {
     display: none;
   }
@@ -383,13 +374,13 @@
     justify-content: space-around;
   }
 
-  .logo{
+  .logo {
     position: fixed;
     left: 0;
     margin-left: 3em;
   }
 
-  .hamburger-menu{
+  .hamburger-menu {
     position: fixed;
     right: 0;
     margin-right: 3em;
@@ -475,7 +466,7 @@
     padding: 0.75rem; /* Adjust padding for better touch targets */
   }
 
-  .main-container-jobs{
+  .main-container-jobs {
     width: 90%;
   }
 
@@ -604,7 +595,6 @@
   .partner-header .search-container {
     margin-right: 0;
   }
-  
 }
 
 @media (max-width: 880px) {
@@ -650,8 +640,6 @@
     border-radius: 20px;
     width: auto;
   }
-  
-
 }
 
 @media screen and (max-width: 650px) {
@@ -700,17 +688,15 @@
     box-sizing: border-box; /* Ensure padding and border are included in the width */
   }
 
-  .title4{
+  .title4 {
     color: black;
   }
 
-  .tags-container{
+  .tags-container {
     display: grid;
     grid-template-columns: auto auto auto auto;
     width: 20px;
   }
-
-
 }
 
 /* For screens between 768px and 1200px */
@@ -719,10 +705,9 @@
     flex-basis: 50%;
   }
 
-  .sections{
+  .sections {
     max-width: 80%;
   }
-
 }
 
 /* For screens between 480px and 768px */
@@ -730,11 +715,10 @@
   .profile-card {
     flex-basis: 30%;
   }
-  
-  .sections{
+
+  .sections {
     flex-basis: 60%;
   }
-  
 }
 
 /* For smartphone-sized screens (max-width: 480px) */
@@ -744,7 +728,7 @@
     padding: 1rem; /* adjust padding for smaller screens */
   }
 
-  .profile-body{
+  .profile-body {
     margin-left: -30px;
   }
 
@@ -755,7 +739,7 @@
   #my-jobs-card .content {
     align-items: left;
   }
-  
+
   #my-jobs-card {
     padding: 1rem 2rem 0;
     max-width: 55rem;
@@ -766,7 +750,6 @@
   .sections > * {
     flex-grow: 1;
   }
-  
 }
 
 /* **Added media query for PC screens** */
@@ -781,10 +764,7 @@
   .section {
     flex-basis: 60%; /* **Adjusted width for two columns on tablet** */
   }
-
-  
 }
-
 
 @media (min-width: 300px) and (max-width: 512px) {
   .about-card .content {
@@ -796,27 +776,26 @@
     display: block;
     margin: 0 auto;
   }
-  
-  .section{
+
+  .section {
     width: 50%;
   }
 }
-
 
 /* **Added media query for smartphone screens** */
 @media (max-width: 767px) {
   .sections {
     flex-direction: column; /* **Switched to single column on smartphone** */
   }
-  .section{
+  .section {
     width: 100%;
   }
 
-  .profile-card{
-    width: 85%; 
+  .profile-card {
+    width: 85%;
   }
 
-.title4{
-  color: black;
-}
+  .title4 {
+    color: black;
+  }
 }

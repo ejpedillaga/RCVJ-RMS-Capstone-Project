@@ -185,7 +185,7 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
                         $partnerClass = $isPartner1 ? 'partner1' : 'partner2';
                         $isPartner1 = !$isPartner1; // Toggle the flag for the next iteration
                     ?>
-                        <div class="<?php echo $partnerClass; ?>" onclick="redirectTo('CompanyProfile.php?company=<?php echo urlencode($partner['company_name']); ?>')">
+                        <div class="<?php echo $partnerClass; ?>" onclick="redirectTo('CompanyProfile.php?company_name=<?php echo urlencode($partner['company_name']); ?>')">
                             <img src="data:image/jpeg;base64,<?php echo base64_encode($partner['logo']); ?>" alt="<?php echo htmlspecialchars($partner['company_name']); ?>">
                         </div>
                     <?php endforeach; ?>

@@ -706,8 +706,8 @@ if (isset($_SESSION['message'])) {
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
-                    <form action="" method="POST" enctype="multipart/form-data"> 
-                    <input type="hidden" name="userid" value="<?php echo htmlspecialchars($user_data['userid']); ?>">
+                    <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()"> 
+                        <input type="hidden" name="userid" value="<?php echo htmlspecialchars($user_data['userid']); ?>">
                         <!-- Upload Logo -->
                         <div class="upload-image-group">
                             <div class="upload-image" onclick="document.getElementById('logo-upload').click()">
@@ -765,17 +765,22 @@ if (isset($_SESSION['message'])) {
                         <div class="form-group">
                             <div>
                                 <label class="label" for="classification">Classification</label>
-                                <select id="classification" name="classi" class="select-field">
-                                    <option value="Sales" <?php if ($user_data['classi'] == 'Sales') echo 'selected'; ?>>Sales</option>
-                                    <!-- Add more classification options as needed -->
+                                <select id="classification" name="classi" class="select-field" onchange="updateSubClassifications()">
+                                    <option value="" disabled selected><?php echo $user_data['classi']; ?></option>
+                                    <option value="No Classification" <?php if ($user_data['classi'] == 'No Classification') echo 'selected'; ?>>No Classification</option>
+                                    <option value="Construction and Building Trades" <?php if ($user_data['classi'] == 'Construction and Building Trades') echo 'selected'; ?>>Construction and Building Trades</option>
+                                    <option value="Mechanical and Technical" <?php if ($user_data['classi'] == 'Mechanical and Technical') echo 'selected'; ?>>Mechanical and Technical</option>
+                                    <option value="Transportation and Logistics" <?php if ($user_data['classi'] == 'Transportation and Logistics') echo 'selected'; ?>>Transportation and Logistics</option>
+                                    <option value="Janitorial and Cleaning" <?php if ($user_data['classi'] == 'Janitorial and Cleaning') echo 'selected'; ?>>Janitorial and Cleaning</option>
+                                    <option value="Facilities and Operations" <?php if ($user_data['classi'] == 'Facilities and Operations') echo 'selected'; ?>>Facilities and Operations</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label class="label" for="sub-classification">Sub-Classification</label>
                                 <select id="sub-classification" name="subclassi" class="select-field">
-                                    <option value="Management" <?php if ($user_data['subclassi'] == 'Management') echo 'selected'; ?>>Management</option>
-                                    <!-- Add more sub-classification options as needed -->
+                                    <option value="" disabled selected><?php echo $user_data['subclassi']; ?></option>
+                                    <!-- Sub-classification options will be populated dynamically -->
                                 </select>
                             </div>
                         </div>
@@ -1492,6 +1497,72 @@ if (isset($_SESSION['message'])) {
                 function selectInput(list){
                     inputBox.value = list.innerHTML;
                     resultsBox.innerHTML = '';
+                }
+
+                const subClassifications = {
+                    "No Classification": [
+                        "General"
+                    ],
+                    "Construction and Building Trades": [
+                        "Carpentry and Woodworking",
+                        "Masonry and Concrete",
+                        "Welding and Metalworking"
+                    ],
+                    "Mechanical and Technical": [
+                        "Maintenance and Repair",
+                        "Plumbing and Piping",
+                        "Automotive"
+                    ],
+                    "Transportation and Logistics": [
+                        "General Driving",
+                        "Truck Driving",
+                        "Transportation Support"
+                    ],
+                    "Janitorial and Cleaning": [
+                        "General Cleaning",
+                        "Specialized Cleaning",
+                        "Industrial Cleaning"
+                    ],
+                    "Facilities and Operations": [
+                        "Facility Maintenance and Security",
+                        "Customer Service",
+                        "Hospitality and Food Service",
+                        "Attendant"
+                    ]
+                };
+
+                function updateSubClassifications() {
+                    const classification = document.getElementById('classification').value;
+                    const subClassificationSelect = document.getElementById('sub-classification');
+                    // Clear existing options
+                    subClassificationSelect.innerHTML = '<option value="" disabled selected>Select Sub-Classification</option>';
+
+                    // Add new options
+                    if (classification in subClassifications) {
+                        subClassifications[classification].forEach(sub => {
+                            const option = document.createElement('option');
+                            option.value = sub;
+                            option.textContent = sub;
+
+                            // Retain the selected value if it matches the user's data
+                            if (sub === "<?php echo $user_data['subclassi']; ?>") {
+                                option.selected = true;
+                            }
+
+                            subClassificationSelect.appendChild(option);
+                        });
+                    }
+                }
+
+                function validateForm() {
+                    const subclassi = document.getElementById('sub-classification').value;
+                    
+                    // Check if sub-classification has a value
+                    if (subclassi === "") {
+                        alert("Please select a sub-classification before submitting the form.");
+                        return false; // Prevent form submission
+                    }
+                    return true; // Allow form submission
                 }
             </script>
 

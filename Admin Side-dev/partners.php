@@ -6,9 +6,9 @@
     <title>Partners</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mediaqueries.css">
-    <script src="script.js"></script>  
+    <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
+    <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
+    <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
 
 </head>
 
@@ -24,7 +24,7 @@
         <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
         <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
         <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
-        <a href="partners.html" class="active"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
+        <a href="partners.php" class="active"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
         <a href="employees.html"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
     </div>
 

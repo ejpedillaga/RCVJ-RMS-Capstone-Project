@@ -459,6 +459,8 @@ function openThirdPopup(companyName) {
     // Add the 'show' class to display the popup
     thirdPopup.classList.add('show');
     
+    document.getElementById('overlay').classList.add('show');
+    
     // Set the company name in the input field
     document.getElementById('partner-jobposting-partner-company').value = companyName;
 
@@ -617,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else if (currentPage.includes('employees.html')){
         fetchData('fetch_employees.php', populateEmployeesTable)
-    } else if (currentPage.includes('partners.html')){
+    } else if (currentPage.includes('partners.php')){
         fetchData('fetch_partners.php', populatePartnersTable)
     } else if(document.querySelector('.container-calendar')){
         displaySchedule();
@@ -1044,7 +1046,7 @@ function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
          `
         <td id="logo">
-            <img src="data:image/jpeg;base64,${partner.logo}" alt="${partner.company_name}" width="100">
+            <img src="data:image/jpeg;base64,${partner.logo}" alt="Image not found" width="100">
         </td>
         <td id="company-name">${partner.company_name}</td>
         <td>
@@ -1366,15 +1368,16 @@ function submitForm() {
     const industry = document.getElementById('addpartners-industry').value.trim();
     const location = document.getElementById('addpartners-location').value.trim();
     const description = document.getElementById('addpartners-company-description').value.trim();
-    const logoFile = document.getElementById('logo-upload').files[0];
+    
+    let logoFile = document.getElementById('logo-upload').files[0];
 
     console.log('Company Name:', companyName);
     console.log('Industry:', industry);
     console.log('Location:', location);
     console.log('Description:', description);
 
-     // Validate form fields
-     if (!companyName || !industry || !location || !description) {
+    // Validate form fields
+    if (!companyName || !industry || !location || !description) {
         alert('Please fill out all required fields.');
         return; // Prevent form submission
     }
@@ -1386,7 +1389,8 @@ function submitForm() {
     formData.append('location', location);
     formData.append('description', description);
 
-    if (logoFile) {
+    // Only append logo if the user uploaded a file
+    if (logoFile instanceof File) {
         formData.append('logo', logoFile);
     }
 
@@ -1412,9 +1416,8 @@ function submitForm() {
             document.getElementById('logo-preview').src = ''; // Clear image preview
             document.getElementById('logo-preview').style.display = 'none';
 
-            //Fetch and display new data
-            fetchData('fetch_partners.php', populatePartnersTable)
-            
+            // Fetch and display new data
+            fetchData('fetch_partners.php', populatePartnersTable);
         } else {
             console.error('Error:', data.error);
             alert('An error occurred while adding the partner.');
@@ -1425,6 +1428,7 @@ function submitForm() {
         alert('An error occurred while adding the partner.');
     });
 }
+
 
 //Adding new job post
 // Function to collect form data and send to the server

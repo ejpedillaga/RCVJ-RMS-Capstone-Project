@@ -4,24 +4,23 @@ session_start();
 $user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null; // Initialize the profile_image variable
 
+// Database connection details
+$servername = "localhost";
+$username = "root";
+$password = "12345";
+$dbname = "admin_database";
+
+// Create a connection
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+// Check the connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
     $user_email = $_SESSION['user'];
-
-    // Database connection details
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345";
-    $dbname = "admin_database";
-
-    // Create a connection
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check the connection
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
     // Fetch the full name and profile image from the applicant_table
     $sql = "SELECT fname, lname, profile_image FROM applicant_table WHERE email = '$user_email'";
     $result = $conn->query($sql);
@@ -33,7 +32,9 @@ if (isset($_SESSION['user'])) {
         // Fetch the profile image
         $profile_image = !empty($user['profile_image']) ? base64_encode($user['profile_image']) : null;
     }
-
+    // Close the connection
+    
+}
 // Query to get the top 4 companies with the most job posts and their logos
 $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM partner_table
                      INNER JOIN job_table ON partner_table.company_name = job_table.company_name
@@ -50,9 +51,6 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
     while ($row = $result_top_partners->fetch_assoc()) {
     $partners[] = $row;
     }
-}
-
-    // Close the connection
     $conn->close();
 }
 ?>
@@ -185,7 +183,7 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
                         $partnerClass = $isPartner1 ? 'partner1' : 'partner2';
                         $isPartner1 = !$isPartner1; // Toggle the flag for the next iteration
                     ?>
-                        <div class="<?php echo $partnerClass; ?>" onclick="redirectTo('CompanyProfile.php?company=<?php echo urlencode($partner['company_name']); ?>')">
+                        <div class="<?php echo $partnerClass; ?>" onclick="redirectTo('CompanyProfile.php?company_name=<?php echo urlencode($partner['company_name']); ?>')">
                             <img src="data:image/jpeg;base64,<?php echo base64_encode($partner['logo']); ?>" alt="<?php echo htmlspecialchars($partner['company_name']); ?>">
                         </div>
                     <?php endforeach; ?>

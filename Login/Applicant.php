@@ -38,8 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         // Profile image set to NULL
         $profile_image = 'NULL'; 
 
-        $sql = "INSERT INTO applicant_table (email, password, fname, lname, gender, birthday, location, phone, classi, subclassi, profile_image)
-                VALUES ('$email', '$hashed_password', '$fname', '$lname', '$gender', '$birthday', '$location', '$phone', '$classi', '$subclassi', $profile_image)";
+        $sql = "INSERT INTO applicant_table (email, password, fname, lname, gender, birthday, location, phone, classi, subclassi)
+                VALUES ('$email', '$hashed_password', '$fname', '$lname', '$gender', '$birthday', '$location', '$phone', '$classi', '$subclassi')";
 
         if ($conn->query($sql) === TRUE) {
             $message = "Registration successful!";
@@ -197,20 +197,21 @@ $conn->close();
             <div class="form-step">
                 <header>Specialization</header>
                 <div class="input-group">
-                    <select name="classi" id="classi" class="clas" placeholder="Classification" required>
+                    <select name="classi" id="classi" class="clas" required onchange="updateSubClassifications()">
                         <option value="">Classification</option>
-                        <option value="Class1">Class 1</option>
-                        <option value="Class2">Class 2</option>
-                        <option value="Class3">Class 3</option>
+                        <option value="No Classification">No Classification</option>
+                        <option value="Construction and Building Trades">Construction and Building Trades</option>
+                        <option value="Mechanical and Technical">Mechanical and Technical</option>
+                        <option value="Transportation and Logistics">Transportation and Logistics</option>
+                        <option value="Janitorial and Cleaning">Janitorial and Cleaning</option>
+                        <option value="Facilities and Operations">Facilities and Operations</option>
                     </select>
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
+                
                 <div class="input-group">
-                    <select name="subclassi" id="subclassi" class="clas" placeholder="Sub-classification"  required>
+                    <select name="subclassi" id="subclassi" class="clas" required>
                         <option value="">Sub-classification</option>
-                        <option value="Sub1">Sub 1</option>
-                        <option value="Sub2">Sub 2</option>
-                        <option value="Sub3">Sub 3</option>
                     </select>
                     <i class="fa-solid fa-briefcase"></i>
                 </div>
@@ -267,5 +268,57 @@ $conn->close();
                 showPopupMessage("<?php echo addslashes($message); ?>");
             });
         <?php endif; ?>
+
+        const subClassifications = {
+        "No Classification": ["General"],
+        "Construction and Building Trades": [
+            "Carpentry and Woodworking",
+            "Masonry and Concrete",
+            "Welding and Metalworking"
+        ],
+        "Mechanical and Technical": [
+            "Maintenance and Repair",
+            "Plumbing and Piping",
+            "Automotive"
+        ],
+        "Transportation and Logistics": [
+            "General Driving",
+            "Truck Driving",
+            "Transportation Support"
+        ],
+        "Janitorial and Cleaning": [
+            "General Cleaning",
+            "Specialized Cleaning",
+            "Industrial Cleaning"
+        ],
+        "Facilities and Operations": [
+            "Facility Maintenance and Security",
+            "Customer Service",
+            "Hospitality and Food Service"
+        ]
+    };
+
+    function updateSubClassifications() {
+        const classificationSelect = document.getElementById('classi');
+        const subClassificationSelect = document.getElementById('subclassi');
+        const selectedClassi = classificationSelect.value;
+
+        // Clear previous options
+        subClassificationSelect.innerHTML = '<option value="">Sub-classification</option>';
+
+        if (subClassifications[selectedClassi]) {
+            subClassifications[selectedClassi].forEach(sub => {
+                const option = document.createElement('option');
+                option.value = sub;
+                option.textContent = sub;
+                subClassificationSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Ensure sub-classification options reset correctly when the page loads
+    window.onload = function () {
+        updateSubClassifications();
+    };
     </script>
 </html>

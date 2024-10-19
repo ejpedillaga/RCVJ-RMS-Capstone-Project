@@ -117,6 +117,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
             <a href="schedules.php" ><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.php"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+
         </div>
 
         <div id="header">
@@ -139,7 +140,7 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                     <i class="fas fa-magnifying-glass search-icon"></i>
                     <input type="text" class="search-candidates" placeholder="Search Candidates">
                 </div>
-                <select class="company-sort">
+                <select id="sort_Company" class="company-sort">
                 <option value="All Companies">All Companies</option>
                 <?php
                 $resultCompanies = $conn->query("SELECT DISTINCT company_name FROM candidate_list");
@@ -148,12 +149,12 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                 }
                 ?>
             </select>
-                <select class="sort-by">
+                <select id="sort_Type" class="sort-by">
                     <option>Date Applied</option>
                     <option>Company Name</option>
                     <option>Job Title</option>
                 </select>
-                <select class="order-sort">
+                <select id="sort_Order" class="order-sort">
                     <option>Ascending</option>
                     <option>Descending</option>
                 </select>
@@ -694,5 +695,39 @@ function undoApproval(candidateId) {
         });
     }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Select input elements
+    const sortCompany = document.getElementById('sort_Company');
+    const sortType = document.getElementById('sort_Type');
+    const sortOrder = document.getElementById('sort_Order');
+
+    // Function to send AJAX request whenever filter changes
+    function updateTable() {
+        const company = sortCompany.value;
+        const type = sortType.value;
+        const order = sortOrder.value;
+
+        // Send AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'your_php_file.php?sort_Company=' + encodeURIComponent(company) + '&sort_Type=' + encodeURIComponent(type) + '&sort_Order=' + encodeURIComponent(order), true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // Replace the table content with the response
+                document.querySelector('#pending tbody').innerHTML = xhr.responseText;
+            } else {
+                console.error('Error fetching filtered data');
+            }
+        };
+        xhr.send();
+    }
+
+    // Event listeners for the select inputs
+    sortCompany.addEventListener('change', updateTable);
+    sortType.addEventListener('change', updateTable);
+    sortOrder.addEventListener('change', updateTable);
+});
+
+
 </script>
 

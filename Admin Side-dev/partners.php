@@ -9,7 +9,59 @@
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
-
+    <script>
+        const subclassData = {
+            "No Classification": ["General"],
+            "Construction and Building Trades": [
+                "Carpentry and Woodworking",
+                "Masonry and Concrete",
+                "Welding and Metalworking"
+            ],
+            "Mechanical and Technical": [
+                "Maintenance and Repair",
+                "Plumbing and Piping",
+                "Automotive"
+            ],
+            "Transportation and Logistics": [
+                "General Driving",
+                "Truck Driving",
+                "Transportation Support"
+            ],
+            "Janitorial and Cleaning": [
+                "General Cleaning",
+                "Specialized Cleaning",
+                "Industrial Cleaning"
+            ],
+            "Facilities and Operations": [
+                "Facility Maintenance and Security",
+                "Customer Service",
+                "Hospitality and Food Service"
+            ]
+        };
+    
+        function populateSubClassifications() {
+            const classificationSelect = document.getElementById('partner-classification');
+            const subclassSelect = document.getElementById('partner-subclassification');
+            const selectedClass = classificationSelect.value;
+    
+            // Clear previous options
+            subclassSelect.innerHTML = '<option value="" disabled selected>Sub-classification</option>';
+    
+            if (subclassData[selectedClass]) {
+                subclassData[selectedClass].forEach(subclass => {
+                    const option = document.createElement('option');
+                    option.value = subclass;
+                    option.textContent = subclass;
+                    subclassSelect.appendChild(option);
+                });
+            }
+        }
+    
+        // Ensure sub-classification options reset on page load
+        window.onload = function () {
+            populateSubClassifications();
+        };
+    </script>
 </head>
 
 <body>
@@ -295,18 +347,18 @@
 
                     <label>Classification <span style="color: red;">*</span></label>
                     <div class="class-group">
-                        <select name="classi" id="partner-classification" class="jobposting-select" placeholder="Classification" required>
+                        <select name="classi" id="partner-classification" class="jobposting-select" onchange="populateSubClassifications()" required>
                             <option value="" disabled selected>Classification</option>
-                            <option value="Class1">Class 1</option>
-                            <option value="Class2">Class 2</option>
-                            <option value="Class3">Class 3</option>
+                            <option value="No Classification">No Classification</option>
+                            <option value="Construction and Building Trades">Construction and Building Trades</option>
+                            <option value="Mechanical and Technical">Mechanical and Technical</option>
+                            <option value="Transportation and Logistics">Transportation and Logistics</option>
+                            <option value="Janitorial and Cleaning">Janitorial and Cleaning</option>
+                            <option value="Facilities and Operations">Facilities and Operations</option>
                         </select>
 
-                        <select name="subclassi" id="partner-subclassification" class="jobposting-select" placeholder="Sub-classification" required>
+                        <select name="subclassi" id="partner-subclassification" class="jobposting-select" required>
                             <option value="" disabled selected>Sub-classification</option>
-                            <option value="Sub1">Sub 1</option>
-                            <option value="Sub2">Sub 2</option>
-                            <option value="Sub3">Sub 3</option>
                         </select>
                     </div>
                 </div>

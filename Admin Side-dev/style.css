@@ -1823,7 +1823,8 @@ input[type="radio"] {
   left: 3px;
 }
 
-#add-job-title-popup .jobposting-box {
+#add-job-title-popup .jobposting-box,
+#partner-add-job-title-popup .jobposting-box {
   background-color: #ef9a5069;
 }
 

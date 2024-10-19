@@ -16,23 +16,32 @@ try {
     // Insert first_name, last_name, username, and password into employee_table
     $stmt = $conn->prepare("INSERT INTO employee_table (first_name, last_name, username, password) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $firstName, $lastName, $username, $hashed_password);
-    
-    // Insert username and hashed password into users_table (if necessary)
-    $empCredStmt = $conn->prepare("INSERT INTO users_table (username, password) VALUES (?, ?)");
-    $empCredStmt->bind_param("ss", $username, $hashed_password);
 
-    if ($stmt->execute() && $empCredStmt->execute()) {
-        echo json_encode(["message" => "Employee added successfully"]);
+    if ($stmt->execute()) {
+        // Get the last inserted employee_id
+        $employeeId = $stmt->insert_id;
+
+        // Insert username and hashed password into users_table with employee_id as foreign key
+        $empCredStmt = $conn->prepare("INSERT INTO users_table (employee_id, username, password) VALUES (?, ?, ?)");
+        $empCredStmt->bind_param("iss", $employeeId, $username, $hashed_password); // Use employee_id as foreign key
+
+        if ($empCredStmt->execute()) {
+            echo json_encode(["message" => "Employee added successfully"]);
+        } else {
+            echo json_encode(["error" => "Error inserting into users_table: " . $empCredStmt->error]);
+        }
+
+        // Close the user account insert statement
+        $empCredStmt->close();
     } else {
-        echo json_encode(["error" => "Error: " . $stmt->error]);
+        echo json_encode(["error" => "Error inserting into employee_table: " . $stmt->error]);
     }
 
-    // Close the statements
+    // Close the employee insert statement
     $stmt->close();
-    $empCredStmt->close();
-    
+
 } catch (Exception $e) {
     error_log($e->getMessage()); // Log the error
-    echo json_encode(["error" => $e->getMessage()]);
+    echo json_encode(["error" => "Exception: " . $e->getMessage()]);
 }
 ?>

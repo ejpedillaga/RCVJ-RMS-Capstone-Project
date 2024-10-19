@@ -197,24 +197,24 @@ $conn->close();
             <div class="form-step">
                 <header>Specialization</header>
                 <div class="input-group">
-    <select name="classi" id="classi" class="clas" required onchange="updateSubClassifications()">
-        <option value="">Classification</option>
-        <option value="No Classification">No Classification</option>
-        <option value="Construction and Building Trades">Construction and Building Trades</option>
-        <option value="Mechanical and Technical">Mechanical and Technical</option>
-        <option value="Transportation and Logistics">Transportation and Logistics</option>
-        <option value="Janitorial and Cleaning">Janitorial and Cleaning</option>
-        <option value="Facilities and Operations">Facilities and Operations</option>
-    </select>
-    <i class="fa-solid fa-briefcase"></i>
-</div>
-
-<div class="input-group">
-    <select name="subclassi" id="subclassi" class="clas" required>
-        <option value="">Sub-classification</option>
-    </select>
-    <i class="fa-solid fa-briefcase"></i>
-</div>
+                    <select name="classi" id="classi" class="clas" required onchange="updateSubClassifications()">
+                        <option value="">Classification</option>
+                        <option value="No Classification">No Classification</option>
+                        <option value="Construction and Building Trades">Construction and Building Trades</option>
+                        <option value="Mechanical and Technical">Mechanical and Technical</option>
+                        <option value="Transportation and Logistics">Transportation and Logistics</option>
+                        <option value="Janitorial and Cleaning">Janitorial and Cleaning</option>
+                        <option value="Facilities and Operations">Facilities and Operations</option>
+                    </select>
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
+                
+                <div class="input-group">
+                    <select name="subclassi" id="subclassi" class="clas" required>
+                        <option value="">Sub-classification</option>
+                    </select>
+                    <i class="fa-solid fa-briefcase"></i>
+                </div>
                 <div class="btns-group">
                     <a href="#" class="btn btn-prev">Previous</a>
                     <input type="submit" class="btn btn-finish" name="submit" value="Finish"/>

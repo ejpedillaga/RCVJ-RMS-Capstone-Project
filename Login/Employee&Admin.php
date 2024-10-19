@@ -15,8 +15,10 @@ if ($conn->connect_error) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username_input = $_POST["username"];
     $password_input = $_POST["password"];
+    $login_type = $_POST["login_type"]; // Get login type (admin or employee)
 
-    $sql = "SELECT * FROM users_table WHERE username='$username_input'";
+    // SQL query to fetch the user based on the username and login type
+    $sql = "SELECT * FROM users_table WHERE username='$username_input' AND usertype='$login_type'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
@@ -26,9 +28,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password_input, $row['password'])) {
             $_SESSION["username"] = $username_input;
 
-            if ($row["usertype"] == "admin") {
+            // Redirect based on the login type
+            if ($login_type == "admin") {
                 header("Location: ../Admin Side-dev/index.html");
-            } elseif ($row["usertype"] == "employee") {
+            } elseif ($login_type == "employee") {
                 header("Location: ../Employee Side/index.html");
             }
         } else {
@@ -58,40 +61,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container">
       <div class="forms-container">
         <div class="signin-signup">
-          <form action="" class="sign-in-form" method="POST">
+        <form action="" class="sign-in-form" method="POST">
             <h2 class="title">Employee Sign in</h2>
             <div class="input-field">
-              <i class="fas fa-user"></i>
-              <input type="text" placeholder="Username" name="username"/>
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Username" name="username"/>
             </div>
             <div class="input-field">
-                <i class="fas fa-hashtag"></i>
-                <input type="text" placeholder="User ID"/>
-              </div>
-            <div class="input-field">
-              <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" name="password"/>
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Password" name="password"/>
             </div>
+            <input type="hidden" name="login_type" value="employee"/>
             <input type="submit" value="Login" class="btn solid" name="submit"/>
             <p class="social-text">Or Sign in as <a href="Applicant.php" class="admin-class"> Applicant </a></p>
+        </form>
 
-          </form>
-          <form action="#" class="sign-up-form">
-            <h2 class="title"> Admin Sign In</h2>
+        <form action="" class="sign-up-form" method="POST">
+            <h2 class="title">Admin Sign In</h2>
             <div class="input-field">
-              <i class="fas fa-user"></i>
-              <input type="text" placeholder="Username" />
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Username" name="username"/>
             </div>
             <div class="input-field">
-                <i class="fas fa-hashtag"></i>
-                <input type="text" placeholder="User ID" />
-              </div>
-            <div class="input-field">
-              <i class="fas fa-lock"></i>
-              <input type="password" placeholder="Password" />
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Password" name="password"/>
             </div>
+            <input type="hidden" name="login_type" value="admin"/>
             <input type="submit" class="btn" value="Log In" />
-          </form>
+        </form>
+
         </div>
       </div>
 

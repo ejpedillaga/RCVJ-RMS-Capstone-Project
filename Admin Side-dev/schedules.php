@@ -73,7 +73,7 @@ mysqli_close($conn);
             <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" class="active"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
-            <a href="employees.html"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+            <a href="employees.php"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
         </div>
 
         <div id="header">

@@ -12,8 +12,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-echo "Hashed Password: " . $hashed_password;
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username_input = $_POST["username"];
     $password_input = $_POST["password"];

@@ -617,7 +617,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_smartsearch.php', populateSmartSearchTable);
     } else*/ if (currentPage.includes('rejected.html')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
-    } else if (currentPage.includes('employees.html')){
+    } else if (currentPage.includes('employees.php')){
         fetchData('fetch_employees.php', populateEmployeesTable)
     } else if (currentPage.includes('partners.php')){
         fetchData('fetch_partners.php', populatePartnersTable)
@@ -964,30 +964,70 @@ function populateRejectsTable(data) {
 }
 
 function populateEmployeesTable(data) {
-    const rowTemplate = (employee) => `
-        <td id="fullname" class="fullname">${employee.full_name}</td>
-        <td id="date">${employee.date_added}</td>
-        <td>
-            <select id="employee-status-dropdown-${employee.employee_id}" class="status-dropdown" data-original-value="${employee.status}" onchange="handleEmployeeStatusChange(${employee.employee_id})">
-                <option value="Active" ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
-                <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
-            </select>
-        </td>
-        <td>
-            <div class="employees-tooltip-container">
-                <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
-                <span class="tooltip-text">Edit <br>Employee</span>
-            </div>
-        </td>
-        <td>
-            <div class="employees-tooltip-container">
-                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
-                <span class="tooltip-text">Delete Employee</span>
-            </div>
-        </td>
-    `;
-    populateTable(data, 'table', rowTemplate);
+    const activeBody = document.querySelector('#tab1-content tbody');
+    const inactiveBody = document.querySelector('#tab2-content tbody');
+    const noActiveMessage = document.getElementById('no-active-employees-message');
+    const noInactiveMessage = document.getElementById('no-inactive-employees-message');
+
+    // Clear previous data
+    activeBody.innerHTML = '';
+    inactiveBody.innerHTML = '';
+
+    let activeEmployeesCount = 0;
+    let inactiveEmployeesCount = 0;
+
+    data.forEach(employee => {
+        const rowTemplate = `
+            <tr class="tr1" data-status="${employee.status}">
+                <td class="fullname">${employee.full_name}</td>
+                <td>${employee.date_added}</td>
+                <td>
+                    <select id="employee-status-dropdown-${employee.employee_id}" class="status-dropdown" data-original-value="${employee.status}" onchange="handleEmployeeStatusChange(${employee.employee_id})">
+                        <option value="Active" ${employee.status === 'Active' ? 'selected' : ''}>Active</option>
+                        <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
+                    </select>
+                </td>
+                <td>
+                    <div class="employees-tooltip-container">
+                        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
+                        <span class="tooltip-text">Edit <br>Employee</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="employees-tooltip-container">
+                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showDialogDelete(${employee.employee_id})"></i>
+                        <span class="tooltip-text">Delete Employee</span>
+                    </div>
+                </td>
+            </tr>
+        `;
+
+        // Insert the row into the appropriate table body based on status
+        if (employee.status === 'Active') {
+            activeBody.insertAdjacentHTML('beforeend', rowTemplate);
+            activeEmployeesCount++;
+        } else {
+            inactiveBody.insertAdjacentHTML('beforeend', rowTemplate);
+            inactiveEmployeesCount++;
+        }
+    });
+
+    // Show or hide "No employees found" message for active employees
+    if (activeEmployeesCount === 0) {
+        noActiveMessage.style.display = 'block'; // Show message
+    } else {
+        noActiveMessage.style.display = 'none'; // Hide message
+    }
+
+    // Show or hide "No employees found" message for inactive employees
+    if (inactiveEmployeesCount === 0) {
+        noInactiveMessage.style.display = 'block'; // Show message
+    } else {
+        noInactiveMessage.style.display = 'none'; // Hide message
+    }
 }
+
+
 
 function handleEmployeeStatusChange(employeeId) {
     const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
@@ -1003,7 +1043,11 @@ function handleEmployeeStatusChange(employeeId) {
         dropdown.setAttribute('data-original-value', selectedValue);
 
         // Send an AJAX request to update the status in the database
-        updateEmployeeStatusInDatabase(employeeId, selectedValue);
+        updateEmployeeStatusInDatabase(employeeId, selectedValue)
+            .then(() => {
+                // Reload the page after a successful update
+                location.reload();
+            });
     } else {
         // User canceled the change, revert to the original value
         dropdown.value = originalValue;
@@ -1013,7 +1057,7 @@ function handleEmployeeStatusChange(employeeId) {
 
 function updateEmployeeStatusInDatabase(employeeId, status) {
     // Example using fetch API to send the update request
-    fetch('updateEmployeeStatus.php', {
+    return fetch('updateEmployeeStatus.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -1027,20 +1071,18 @@ function updateEmployeeStatusInDatabase(employeeId, status) {
     .then(data => {
         if (data.success) {
             console.log('Employee status updated successfully in the database.');
+            return true; // Return success
         } else {
             console.error('Failed to update employee status in the database.');
-            // Optionally, revert the dropdown to its original value if the update fails
-            const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
-            dropdown.value = dropdown.getAttribute('data-original-value');
+            return false; // Return failure
         }
     })
     .catch(error => {
         console.error('Error updating employee status:', error);
-        // Optionally, revert the dropdown to its original value if the update fails
-        const dropdown = document.getElementById(`employee-status-dropdown-${employeeId}`);
-        dropdown.value = dropdown.getAttribute('data-original-value');
+        return false; // Return failure
     });
 }
+
 
 function populatePartnersTable(data) {
     const rowTemplate = (partner) =>
@@ -1611,69 +1653,9 @@ function hideEditDialog(){
     document.getElementById('overlay').classList.remove('show');
 }
 
-function editEmployee(){
+function editEmployee() {
     const firstName = document.getElementById('edit-employees-firstname').value.trim();
     const lastName = document.getElementById('edit-employees-lastname').value.trim();
-    const pw = document.getElementById('edit-employees-userid').value.trim();
-
-    console.log(firstName);
-    console.log(lastName);
-    console.log(pw);
-
-
-    // Input validation
-    if (!firstName || !lastName || !pw) {
-        alert('Please fill out all required fields.');
-        return; // Prevent form submission
-    }
-
-    // Create form data
-    const formData = new FormData();
-    formData.append('first_name', firstName);
-    formData.append('last_name', lastName);
-    //formData.append('password', pw);
-    formData.append('employee_id', currentEmployeeId);
-
-
-    // Send data using fetch
-    fetch('editEmployee.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            console.log('Success:', data.message);
-            alert('Employee data updated successfully!');
-            hideEditDialog();
-
-            // Clear the form fields
-            document.getElementById('addemployees-firstname').value = '';
-            document.getElementById('addemployees-lastname').value = '';
-            document.getElementById('addemployees-password').value = '';
-
-            //Fetch and display new data
-            fetchData('fetch_employees.php', populateEmployeesTable)
-        } else {
-            console.error('Error:', data.error);
-            alert('An error occurred while updating the employee data: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while updating the employee data.');
-    });
-}
-
-function addNewEmployee(){
-    const firstName = document.getElementById('addemployees-firstname').value.trim();
-    const lastName = document.getElementById('addemployees-lastname').value.trim();
-    const password = document.getElementById('addemployees-password').value.trim();
-
-    console.log(firstName);
-    console.log(lastName);
-    console.log(password);
-    
 
     // Input validation
     if (!firstName || !lastName) {
@@ -1685,6 +1667,52 @@ function addNewEmployee(){
     const formData = new FormData();
     formData.append('first_name', firstName);
     formData.append('last_name', lastName);
+    formData.append('employee_id', currentEmployeeId); // Assuming currentEmployeeId is defined
+
+    // Send data using fetch
+    fetch('editEmployee.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Employee data updated successfully!');
+            hideEditDialog();
+            // Optionally refresh the employee list
+            fetchData('fetch_employees.php', populateEmployeesTable);
+        } else {
+            console.error('Error:', data.error);
+            alert('An error occurred while updating the employee data: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while updating the employee data.');
+    });
+}
+
+
+
+
+
+function addNewEmployee() {
+    const firstName = document.getElementById('addemployees-firstname').value.trim();
+    const lastName = document.getElementById('addemployees-lastname').value.trim();
+    const username = document.getElementById('addemployees-username').value.trim(); // Get username directly
+    const password = document.getElementById('addemployees-password').value.trim();
+
+    // Input validation
+    if (!firstName || !lastName || !username) {
+        alert('Please fill out all required fields.');
+        return;
+    }
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('username', username); // Pass username from input
     formData.append('password', password);
 
     // Send data using Fetch
@@ -1695,19 +1723,17 @@ function addNewEmployee(){
     .then(response => response.json())
     .then(data => {
         if (data.message) {
-            console.log('Success:', data.message);
             alert('Employee added successfully!');
-            // Hide the form after successful submission
             hideEmployeeDialog();
 
             // Clear the form fields
             document.getElementById('addemployees-firstname').value = '';
             document.getElementById('addemployees-lastname').value = '';
+            document.getElementById('addemployees-username').value = '';
             document.getElementById('addemployees-password').value = '';
 
-            //Fetch and display new data
-            fetchData('fetch_employees.php', populateEmployeesTable)
-            
+            // Refresh the page to show updated employee data
+            location.reload();
         } else {
             console.error('Error:', data.error);
             alert('An error occurred while adding the Employee.');
@@ -1718,6 +1744,9 @@ function addNewEmployee(){
         alert('An error occurred while adding the Employee.');
     });
 }
+
+
+
 
 function showEditPartnerDialog(partnerId) {
     currentPartnerId = partnerId;
@@ -2683,4 +2712,37 @@ function confirmLogout() {
     if (confirm("Are you sure you want to log out?")) {
         window.location.href = 'logout.php'; // Redirect to logout script
     }
+}
+
+function showDialogDelete(employeeId) {
+    // Confirm deletion
+    if (confirm("Are you sure you want to delete this employee?")) {
+        deleteEmployee(employeeId);
+    }
+}
+
+function deleteEmployee(employeeId) {
+    // Send a request to delete the employee
+    fetch('deleteEmployee.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ employee_id: employeeId }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            alert('Employee deleted successfully!');
+            // Optionally refresh the employee list
+            fetchData('fetch_employees.php', populateEmployeesTable);
+        } else {
+            console.error('Error:', data.error);
+            alert('An error occurred while deleting the employee: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the employee.');
+    });
 }

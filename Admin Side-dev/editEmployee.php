@@ -3,44 +3,30 @@ include_once("connection.php");
 
 $conn = connection();
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $employeeId = intval($_POST['employee_id']);
+try {
+    // Fetch and sanitize POST data
     $firstName = isset($_POST['first_name']) ? $_POST['first_name'] : '';
     $lastName = isset($_POST['last_name']) ? $_POST['last_name'] : '';
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $employeeId = isset($_POST['employee_id']) ? (int)$_POST['employee_id'] : 0;
 
-    // Update job data
-    $sql = "UPDATE employee_table SET first_name = ?, last_name = ? WHERE employee_id = ?";
-    $stmt = $conn->prepare($sql);
-    if (!$stmt) {
-        echo json_encode(["error" => "Failed to prepare statement"]);
-        exit;
-    }
-    $stmt->bind_param('ssi', $firstName, $lastName, $employeeId);
+    // Prepare the SQL update query for first name and last name only
+    $updateSql = "UPDATE employee_table SET first_name = ?, last_name = ? WHERE employee_id = ?";
+    $stmt = $conn->prepare($updateSql);
+    $stmt->bind_param("ssi", $firstName, $lastName, $employeeId);
+
     if ($stmt->execute()) {
-       echo json_encode(["message" => "Partner added successfully"]);
+        echo json_encode(["message" => "Employee updated successfully"]);
     } else {
-       echo json_encode(["error" => "Error: " . $stmt->error]);
+        echo json_encode(["error" => "Error: " . $stmt->error]);
     }
-   $stmt->close();
 
-
-
-
-   /*
-   //TODO Fix updating userpassword
-   $user_stmt = $conn->prepare("UPDATE users_table SET password = ? WHERE userid = $employeeId" );
-   if (!$user_stmt) {
-      echo json_encode(["error" => "Failed to prepare update password statement"]);
-      exit;
-  }
-  $user_stmt->bind_param("s", $password) ;
-  if ($user_stmt->execute()) {
-   echo json_encode(["message"=> "Password updated succesfully"]);
-  } else {
-   echo json_encode(["error"=> "Error " . $user_stmt->error]);
-  }
-  $user_stmt->close();
-  */
+    // Close the statement
+    $stmt->close();
+    
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Log the error
+    echo json_encode(["error" => $e->getMessage()]);
 }
+
 $conn->close();
+?>

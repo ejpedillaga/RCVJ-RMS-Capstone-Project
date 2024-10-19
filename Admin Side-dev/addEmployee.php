@@ -1,32 +1,38 @@
-<?PHP
-    include_once("connection.php");
+<?php
+include_once("connection.php");
 
-    $conn = connection();
-    
-    try {
-        // Fetch and sanitize POST data
-        $firstName = isset($_POST['first_name']) ? $_POST['first_name'] : '';
-        $lastName = isset($_POST['last_name']) ? $_POST['last_name'] : '';
-        $password = isset($_POST['password']) ? $_POST['password'] : '';
-        
-        // Concatenate first and last name to get full name
-        $username = $firstName . $lastName . 'test';
-    
-        // Prepare and bind
-        $stmt = $conn->prepare("INSERT INTO employee_table (first_name, last_name) VALUES (?,?)");
-        $stmt->bind_param("ss", $firstName, $lastName);
-        $stmt->execute();
-        $stmt->close();
+$conn = connection();
 
-        $empCredStmt = $conn -> prepare("INSERT INTO users_table (username, password) VALUES (?, ?)");
-        $empCredStmt->bind_param("ss", $username, $password);
+try {
+    // Fetch and sanitize POST data
+    $firstName = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+    $lastName = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+    $username = isset($_POST['username']) ? $_POST['username'] : ''; // Get username directly from input
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+
+    // Hash the password before storing it
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+    // Insert first_name, last_name, username, and password into employee_table
+    $stmt = $conn->prepare("INSERT INTO employee_table (first_name, last_name, username, password) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $firstName, $lastName, $username, $hashed_password);
     
-        if ($stmt && $empCredStmt ->execute()) {
-            echo json_encode(["message" => "Employee added successfully"]);
-        } else {
-            echo json_encode(["error" => "Error: " . $stmt->error]);
-        }
-    } catch (Exception $e) {
-        error_log($e->getMessage()); // Log the error
-        echo json_encode(["error" => $e->getMessage()]);
+    // Insert username and hashed password into users_table (if necessary)
+    $empCredStmt = $conn->prepare("INSERT INTO users_table (username, password) VALUES (?, ?)");
+    $empCredStmt->bind_param("ss", $username, $hashed_password);
+
+    if ($stmt->execute() && $empCredStmt->execute()) {
+        echo json_encode(["message" => "Employee added successfully"]);
+    } else {
+        echo json_encode(["error" => "Error: " . $stmt->error]);
     }
+
+    // Close the statements
+    $stmt->close();
+    $empCredStmt->close();
+    
+} catch (Exception $e) {
+    error_log($e->getMessage()); // Log the error
+    echo json_encode(["error" => $e->getMessage()]);
+}
+?>

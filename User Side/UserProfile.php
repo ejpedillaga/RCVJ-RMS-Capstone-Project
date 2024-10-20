@@ -702,6 +702,13 @@ if (isset($_SESSION['message'])) {
         </nav>
             
             <section class="profile-section">
+                
+                <div class="shape-container2">
+                    <div class="rectangle-4"></div>
+                    <div class="rectangle-5"></div>
+                    <div class="rectangle-6"></div>
+                </div>
+                
                 <!--Edit Profile Sidenav-->
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>

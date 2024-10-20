@@ -128,12 +128,12 @@ if (isset($_SESSION['user'])) {
                     <span style="font-weight: 500;"> RCVJ, Incorporated </span>was established in October 09, 1992, with Hon. Recto M. Cantimbuhan as President and his wife Mrs. Veronica J. Cantimbuhan as Treasurer and Vice President. RCVJ provides manpower and janitorial services to prestigious companies in Cavite, Laguna, and other places in Luzon.
                     </p>
                     <div class="rcvj-section">
-                    <p class="rcvj-title">RCVJ Stands for:</p>
+                    <p class="rcvj-title"><span style="font-weight: 800;">RCVJ</span> Stands for:</p>
                     <ul class="rcvj-list">
-                        <li>R - Recto</li>
-                        <li>C - Cantimbuhan</li>
-                        <li>V - Veronica</li>
-                        <li>J - Jarata</li>
+                        <li><span style="font-weight: 800;">R</span>  - Recto</li>
+                        <li><span style="font-weight: 800;">C</span>  - Cantimbuhan</li>
+                        <li><span style="font-weight: 800;">V</span>  - Veronica</li>
+                        <li><span style="font-weight: 800;">J</span>  - Jarata</li>
                     </ul>
                     </div>
                 </div>

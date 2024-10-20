@@ -567,9 +567,7 @@ section {
   transform: rotate(-220deg);
   z-index: -1;
   opacity: 50%;
-
 }
-
 
 .shape-container1 {
   margin-right: -30rem;
@@ -587,8 +585,6 @@ section {
   z-index: -1; /* Ensure it is behind other elements */
   pointer-events: none;
 }
-
-
 
 /* Searchbar */
 .searchbar1 {
@@ -637,9 +633,9 @@ input:hover {
 /*tags*/
 
 .tags-container {
- display: grid;
- grid-template-columns: auto auto auto auto auto auto;
- gap: 15px;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto auto;
+  gap: 15px;
 }
 
 .tags {
@@ -889,7 +885,7 @@ footer {
 
 .flip-card {
   background-color: transparent;
-  width: 40em;
+  width: 50em;
   height: 400px;
   perspective: 1000px;
 }
@@ -909,14 +905,14 @@ footer {
   transform: rotateY(180deg);
 }
 
-.flip-card-front, .flip-card-back {
+.flip-card-front,
+.flip-card-back {
   position: absolute;
   width: 100%;
   height: 100%;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   border-radius: 60px;
-
 }
 
 .flip-card-front {
@@ -936,10 +932,31 @@ footer {
 .flip-card-front img {
   width: 20em;
   height: auto;
+  filter: drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5));
 }
 
 .flip-card-back {
-  background-color: #ef9b50;
+  background: hsla(28, 83%, 63%, 1);
+
+  background: linear-gradient(
+    180deg,
+    hsla(28, 83%, 63%, 1) 0%,
+    hsla(253, 66%, 28%, 1) 100%
+  );
+
+  background: -moz-linear-gradient(
+    180deg,
+    hsla(28, 83%, 63%, 1) 0%,
+    hsla(253, 66%, 28%, 1) 100%
+  );
+
+  background: -webkit-linear-gradient(
+    180deg,
+    hsla(28, 83%, 63%, 1) 0%,
+    hsla(253, 66%, 28%, 1) 100%
+  );
+
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#ef9b50", endColorstr="#2C1875", GradientType=1 );
   color: white;
   transform: rotateY(180deg);
   padding: 2rem;
@@ -950,6 +967,12 @@ footer {
   font-size: 25px;
   font-family: "Encode Sans Semi Expanded", sans-serif;
   font-weight: 200;
+  gap: 3rem;
+  box-shadow: rgba(0, 0, 0, 0.17) 0px -10px 20px 0px inset,
+    rgba(0, 0, 0, 0.15) 0px -10px 30px 0px inset,
+    rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
+    rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px,
+    rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 }
 
 .rcvj-description {
@@ -964,6 +987,11 @@ footer {
   flex-direction: column;
 }
 
+.rcvj-description img {
+  max-width: 20rem;
+  max-height: 5rem;
+}
+
 .rcvj-title {
   font-weight: 500;
 }
@@ -976,10 +1004,6 @@ footer {
 .rcvj-list li {
   font-weight: 500;
 }
-
-
-
-
 
 /*Jobs Styles*/
 .jobs-section {
@@ -1154,7 +1178,6 @@ footer {
   margin-top: 1rem;
   text-align: justify;
 }
-
 
 /*Job Details Styles*/
 .details-section {
@@ -1766,8 +1789,6 @@ img#profile-picture {
   background-color: #2c1875;
   color: #ffffff;
 }
-
-
 
 /*Sidenav*/
 body.overlay-active #desktop-nav {
@@ -3074,4 +3095,3 @@ input[type="number"] {
 .logout-btn {
   margin-left: 50px;
 }
-

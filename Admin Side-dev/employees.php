@@ -80,6 +80,9 @@
                         <!-- Active employees populated here -->
                     </tbody>
                 </table>
+                <div id="no-active-employees-message" style="text-align: center; color: #2C1875; font-weight: bold;">
+                    No active employees found
+                </div>
             </div>
 
             <div class="tab-content" id="tab2-content" style="display: none;">
@@ -114,6 +117,10 @@
                         <!-- Inside your inactive employee table -->
                     </tbody>
                 </table>
+                <div id="no-inactive-employees-message" style="text-align: center; color: #2C1875; font-weight: bold;">
+                    No inactive employees found
+                </div>
+                
             </div>
 
         

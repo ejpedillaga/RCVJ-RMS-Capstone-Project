@@ -552,6 +552,25 @@ section {
   opacity: 40%;
 }
 
+.rectangle-6 {
+  width: 500px;
+  height: 500px;
+  margin-top: -300px;
+  margin-left: 90rem;
+  border-radius: 60px;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 1) 10%,
+    rgb(41, 25, 99) 100%
+  );
+  transform: rotate(-220deg);
+  z-index: -1;
+  opacity: 50%;
+
+}
+
+
 .shape-container1 {
   margin-right: -30rem;
   margin-top: -1rem;
@@ -568,6 +587,8 @@ section {
   z-index: -1; /* Ensure it is behind other elements */
   pointer-events: none;
 }
+
+
 
 /* Searchbar */
 .searchbar1 {
@@ -616,10 +637,9 @@ input:hover {
 /*tags*/
 
 .tags-container {
-  display: flex;
-  flex-direction: row; /* Changed from column to row */
-  gap: 1rem;
-  margin-top: 1rem;
+ display: grid;
+ grid-template-columns: auto auto auto auto auto auto;
+ gap: 15px;
 }
 
 .tags {
@@ -861,14 +881,51 @@ footer {
   align-self: center;
   justify-content: space-around;
 }
-
-.about-card {
+.flip-main-container {
   display: flex;
-  padding: 5rem;
-  margin-left: 15rem;
-  margin-right: 15rem;
-  background-color: #ef9b50;
+  justify-content: center;
+  align-items: center;
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 40em;
+  height: 400px;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border-radius: 60px;
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 60px;
+
+}
+
+.flip-card-front {
+  background-color: #ef9b50;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
   box-shadow: rgba(0, 0, 0, 0.17) 0px -10px 20px 0px inset,
     rgba(0, 0, 0, 0.15) 0px -10px 30px 0px inset,
     rgba(0, 0, 0, 0.1) 0px -79px 40px 0px inset, rgba(0, 0, 0, 0.06) 0px 2px 1px,
@@ -876,22 +933,53 @@ footer {
     rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
 }
 
-.about-card .content {
-  display: flex;
-  align-items: center;
+.flip-card-front img {
+  width: 20em;
+  height: auto;
 }
 
-.about-card img {
-  width: 20rem;
-  height: auto;
-  filter: drop-shadow(0.35rem 0.35rem 0.4rem rgba(0, 0, 0, 0.5));
-}
-.about-card p {
-  line-height: 1.5;
-  letter-spacing: 1px;
-  color: #ffffff;
+.flip-card-back {
+  background-color: #ef9b50;
+  color: white;
+  transform: rotateY(180deg);
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: justify;
+  font-size: 25px;
+  font-family: "Encode Sans Semi Expanded", sans-serif;
+  font-weight: 200;
 }
+
+.rcvj-description {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  width: 50%;
+  padding-right: 2em;
+}
+
+.rcvj-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.rcvj-title {
+  font-weight: 500;
+}
+
+.rcvj-list {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+.rcvj-list li {
+  font-weight: 500;
+}
+
+
+
+
 
 /*Jobs Styles*/
 .jobs-section {
@@ -1027,7 +1115,7 @@ footer {
   padding: 2rem;
   margin: 1rem;
   width: 250px;
-  height: auto;
+  height: 8rem;
   transition: 0.1s ease;
   box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px,
     rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px,
@@ -1059,12 +1147,14 @@ footer {
 
 .company-box {
   text-align: left;
+  margin-right: 3em;
 }
 
 .jobs-card .desc-box {
   margin-top: 1rem;
   text-align: justify;
 }
+
 
 /*Job Details Styles*/
 .details-section {
@@ -1387,9 +1477,8 @@ footer {
 }
 
 .tab-content ul {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 0;
+  display: grid;
+  grid-template-columns: auto auto auto;
   list-style: none;
   width: 100%; /* Ensure the ul takes up the full width of its container */
   transition: 0.3s ease;
@@ -1543,7 +1632,8 @@ footer {
   margin: 2rem 2rem 0 1rem;
   padding: 0.5rem 3rem 0.5rem 2rem;
   transition: 0.3s ease;
-  max-height: 18rem;
+  max-height: 20rem;
+  width: 70em;
   flex-grow: 1;
   flex-basis: 40%;
 }
@@ -1575,18 +1665,12 @@ img#profile-picture {
   font-weight: 500;
 }
 
-.profile-contacts .user-address {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
+.profile-contacts .user-address,
 .profile-contacts .user-email {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .profile-logo {
@@ -1595,7 +1679,7 @@ img#profile-picture {
 
 .profile-edit {
   padding-bottom: 13rem;
-  margin-left: 2rem;
+  margin-left: 15rem;
 }
 
 .profile-edit:hover {
@@ -1609,7 +1693,7 @@ img#profile-picture {
 
 #my-jobs-card {
   padding: 1rem 2rem 0;
-  max-width: 50rem;
+  max-width: 30rem;
   min-height: 18rem;
   cursor: pointer;
 }
@@ -1619,9 +1703,10 @@ img#profile-picture {
   font-weight: 500;
   color: white;
   font-family: "Encode Sans Semi Expanded", sans-serif;
-  margin-right: 25rem;
+  margin-left: -3em;
+  padding-right: 15rem;
+  padding-left: 3em;
 }
-
 
 .mjc-header {
   display: flex;
@@ -1637,7 +1722,7 @@ img#profile-picture {
   margin-bottom: 1rem;
 }
 
-/*Profile Body*/
+/* Profile Body */
 .sections {
   display: grid;
   grid-template-columns: auto auto;
@@ -1681,6 +1766,8 @@ img#profile-picture {
   background-color: #2c1875;
   color: #ffffff;
 }
+
+
 
 /*Sidenav*/
 body.overlay-active #desktop-nav {

@@ -114,15 +114,31 @@ if (isset($_SESSION['user'])) {
         </nav>
 
         <section class="about-section">
-            <div class="main-container">
-                <div class="about-card">
-                <div class="content">
+        <div class="main-container">
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <div class="content">
                     <img src="images/about.png" alt="">
-                    <div>
-                        <h1 class="title5">WHO IS RCVJ?</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <h1 class="title5">WHO IS RCVJ?</h1>
                     </div>
                 </div>
+                <div class="flip-card-back">
+                    <p class="rcvj-description">
+                    <span style="font-weight: 500;"> RCVJ, Incorporated </span>was established in October 09, 1992, with Hon. Recto M. Cantimbuhan as President and his wife Mrs. Veronica J. Cantimbuhan as Treasurer and Vice President. RCVJ provides manpower and janitorial services to prestigious companies in Cavite, Laguna, and other places in Luzon.
+                    </p>
+                    <div class="rcvj-section">
+                    <p class="rcvj-title">RCVJ Stands for:</p>
+                    <ul class="rcvj-list">
+                        <li>R - Recto</li>
+                        <li>C - Cantimbuhan</li>
+                        <li>V - Veronica</li>
+                        <li>J - Jarata</li>
+                    </ul>
+                    </div>
+                </div>
+                </div>
+            </div>
             </div>
 
             </div>

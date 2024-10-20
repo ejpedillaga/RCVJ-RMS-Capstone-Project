@@ -77,21 +77,26 @@ if (isset($_SESSION['user'])) {
         $stmt_job->close();
         
         // Fetch user-specific skills
-        $sql = "SELECT skill_table.skill_name 
-                FROM skill_table 
-                JOIN user_skills_table ON skill_table.skill_id = user_skills_table.skill_id 
-                WHERE user_skills_table.userid = ?";
-        $stmt_skills_user = $conn->prepare($sql);
-        $stmt_skills_user->bind_param("i", $userid);
-        $stmt_skills_user->execute();
-        $result_skills_user = $stmt_skills_user->get_result();
+        $sql_user_skills = "SELECT skill_table.skill_name 
+                            FROM skill_table 
+                            JOIN user_skills_table ON skill_table.skill_id = user_skills_table.skill_id 
+                            WHERE user_skills_table.userid = ?";
+        $stmt_user_skills = $conn->prepare($sql_user_skills);
+        $stmt_user_skills->bind_param("i", $userid);
+        $stmt_user_skills->execute();
+        $result_user_skills = $stmt_user_skills->get_result();
 
-        if ($result_skills_user->num_rows > 0) {
-            while ($row = $result_skills_user->fetch_assoc()) {
-                $skills[] = $row['skill_name'];
+        $user_skills = [];
+        if ($result_user_skills->num_rows > 0) {
+            while ($row = $result_user_skills->fetch_assoc()) {
+                $user_skills[] = $row['skill_name'];
             }
         }
-        $stmt_skills_user->close();
+        $stmt_user_skills->close();
+
+        
+
+
 
         // Fetch licenses
         $sql = "SELECT license_name, month_issued, year_issued, month_expired, year_expired FROM certification_license_table WHERE userid = ?";
@@ -323,10 +328,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </ul>
                 </div>
                 <div id="user-skills">
-                    <h3>Skills</h3>
+                    <h3>User Skills</h3>
                     <ul class="skills-list">
-                        <?php if (!empty($skills)) : ?>
-                            <?php foreach ($skills as $skill) : ?>
+                        <?php if (!empty($user_skills)) : ?>
+                            <?php foreach ($user_skills as $skill) : ?>
                                 <li><?php echo htmlspecialchars($skill); ?></li>
                             <?php endforeach; ?>
                         <?php else : ?>
@@ -334,6 +339,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <?php endif; ?>
                     </ul>
                 </div>
+
                 <div id="licenses-container">
                     <h3>Licenses</h3>
                     <ul class="licenses-list">

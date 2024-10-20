@@ -964,8 +964,8 @@ function populateRejectsTable(data) {
 }
 
 function populateEmployeesTable(data) {
-    const activeBody = document.querySelector('#tab1-content tbody');
-    const inactiveBody = document.querySelector('#tab2-content tbody');
+    const activeBody = document.querySelector('#active-employees-body');
+    const inactiveBody = document.querySelector('#inactive-employees-body');
     const noActiveMessage = document.getElementById('no-active-employees-message');
     const noInactiveMessage = document.getElementById('no-inactive-employees-message');
 
@@ -1002,7 +1002,6 @@ function populateEmployeesTable(data) {
             </tr>
         `;
 
-        // Insert the row into the appropriate table body based on status
         if (employee.status === 'Active') {
             activeBody.insertAdjacentHTML('beforeend', rowTemplate);
             activeEmployeesCount++;
@@ -1012,15 +1011,11 @@ function populateEmployeesTable(data) {
         }
     });
 
-    // Log counts for debugging
-    console.log(`Active Employees Count: ${activeEmployeesCount}`);
-    console.log(`Inactive Employees Count: ${inactiveEmployeesCount}`);
+    // Show or hide the "No active employees found" message
+    noActiveMessage.style.display = activeEmployeesCount === 0 ? 'block' : 'none';
 
-    // Show or hide "No employees found" message for active employees
-    noActiveMessage.style.display = activeEmployeesCount === 0 ? 'block' : 'none'; 
-
-    // Show or hide "No employees found" message for inactive employees
-    noInactiveMessage.style.display = inactiveEmployeesCount === 0 ? 'block' : 'none'; 
+    // Show or hide the "No inactive employees found" message
+    noInactiveMessage.style.display = inactiveEmployeesCount === 0 ? 'block' : 'none';
 }
 
 

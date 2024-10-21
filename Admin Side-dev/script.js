@@ -207,17 +207,25 @@ function showInfo(candidate) {
         noResumeMessage.style.display = 'block';
     }
 
-    // Create the Approve Application button
+    //Approve Application button
     const approveButton = document.createElement('button');
     approveButton.className = 'button-apply';
     approveButton.textContent = 'Approve Application';
 
     approveButton.onclick = () => approveApplication(candidate.userid, candidate.job_id);
 
+    //RejectApplication button
+    const rejectButton = document.createElement('button');
+    rejectButton.className = 'button-reject';
+    rejectButton.textContent = 'Reject Application';
+
+    rejectButton.onclick = () => showDialogReject(candidate.userid, candidate.job_id);
+
     
     const buttonsContainer = document.getElementById('buttons-container');
     buttonsContainer.innerHTML = ''; 
     buttonsContainer.appendChild(approveButton);
+    buttonsContainer.appendChild(rejectButton);
 }
 
 function showInfoCandidate(candidate) {
@@ -450,6 +458,35 @@ function hideDialogEdit() {
     document.getElementById('dialogBox-edit').style.display = 'none';
 }
 
+function showDialogReject(userId, jobId) {
+    document.getElementById('dialogBox-reject').style.display = 'block';
+    document.getElementById('dialogBox-reject').classList.add('show');
+    document.getElementById('overlay2').classList.add('show');
+
+    const rejectButton = document.querySelector('.rejected-save-button');
+
+    // Reset the event listener to avoid duplicates
+    rejectButton.onclick = null; 
+    rejectButton.onclick = () => {
+        const remarks = document.getElementById('rejected-remarks').value.trim();
+
+        if (!remarks) {
+            alert('Please provide remarks for rejection.');
+            return;
+        }
+
+        rejectApplication(userId, jobId, remarks);
+    };
+}
+
+function hideDialogReject() {
+    document.getElementById('dialogBox-reject').style.display = 'none';
+    document.getElementById('dialogBox-reject').classList.remove('show');
+    document.getElementById('overlay2').classList.remove('show');
+
+    // Clear remarks input for a clean slate
+    document.getElementById('rejected-remarks').value = '';
+}
 function openThirdPopup(companyName) {
     const thirdPopup = document.getElementById('thirdPopup');
     
@@ -611,13 +648,9 @@ function previewEditLogo(event) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname;
 
-    /*if (currentPage.includes('candidates.php')) {
-        fetchData('fetch_candidates.php', populateCandidatesTable);
-    } else if (currentPage.includes('smartsearch.php')) {
-        fetchData('fetch_smartsearch.php', populateSmartSearchTable);
-    } else*/ if (currentPage.includes('rejected.html')) {
+    /*if (currentPage.includes('rejected.php')) {
         fetchData('fetch_rejects.php', populateRejectsTable);
-    } else if (currentPage.includes('employees.php')){
+    } else*/ if (currentPage.includes('employees.php')){
         fetchData('fetch_employees.php', populateEmployeesTable)
     } else if (currentPage.includes('partners.php')){
         fetchData('fetch_partners.php', populatePartnersTable)
@@ -951,17 +984,34 @@ function populateTable(data, tableSelector, rowTemplate) {
     `;
     populateTable(data, 'table', rowTemplate);
 }*/
+// Helper function to format date to MM/DD/YYYY
+function formatDate(dateString) {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, options).replace(/(\d+)\/(\d+)\/(\d+)/, '$1/$2/$3'); // Ensure MM/DD/YYYY format
+}
 
-function populateRejectsTable(data) {
+/*function populateRejectsTable(data) {
     const rowTemplate = (reject) => `
-        <td id="fullname" class="fullname">${reject.full_name}</td>
-        <td id="remarks">${reject.remarks}</td>
-        <td id="date">${reject.date_rejected}</td>
-        <td><i class="fa-solid fa-rotate-left fa-2xl" style="color: #2C1875;"></i></td>
-        <td><i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showEditDialog()"></i></td>
+        <tr>
+            <td class="fullname">${reject.full_name}</td>
+            <td><strong>${reject.company_name}</strong></td>
+            <td>${reject.job_title}</td>
+            <td>${reject.remarks}</td>
+            <td>${formatDate(reject.date_rejected)}</td>
+            <td class="candidates-tooltip-container">
+                <i class="fa-solid fa-rotate-left fa-2xl" style="color: #2C1875; cursor: pointer;" 
+                   onclick="undoRejection(${reject.userid}, ${reject.job_id})"></i>
+                <span class="tooltip-text">Undo Rejection</span> 
+            </td>
+            <td class="candidates-tooltip-container">
+                <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showEditDialog()"></i>
+                <span class="tooltip-text">Remove Applicant</span>
+            </td>
+        </tr>
     `;
     populateTable(data, 'table', rowTemplate);
-}
+}*/
 
 function populateEmployeesTable(data) {
     const activeBody = document.querySelector('#active-employees-body');

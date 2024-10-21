@@ -59,6 +59,8 @@ $jobs_result = $stmt->get_result();
                 $for_deployment_jobs[] = $job;
             } elseif ($job['deployment_status'] == 'Deployed') {
                 $current_jobs[] = $job;
+            } elseif ($job['status'] == 'Rejected') {
+                $rejected_jobs[] = $job;
             }
         }
     }
@@ -82,7 +84,7 @@ $conn->close();
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RCVJ, Inc.</title>
+        <title>My Jobs | RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
@@ -308,18 +310,29 @@ $conn->close();
 
                 <div id="rejected" class="tab-content">
                     <ul class="job-list">
-                    <div class="empty-message" style="display: flex;">
-                        <img src="images/findjobs.png" alt="">
-                        <p>You have no declined job submission.<br>Look for jobs.</p>
-                        <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
-                    </div>
+                        <?php if (!empty($rejected_jobs)): ?>
+                            <?php foreach ($rejected_jobs as $job): ?>
+                                <li>
+                                    <div class="jobs-card" onclick="redirectTo('JobDetails.php?id=<?php echo $job['job_id']; ?>')">
+                                        <div class="job-header">
+                                            <h3 id="job-title"><?php echo htmlspecialchars($job['job_title']); ?></h3>
+                                        </div>
+                                        <div class="company-box">
+                                            <p id="company"><?php echo htmlspecialchars($job['company_name']); ?></p>
+                                            <p id="location"><i class="fas fa-map-marker-alt"></i><?php echo htmlspecialchars($job['job_location']); ?></p>
+                                            <p id="date">Date Applied: </i><?php echo date('m/d/Y', strtotime($job['date_applied'])); ?></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="empty-message" style="display: flex;">
+                                <img src="images/findjobs.png" alt="">
+                                <p>You have no declined job submissions.<br>Look for jobs.</p>
+                                <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
+                            </div>
+                        <?php endif; ?>
                     </ul>
-                    <!-- Empty message should be outside the job list -->
-                    <div class="empty-message" style="display: none;">
-                        <img src="images/findjobs.png" alt="">
-                        <p>You have no job declined submission.<br>Look for jobs.</p>
-                        <button onclick="redirectTo('Jobs.php')">Find Jobs</button>
-                    </div>
                 </div>
             </div>
         </section>

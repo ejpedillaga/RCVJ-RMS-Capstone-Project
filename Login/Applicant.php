@@ -85,7 +85,7 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="ApplicantStyle.css" />
-    <title>Sign in & Sign up Form</title>
+    <title>Sign In/Sign Up | RCVJ, Inc.</title>
     <style>
         /* POPUP MESSAGE */
         .popup-message {

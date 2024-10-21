@@ -58,7 +58,7 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RCVJ, Inc.</title>
+        <title>Home | RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>

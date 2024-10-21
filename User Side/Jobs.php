@@ -65,7 +65,7 @@ $conn->close();
 <!DOCTYPE html>
 <html>
     <head>
-        <title>RCVJ, Inc.</title>
+        <title>Jobs | RCVJ, Inc.</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>

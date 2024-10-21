@@ -182,8 +182,8 @@ $conn->close();
                                 
                                 // Company and Location Details
                                 echo '<div class="company-box">';
-                                echo '<p style="margin-top: 0.5rem; margin-bottom: 0.5rem;" id="company-name">' . htmlspecialchars($row["company_name"]) . '</p>';
-                                echo '<p style="margin-top: 5px" id="location"><i class="location fas fa-map-marker-alt"></i>' . htmlspecialchars($row["job_location"]) . '</p>';
+                                echo '<p style="margin-top: 0.5rem; padding-bottom: 0.5rem; height:2rem;" id="company-name">' . htmlspecialchars($row["company_name"]) . '</p>';
+                                echo '<p id="location"><i class="location fas fa-map-marker-alt"></i>' . htmlspecialchars($row["job_location"]) . '</p>';
                                 
                                 // Date Posted
                                 $datePosted = new DateTime($row["date_posted"]);

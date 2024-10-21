@@ -1,18 +1,13 @@
 <?php
 session_start();
-
-// Include the connection.php file
-include 'connection.php'; // Adjust this if necessary
-
-// Call the connection function to establish the database connection
+include 'connection.php'; 
 $conn = connection();
 
-// Check if the connection is established
 if (!$conn) {
     die("Database connection failed.");
 }
 
-$user_name = 'Sign Up'; // Default username if not logged in
+$user_name = 'Sign Up';
 $user_info = [];
 $education_list = [];
 $vocational_list = [];
@@ -473,6 +468,12 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     <td class="fullname">${candidate.candidate.fname} ${candidate.candidate.lname}</td>
                     <td><strong>${candidate.candidate.job_title}</strong></td>
                     <td>${candidate.candidate.company_name}</td>
+                    <td class="candidates-tooltip-container">
+                        <i class="fa fa-file-text fa-2xl" aria-hidden="true" 
+                        style="color: #2C1875; cursor: pointer;" 
+                        onclick="window.open('../User Side/JobDetails.php?id=${candidate.candidate.job_id}', '_blank')"></i>
+                        <span class="tooltip-text">Job Details</span>
+                    </td>
                     <td>${candidate.candidate.date_applied}</td>
                     <td class="status candidates-tooltip-container">
                         <span class="${statusClass}">${statusText}</span>
@@ -488,10 +489,6 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         style="color: #2C1875; cursor: pointer;" 
                         onclick='showInfo(${JSON.stringify(candidate.candidate)}, ${candidate.candidate.job_id})'></i>
                         <span class="tooltip-text">Candidate Information</span>
-                    </td>
-                    <td class="candidates-tooltip-container">
-                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;"></i>
-                        <span class="tooltip-text">Delete Candidate</span>
                     </td>
                 </tr>
             `;
@@ -602,7 +599,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 paginationContainer.innerHTML += firstPageLink;
 
                 for (let i = 1; i <= totalPages; i++) {
-                    const pageLink = `<a href="#" onclick="changePage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</a>`;
+                    const pageLink = `<a href="#" onclick="changePage(${i})" class="pagination-link ${i === currentPage ? 'active' : ''}">${i}</a>`;
                     paginationContainer.innerHTML += pageLink;
                 }
 
@@ -645,6 +642,36 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 if (data.success) {
                     alert('Applicant has been approved.');
                     hideInfo();
+                    location.reload();
+                } else {
+                    console.error('Error updating candidate status:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        function rejectApplication(userId, jobId, remarks) { 
+            fetch('reject_candidate.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    userid: userId,
+                    jobid: jobId,
+                    remarks: remarks
+                })
+            })
+            .then(response => response.text())
+            .then(text => {
+                console.log('Raw response:', text); 
+                const data = JSON.parse(text);
+
+                if (data.success) {
+                    alert('Applicant has been rejected.');
+                    hideDialogReject();
                     location.reload();
                 } else {
                     console.error('Error updating candidate status:', data.error);
@@ -709,7 +736,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <div id="candidateResults">
                     <!-- Candidates who applied will be displayed here -->
                 </div>
-                <button class="rejected-button" onclick="redirectTo('rejected.html')">Rejected</button>
+                <button class="rejected-button" onclick="redirectTo('rejected.php')">Rejected</button>
             </div>
             
             <div>
@@ -719,10 +746,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                         <th>Candidate</th>
                         <th>Job Title</th>
                         <th>Company</th>
+                        <th></th>
                         <th>Date Applied</th>
                         <th>Status</th>
                         <th>Matching</th>
-                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
@@ -822,19 +849,22 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 </div>
             </div>
 
+            <!-- Overlay --> 
+            <div class="overlay2" id="overlay2"></div>
+
             <!-- Dialog Box -->
-            <div class="rejected-dialog-box" id="dialogBox">
-            <div class="rejected-back-button" onclick="hideDialog()">
-                <i class="fas fa-chevron-left"></i> Back
+            <div class="rejected-dialog-box" id="dialogBox-reject">
+                <div class="rejected-back-button" onclick="hideDialogReject()">
+                    <i class="fas fa-chevron-left"></i> Back
+                </div>
+                
+                <h2 style="text-align: center;">Are you sure you want to reject this candidate?</h2>
+                <div class="rejected-form-group">
+                    <label for="rejected-remarks">Remarks:</label>
+                    <input type="text" id="rejected-remarks">
+                    <button class="rejected-save-button">Confirm</button>
+                </div>
             </div>
-            
-            <h2 style="text-align: center;">Are you sure you want to reject this candidate?</h2>
-            <div class="rejected-form-group">
-                <label for="rejected-firstname">Remarks:</label>
-                <input type="text" id="rejected-firstname">
-                <button class="rejected-save-button">Confirm</button>
-            </div>
-        </div>
         </div>
     </div>
     <div class="shape-container2">

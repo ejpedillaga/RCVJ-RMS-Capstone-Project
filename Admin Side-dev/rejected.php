@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Side RCVJ</title>
+    <title>Rejected | RCVJ, Inc.</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
@@ -137,19 +137,6 @@
                 <div id="paginationControls" class="pagination"></div>
             </div>
         </div>
-
-        <!-- Overlay -->
-        <div class="overlay" id="overlay"></div>
-
-        <!-- Dialog Box -->
-        <div class="rejected-dialog-box" id="dialogBox">
-            <div class="rejected-back-button" onclick="hideDialog()">
-                <i class="fas fa-chevron-left"></i> Back
-            </div>
-            
-            <h2 style="text-align: center;">Are you sure you want to delete this candidate?</h2>
-            <button class="rejected-save-button">Confirm</button>
-        </div>
     </div>
     <div class="shape-container2">
         <div class="rectangle-4"></div>
@@ -278,7 +265,7 @@
                         <span class="tooltip-text">Undo Rejection</span>
                     </td>
                     <td class="candidates-tooltip-container">
-                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="showEditDialog()"></i>
+                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" onclick="removeApplicant(${reject.userid}, ${reject.job_id})"></i>
                         <span class="tooltip-text">Remove Applicant</span>
                     </td>
                 </tr>`;
@@ -326,5 +313,35 @@
 
         renderTable(filteredRejects);
     }
+
+    function removeApplicant(userId, jobId) {
+    if (confirm("Are you sure you want to remove this applicant?")) {
+        fetch('remove_applicant.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                userid: userId,
+                jobid: jobId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Applicant has been successfully removed.');
+                // Remove the applicant from the UI
+                location.reload();
+            } else {
+                console.error('Error removing applicant:', data.error);
+                alert('Failed to remove applicant. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+}
 </script>
 

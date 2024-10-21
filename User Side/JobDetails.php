@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>RCVJ, Inc.</title>
+    <title>Job Details | RCVJ, Inc.</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
@@ -266,7 +266,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <i class="fa fa-phone" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['phone']); ?></h4>
                         </div>
                         <div class="locationemail">
-                            <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php echo htmlspecialchars($user_info['birthday']); ?></h4>
+                            <i class="fa fa-birthday-cake" aria-hidden="true"></i><h4><?php $birthday = new DateTime($user_info['birthday']); echo htmlspecialchars($birthday->format('m/d/Y'));?></h4>
                         </div>
                     </div>
                     <div>

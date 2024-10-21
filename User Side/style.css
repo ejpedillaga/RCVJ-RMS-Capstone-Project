@@ -3095,3 +3095,8 @@ input[type="number"] {
 .logout-btn {
   margin-left: 50px;
 }
+
+.profile-body {
+  background-color: #fff;
+  border-radius: 10px;
+}

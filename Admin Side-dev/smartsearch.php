@@ -374,6 +374,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+    <link rel="manifest" href="rcvj-logo/site.webmanifest">
     <script>
         // Fetch job postings for a selected company
         function fetchJobs(companyId) {
@@ -471,7 +475,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     <td class="candidates-tooltip-container">
                         <i class="fa fa-file-text fa-2xl" aria-hidden="true" 
                         style="color: #2C1875; cursor: pointer;" 
-                        onclick="window.open('../User Side/JobDetails.php?id=${candidate.candidate.job_id}', '_blank')"></i>
+                        onclick="window.open('JobDetails.php?id=${candidate.candidate.job_id}', '_blank')"></i>
                         <span class="tooltip-text">Job Details</span>
                     </td>
                     <td>${candidate.candidate.date_applied}</td>

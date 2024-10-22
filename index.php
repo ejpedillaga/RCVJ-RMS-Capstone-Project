@@ -5,13 +5,10 @@ $user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null; // Initialize the profile_image variable
 
 // Database connection details
-$servername = "localhost";
-$username = "root";
-$password = "12345";
-$dbname = "admin_database";
+include 'connection.php';
 
 // Create a connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = connection();
 
 // Check the connection
 if ($conn->connect_error) {
@@ -64,6 +61,10 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+        <link rel="manifest" href="rcvj-logo/site.webmanifest">
     </head>
     <body>
         <!--Desktop Nav-->
@@ -88,7 +89,7 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
                 <?php if (isset($_SESSION['user'])): ?>
                     <button onclick="redirectTo('UserProfile.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php else: ?>
-                    <button onclick="redirectTo('../Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
+                    <button onclick="redirectTo('Login/Applicant.php')"><?php echo htmlspecialchars($user_name); ?></button>
                 <?php endif; ?>
 
                 <!-- LOGOUT -->

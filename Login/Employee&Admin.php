@@ -1,12 +1,11 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$username = "root";
-$password = "12345";
-$dbname = "admin_database";
+// Database connection details
+include 'connection.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Create a connection
+$conn = connection();
 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -49,6 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+    <link rel="manifest" href="rcvj-logo/site.webmanifest">
     <script
       src="https://kit.fontawesome.com/64d58efce2.js"
       crossorigin="anonymous"

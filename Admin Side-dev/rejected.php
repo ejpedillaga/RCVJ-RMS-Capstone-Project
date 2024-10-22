@@ -6,6 +6,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
+    <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+    <link rel="manifest" href="rcvj-logo/site.webmanifest">
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

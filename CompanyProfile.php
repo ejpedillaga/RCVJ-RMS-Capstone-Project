@@ -59,6 +59,10 @@ $conn->close();
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
         <link rel="stylesheet" href="mediaqueries.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+        <link rel="manifest" href="rcvj-logo/site.webmanifest">
     </head>
     <body>
         <!--Desktop Nav-->
@@ -68,7 +72,7 @@ $conn->close();
             </div>
             <div>
                 <ul class="nav-links">
-                    <li><a href="Home.php">Home</a></li>
+                    <li><a href="index.php">Home</a></li>
                     <li><a href="Jobs.php">Jobs</a></li>
                     <li><a href="About.php">About</a></li>
                     <li><a class="active" href="#">Partner Companies</a></li>
@@ -109,7 +113,7 @@ $conn->close();
                     </div>
                 </div>
                 <div class="menu-links">
-                    <li><a href="Home.php" onclick="toggleMenu()">Home</a></li>
+                    <li><a href="index.php" onclick="toggleMenu()">Home</a></li>
                     <li><a href="Jobs.php" onclick="toggleMenu()">Jobs</a></li>
                     <li><a href="About.php" onclick="toggleMenu()">About</a></li>
                     <li><a class="active" href="#" onclick="toggleMenu()">Partner Companies</a></li>

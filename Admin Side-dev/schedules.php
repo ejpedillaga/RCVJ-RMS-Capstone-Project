@@ -58,6 +58,10 @@ mysqli_close($conn);
                 <link href="https://fonts.googleapis.com/css2?family=Encode+Sans+Expanded:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
                 <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
                 <link rel="stylesheet" href="mediaqueries.css?=<?php echo filemtime('mediaqueries.css'); ?>"></link>
+                <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+                <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+                <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+                <link rel="manifest" href="rcvj-logo/site.webmanifest">
 </head>
 
 <body>

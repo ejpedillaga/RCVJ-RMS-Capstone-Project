@@ -1,11 +1,11 @@
 <?php
 
 include_once ("connection.php");
-
+$conn = connection();
 header('Content-Type: application/json');
 
 try{
-    $conn = connection();
+
 
     // SQL query to fetch skill names
     // SQL query to fetch skill names

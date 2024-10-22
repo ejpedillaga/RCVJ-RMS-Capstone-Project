@@ -1120,6 +1120,7 @@ footer {
   flex-wrap: wrap;
   justify-content: center;
   overflow-y: scroll;
+  height: 60%;
 }
 
 .jobs-main-container ul {
@@ -1129,10 +1130,6 @@ footer {
   flex-wrap: wrap;
   padding: 0;
   list-style: none;
-}
-
-#location, #date{
-  margin-top: 1rem ;
 }
 
 .jobs-card {

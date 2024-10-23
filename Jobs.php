@@ -69,7 +69,7 @@ $conn->close();
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
-        <link rel="stylesheet" href="mediaqueries.css">
+        <link rel="stylesheet" href="mediaqueries.css?v=<?php echo filemtime('mediaqueries.css'); ?>">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">

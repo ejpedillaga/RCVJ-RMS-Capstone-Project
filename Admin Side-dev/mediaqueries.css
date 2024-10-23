@@ -30,6 +30,33 @@
   .tooltip-text {
     bottom: 70%;
   }
+
+  .container-calendar {
+    flex-direction: column;
+    padding: 20px;
+    gap: 2rem;
+  }
+
+  #right,
+  #left {
+    width: 100%;
+    height: auto;
+  }
+
+  #reminder-section {
+    width: 90%;
+  }
+
+  .filter-container {
+    display: grid;
+    width: 100%;
+  }
+
+  #companyDropdown,
+  #jobDropdown,
+  .select-company {
+    width: 100%;
+  }
 }
 
 @media screen and (max-width: 1100px) {
@@ -44,6 +71,22 @@
 
   .addpartners-upload-logo {
     margin-bottom: 1rem;
+  }
+
+  .container-calendar {
+    flex-direction: column;
+    padding: 20px;
+    gap: 2rem;
+  }
+
+  #right,
+  #left {
+    width: 100%;
+    height: auto;
+  }
+
+  #reminder-section {
+    width: 90%;
   }
 }
 
@@ -72,8 +115,9 @@
   #available,
   #fullname,
   #job-title {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
+
   .status-dropdown {
     font-size: 0.9rem;
   }
@@ -83,6 +127,39 @@
   .popup .candidate-header {
     flex-direction: column;
     text-align: center;
+  }
+
+  .container-calendar {
+    flex-direction: column;
+    padding: 20px;
+    gap: 2rem;
+  }
+
+  #right,
+  #left {
+    width: 100%;
+    height: auto;
+  }
+
+  #header {
+    width: 92%;
+  }
+
+  #reminder-section {
+    width: 90%;
+  }
+
+  .filter-container {
+    display: grid;
+    width: 100%;
+  }
+
+  #candidateTableBody tr {
+    padding: 3px;
+  }
+
+  #candidateTableBody td {
+    font-size: 15px;
   }
 }
 
@@ -111,6 +188,14 @@
   }
   .jobposting-buttons {
     align-self: center;
+  }
+
+  #candidateTableBody tr {
+    padding: 3px;
+  }
+
+  #candidateTableBody td {
+    font-size: 14px;
   }
 }
 
@@ -142,6 +227,146 @@
   .name {
     display: none;
   }
+
+  .container-calendar {
+    flex-direction: column;
+    padding: 40px;
+    gap: inherit;
+    overflow: hidden;
+  }
+
+  #right,
+  #left {
+    width: 100%;
+    height: auto;
+  }
+
+  #reminder-section {
+    width: 90%;
+  }
+
+  #header {
+    width: 90%;
+  }
+
+  table {
+    font-size: 0.9rem; /* Slightly reduce font size */
+  }
+
+  table td,
+  table th {
+    padding: 8px; /* Adjust padding */
+  }
+
+  .tr1 img {
+    width: 60px; /* Adjust image size */
+  }
+
+  table {
+    font-size: 0.9rem; /* Slightly reduce font size */
+  }
+
+  table td,
+  table th {
+    padding: 8px; /* Adjust padding */
+  }
+
+  .tr1 img {
+    width: 60px; /* Adjust image size */
+  }
+
+  .tab-content.active table {
+    width: 90%; /* Or any other percentage/width */
+    max-width: 90%; /* Keeps it within limits */
+    overflow-x: auto;
+    margin-left: 1rem;
+  }
+
+  .tab-content.active thead {
+    display: none;
+  }
+
+  .tab-content.active tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border: 1px solid #fbfbfb;
+    border-radius: 10px;
+    overflow: hidden;
+    width: auto;
+    font-size: 16px;
+  }
+
+  #pending.tab-content.active thead {
+    display: none;
+  }
+
+  #pending.tab-content.active td {
+    padding: 1rem;
+    width: auto;
+    font-size: 16px;
+  }
+
+  .tabs {
+    margin-top: 0rem;
+    display: inline;
+    border-bottom: 2px solid #ddd;
+    transition: 0.3s ease;
+    font-size: 1rem;
+  }
+
+  #scheduled.tab-content.active table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  #scheduled.tab-content.active thead {
+    display: none;
+  }
+
+  #scheduled.tab-content.active td {
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    font-size: 15px;
+  }
+
+  #scheduled.tab-content.active tr {
+    width: 18rem;
+  }
+
+  #time-section {
+    flex-direction: column;
+  }
+
+  .fa.fa-arrow-right {
+    transform: rotate(90deg);
+  }
+
+  .th1 {
+    display: none;
+  }
+
+  #candidateTableBody {
+    border-radius: 20px;
+  }
+
+  #candidateTableBody tr {
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 2rem;
+  }
+
+  #candidateTableBody td {
+    font-size: 17px;
+    gap: 1px;
+  }
+
+  .match-column {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
 }
 
 @media screen and (max-width: 500px) {
@@ -163,5 +388,267 @@
     width: 100%;
     margin-left: 0rem;
   }
+
+  .container-calendar {
+    flex-direction: column;
+    padding: 20px;
+    gap: 2rem;
+  }
+
+  #right,
+  #left {
+    width: 100%;
+    height: auto;
+  }
+
+  #reminder-section {
+    width: 80%;
+  }
+
+  #header {
+    width: 85%;
+  }
+
+  .tab-content.active table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .tab-content.active thead {
+    display: none;
+  }
+
+  .tab-content.active tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tab-content.active td {
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: none;
+  }
+
+  .tab-content.active table {
+    width: 90%; /* Or any other percentage/width */
+    max-width: 90%; /* Keeps it within limits */
+    overflow-x: auto;
+  }
+
+  .tab-content.active thead {
+    display: none;
+  }
+
+  .tab-content.active tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+    width: auto;
+  }
+
+  #pending.tab-content.active thead {
+    display: none;
+  }
+
+  .table {
+    border-radius: 20px;
+  }
+
+  #tab1-content.tab-content thead {
+    display: none;
+  }
+
+  #tab1-content.tab-content,
+  td {
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    width: auto;
+    height: 2rem;
+    border: none;
+    margin-top: 1rem;
+    font-size: 13px;
+  }
+
+  #tab2-content.tab-content {
+    width: 100%;
+  }
+
+  #tab2-content.tab-content thead {
+    display: none;
+  }
+
+  #tab2-content.tab-content,
+  td {
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    width: auto;
+    height: 2rem;
+    border: none;
+    margin-top: 1rem;
+    font-size: larger;
+  }
+
+  #tab2-content.tab-content {
+    width: 100%;
+  }
+
+  .th1 {
+    display: none;
+  }
+
+  #candidateTableBody tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #candidateTableBody td {
+    font-size: 17px;
+    gap: 1px;
+  }
+
+  .match-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust this value to give space */
+    height: 5rem;
+    width: auto;
+    overflow-y: scroll;
+    padding-bottom: 30px;
+  }
+
+  #candidateTableBody i.fa.fa-info-circle.fa-2xl {
+    margin-top: 4rem;
+  }
+
+  #candidateTableBody i.fa-solid.fa-trash.fa-2xl {
+    margin-top: 2rem;
+  }
 }
 
+@media (max-width: 468px) {
+  .container-calendar {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .table-calendar td,
+  .table-calendar th {
+    font-size: 12px;
+    font-family: Encode Sans Expanded;
+  }
+
+  .footer-container-calendar label {
+    font-size: 15px;
+    padding-bottom: 5px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+
+  .fa.fa-arrow-right {
+    transform: rotate(90deg);
+  }
+
+  #reminder-section {
+    width: 75%;
+  }
+
+  .tab-content.active table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .tab-content.active table {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .tab-content.active thead {
+    display: none;
+  }
+
+  .tab-content.active tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .tab-content.active td {
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border: none;
+  }
+
+  #scheduled.tab-content.active tr {
+    width: 12rem;
+  }
+
+  #header {
+    width: 83%;
+  }
+
+  #logo {
+    width: 7rem;
+  }
+
+  #time-section {
+    margin-left: 5px;
+    flex-direction: column;
+  }
+
+  #tab1-content.tab-content thead {
+    display: none;
+  }
+
+  #tab1-content.tab-content {
+    width: 100%;
+  }
+
+  .tr1 {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+    place-items: center;
+  }
+
+  #company-name {
+    font-size: 15px;
+    margin-top: 1.5rem;
+    margin-bottom: 5px;
+  }
+
+  #date-added {
+    font-size: 15px;
+    margin-top: -1.3rem;
+  }
+
+  .match-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust this value to give space */
+    height: 5rem;
+    width: auto;
+    overflow-y: scroll;
+    padding-bottom: 30px;
+  }
+
+  #candidateTableBody i.fa.fa-info-circle.fa-2xl {
+    display: flex;
+    margin-top: 4rem;
+  }
+
+  #candidateTableBody i.fa-solid.fa-trash.fa-2xl {
+    margin-top: 2rem;
+  }
+}

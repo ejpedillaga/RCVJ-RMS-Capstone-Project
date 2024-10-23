@@ -12,9 +12,191 @@
     <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
     <link rel="manifest" href="rcvj-logo/site.webmanifest">
-    <script src="script.js" defer></script>  
+    <script src="script.js"></script>  
     <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
     <script>
+        document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent the form from submitting
+
+            var skillInput = document.getElementById('jobposting-qualifications-input');
+            var skillValue = skillInput.value.trim();
+
+            if (skillValue !== '') {
+                var ul = document.getElementById('added_qualifications_list');
+                var li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${skillValue}</span>
+                    <button class="close-btn">&times;</button>
+                `;
+                ul.appendChild(li);
+                skillInput.value = ''; // Clear the input after adding
+
+                // Add event listener to the close button
+                li.querySelector('.close-btn').addEventListener('click', function() {
+                    li.remove();
+                });
+            }
+        }
+        });
+        const reqCertCheckbox = document.getElementById('req-cert');
+        const jobTitleCertInput = document.getElementById('job-title-cert');
+
+        reqCertCheckbox.addEventListener('change', () => {
+        if (reqCertCheckbox.checked) {
+            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleCertInput.style.opacity = '0';
+            jobTitleCertInput.style.display = 'none';
+            jobTitleCertInput.required = false; 
+        } else {
+            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
+            jobTitleCertInput.style.opacity = '1';
+            jobTitleCertInput.style.display = 'block'; // Show the input field
+            jobTitleCertInput.required = true;
+        }
+        });
+
+        const minJobExp = document.getElementById('min-job-title-exp');
+        const maxJobExp = document.getElementById('max-job-title-exp');
+        const reqExpCheckbox = document.getElementById('req-exp');
+
+        reqExpCheckbox.addEventListener('change', () => {
+        if (reqExpCheckbox.checked) {
+            minJobExp.style.transition = 'opacity 0.3s ease-in-out';
+            minJobExp.style.opacity = '0';
+            minJobExp.style.display = 'none';
+            minJobExp.required = false; 
+
+            maxJobExp.style.transition = 'opacity 0.3s ease-in-out';
+            maxJobExp.style.opacity = '0';
+            maxJobExp.style.display = 'none';
+            maxJobExp.required = false; 
+        } else {
+            minJobExp.style.transition = 'opacity 0.3s ease-in-out';
+            minJobExp.style.opacity = '1';
+            minJobExp.style.display = 'block'; // Show the input field
+            minJobExp.required = true;
+
+            maxJobExp.style.transition = 'opacity 0.3s ease-in-out';
+            maxJobExp.style.opacity = '1';
+            maxJobExp.style.display = 'block'; // Show the input field
+            maxJobExp.required = true;
+        }
+        });
+
+        let availableKeywords = [];
+
+        const resultsBox = document.querySelector('.result-box');
+        const inputBox = document.getElementById('jobposting-search');
+
+        // Fetch skill names from the PHP script
+        fetch('fetch_SkillList.php')  
+            .then(response => response.json())  // Parse the JSON response
+            .then(data => {
+                availableKeywords = data;  // Assign the fetched data to the availableKeywords array
+                console.log(availableKeywords);  // Log the data to confirm it's fetched
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        inputBox.onkeyup = function() {
+            let result = [];
+            let input = inputBox.value;
+            if (input.length) {
+                result = availableKeywords.filter((keyword) => {
+                    return keyword.toLowerCase().includes(input.toLowerCase());
+                });
+                console.log(result);
+            }
+
+            display(result);
+
+            if(!result.length){
+                resultsBox.innerHTML='';
+            }
+        };
+
+        function display(result){
+            const content = result.map((list)=>{
+                return "<li onclick=selectInput(this)>" + list + "</li>";
+            });
+
+            resultsBox.innerHTML = "<ul>" + content.join('') + "</ul>";
+        }
+
+        function selectInput(list){
+            inputBox.value = list.innerHTML;
+            resultsBox.innerHTML = '';
+        }
+
+        // Update search function
+        function filterJobsBySearchTerm(status) {
+            const searchTerm = status === 'Open' 
+                ? document.getElementById('search-bar-open').value.toLowerCase() 
+                : document.getElementById('search-bar-closed').value.toLowerCase(); // Get search term based on active tab
+
+            fetch(`fetch_jobs.php?status=${status}`)
+                .then(response => response.json())
+                .then(data => {
+                    const filteredData = data.filter(job => 
+                        job.company_name.toLowerCase().includes(searchTerm) || 
+                        job.job_title.toLowerCase().includes(searchTerm) || 
+                        job.job_location.toLowerCase().includes(searchTerm)
+                    );
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, filteredData); // Populate table with filtered data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
+        }
+
+        // Add event listener to both search bars
+        document.getElementById('search-bar-open').addEventListener('input', () => {
+            filterJobsBySearchTerm('Open'); // Filter Open jobs
+        });
+
+        document.getElementById('search-bar-closed').addEventListener('input', () => {
+            filterJobsBySearchTerm('Closed'); // Filter Closed jobs
+        });
+
+        // Add event listeners for sorting dropdowns
+        document.getElementById('sort-by-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('order-sort-open').addEventListener('change', () => {
+            sortAndFetchJobs('Open');
+        });
+
+        document.getElementById('sort-by-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        document.getElementById('order-sort-closed').addEventListener('change', () => {
+            sortAndFetchJobs('Closed');
+        });
+
+        // Function to sort and fetch jobs
+        function sortAndFetchJobs(status) {
+            const sortBy = status === 'Open' 
+                ? document.getElementById('sort-by-open').value 
+                : document.getElementById('sort-by-closed').value;
+
+            const order = status === 'Open' 
+                ? document.getElementById('order-sort-open').value 
+                : document.getElementById('order-sort-closed').value;
+
+            fetch(`fetch_jobs.php?status=${status}&sort_by=${sortBy}&order=${order}`)
+                .then(response => response.json())
+                .then(data => {
+                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
+                    populateJobsTable(containerSelector, data); // Populate table with sorted data
+                })
+                .catch(error => console.error('Error fetching jobs:', error));
+        }
+
+        // Modify initial fetch for Open and Closed jobs on page load to include sorting
+        fetchJobsByStatus('Open');
+        fetchJobsByStatus('Closed');
+        
         const subclassData = {
             "No Classification": ["General"],
             "Construction and Building Trades": [
@@ -486,188 +668,5 @@
         <div class="rectangle-4"></div>
         <div class="rectangle-5"></div>
     </div>   
-    <script>
-        document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent the form from submitting
-
-            var skillInput = document.getElementById('jobposting-qualifications-input');
-            var skillValue = skillInput.value.trim();
-
-            if (skillValue !== '') {
-                var ul = document.getElementById('added_qualifications_list');
-                var li = document.createElement('li');
-                li.innerHTML = `
-                    <span>${skillValue}</span>
-                    <button class="close-btn">&times;</button>
-                `;
-                ul.appendChild(li);
-                skillInput.value = ''; // Clear the input after adding
-
-                // Add event listener to the close button
-                li.querySelector('.close-btn').addEventListener('click', function() {
-                    li.remove();
-                });
-            }
-        }
-        });
-        const reqCertCheckbox = document.getElementById('req-cert');
-        const jobTitleCertInput = document.getElementById('job-title-cert');
-
-        reqCertCheckbox.addEventListener('change', () => {
-        if (reqCertCheckbox.checked) {
-            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
-            jobTitleCertInput.style.opacity = '0';
-            jobTitleCertInput.style.display = 'none';
-            jobTitleCertInput.required = false; 
-        } else {
-            jobTitleCertInput.style.transition = 'opacity 0.3s ease-in-out';
-            jobTitleCertInput.style.opacity = '1';
-            jobTitleCertInput.style.display = 'block'; // Show the input field
-            jobTitleCertInput.required = true;
-        }
-        });
-
-        const minJobExp = document.getElementById('min-job-title-exp');
-        const maxJobExp = document.getElementById('max-job-title-exp');
-        const reqExpCheckbox = document.getElementById('req-exp');
-
-        reqExpCheckbox.addEventListener('change', () => {
-        if (reqExpCheckbox.checked) {
-            minJobExp.style.transition = 'opacity 0.3s ease-in-out';
-            minJobExp.style.opacity = '0';
-            minJobExp.style.display = 'none';
-            minJobExp.required = false; 
-
-            maxJobExp.style.transition = 'opacity 0.3s ease-in-out';
-            maxJobExp.style.opacity = '0';
-            maxJobExp.style.display = 'none';
-            maxJobExp.required = false; 
-        } else {
-            minJobExp.style.transition = 'opacity 0.3s ease-in-out';
-            minJobExp.style.opacity = '1';
-            minJobExp.style.display = 'block'; // Show the input field
-            minJobExp.required = true;
-
-            maxJobExp.style.transition = 'opacity 0.3s ease-in-out';
-            maxJobExp.style.opacity = '1';
-            maxJobExp.style.display = 'block'; // Show the input field
-            maxJobExp.required = true;
-        }
-        });
-
-        let availableKeywords = [];
-
-        const resultsBox = document.querySelector('.result-box');
-        const inputBox = document.getElementById('jobposting-search');
-
-        // Fetch skill names from the PHP script
-        fetch('fetch_SkillList.php')  
-            .then(response => response.json())  // Parse the JSON response
-            .then(data => {
-                availableKeywords = data;  // Assign the fetched data to the availableKeywords array
-                console.log(availableKeywords);  // Log the data to confirm it's fetched
-            })
-            .catch(error => console.error('Error fetching data:', error));
-
-        inputBox.onkeyup = function() {
-            let result = [];
-            let input = inputBox.value;
-            if (input.length) {
-                result = availableKeywords.filter((keyword) => {
-                    return keyword.toLowerCase().includes(input.toLowerCase());
-                });
-                console.log(result);
-            }
-
-            display(result);
-
-            if(!result.length){
-                resultsBox.innerHTML='';
-            }
-        };
-
-        function display(result){
-            const content = result.map((list)=>{
-                return "<li onclick=selectInput(this)>" + list + "</li>";
-            });
-
-            resultsBox.innerHTML = "<ul>" + content.join('') + "</ul>";
-        }
-
-        function selectInput(list){
-            inputBox.value = list.innerHTML;
-            resultsBox.innerHTML = '';
-        }
-
-        // Update search function
-        function filterJobsBySearchTerm(status) {
-            const searchTerm = status === 'Open' 
-                ? document.getElementById('search-bar-open').value.toLowerCase() 
-                : document.getElementById('search-bar-closed').value.toLowerCase(); // Get search term based on active tab
-
-            fetch(`fetch_jobs.php?status=${status}`)
-                .then(response => response.json())
-                .then(data => {
-                    const filteredData = data.filter(job => 
-                        job.company_name.toLowerCase().includes(searchTerm) || 
-                        job.job_title.toLowerCase().includes(searchTerm) || 
-                        job.job_location.toLowerCase().includes(searchTerm)
-                    );
-                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
-                    populateJobsTable(containerSelector, filteredData); // Populate table with filtered data
-                })
-                .catch(error => console.error('Error fetching jobs:', error));
-        }
-
-        // Add event listener to both search bars
-        document.getElementById('search-bar-open').addEventListener('input', () => {
-            filterJobsBySearchTerm('Open'); // Filter Open jobs
-        });
-
-        document.getElementById('search-bar-closed').addEventListener('input', () => {
-            filterJobsBySearchTerm('Closed'); // Filter Closed jobs
-        });
-
-        // Add event listeners for sorting dropdowns
-        document.getElementById('sort-by-open').addEventListener('change', () => {
-            sortAndFetchJobs('Open');
-        });
-
-        document.getElementById('order-sort-open').addEventListener('change', () => {
-            sortAndFetchJobs('Open');
-        });
-
-        document.getElementById('sort-by-closed').addEventListener('change', () => {
-            sortAndFetchJobs('Closed');
-        });
-
-        document.getElementById('order-sort-closed').addEventListener('change', () => {
-            sortAndFetchJobs('Closed');
-        });
-
-        // Function to sort and fetch jobs
-        function sortAndFetchJobs(status) {
-            const sortBy = status === 'Open' 
-                ? document.getElementById('sort-by-open').value 
-                : document.getElementById('sort-by-closed').value;
-
-            const order = status === 'Open' 
-                ? document.getElementById('order-sort-open').value 
-                : document.getElementById('order-sort-closed').value;
-
-            fetch(`fetch_jobs.php?status=${status}&sort_by=${sortBy}&order=${order}`)
-                .then(response => response.json())
-                .then(data => {
-                    const containerSelector = status === 'Open' ? '#tab1-content' : '#tab2-content';
-                    populateJobsTable(containerSelector, data); // Populate table with sorted data
-                })
-                .catch(error => console.error('Error fetching jobs:', error));
-        }
-
-        // Modify initial fetch for Open and Closed jobs on page load to include sorting
-        fetchJobsByStatus('Open');
-        fetchJobsByStatus('Closed');
-        </script>
     </body>
 </html>

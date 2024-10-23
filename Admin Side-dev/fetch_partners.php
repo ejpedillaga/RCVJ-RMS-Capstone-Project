@@ -2,6 +2,7 @@
 include_once("connection.php");
 
 $conn = connection();
+header('Content-Type: application/json');
 
 $sql = "SELECT id, logo, company_name, date_added FROM partner_table";
 

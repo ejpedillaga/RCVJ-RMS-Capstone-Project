@@ -1,3 +1,20 @@
+<?php
+// Include the database connection file
+include 'connection.php';
+$conn = connection();
+
+// Fetch partners from the database
+$query = "SELECT id, company_name, logo, date_added FROM partner_table";
+$result = mysqli_query($conn, $query);
+
+// Store the partners in an array
+$partners = [];
+if ($result && mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $partners[] = $row;
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -127,7 +144,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                <?php if (!empty($partners)): ?>
+                        <?php foreach ($partners as $partner): ?>
+                            <tr class='tr1'>
+                                <td id="logo">
+                                    <img src="data:image/jpeg;base64,<?= base64_encode($partner['logo']); ?>" alt="Image not found" width="100">
+                                </td>
+                                <td id="company-name"><?= htmlspecialchars($partner['company_name']); ?></td>
+                                <td>
+                                    <div class="partners-tooltip-container">
+                                        <i class="fa-solid fa-file fa-2xl" style="color: #2C1875; cursor: pointer;" 
+                                           onclick="openThirdPopup('<?= htmlspecialchars($partner['company_name']); ?>')"></i>
+                                        <span class="tooltip-text">Post a Job for Partner</span>
+                                    </div>
+                                </td>
+                                <td id="date-added"><?= htmlspecialchars($partner['date_added']); ?></td>
+                                <td>
+                                    <div class="partners-tooltip-container">
+                                        <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" 
+                                           onclick="showEditPartnerDialog(<?= $partner['id']; ?>)"></i>
+                                        <span class="tooltip-text">Edit Partner Company</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="partners-tooltip-container">
+                                        <i class="fa-solid fa-trash fa-2xl" style="color: #EF9B50; cursor: pointer;" 
+                                           onclick="showDialogDeletePartner(<?= $partner['id']; ?>)"></i>
+                                        <span class="tooltip-text">Delete Partner Company</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr class="no-results-row">
+                            <td colspan="6" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">
+                                No available partners found.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -292,48 +346,6 @@
                 </div>
             </div>
             
-            <!--
-            <div class="form-step">
-                <div class="jobposting-box">
-                    <div class="jobposting-container">
-                        <div id="jobposting-qualifications-container" class="jobposting-qualifications-container">
-                            <label for="jobposting-qualifications">Qualifications <span style="color: red;">*</span></label>
-                            <input type="text" id="jobposting-qualifications-input" placeholder="Enter a qualification and press Enter">
-                        </div>
-                        <div class="form-group">
-                            <label for="added_qualifications">Qualifications Added</label>
-                            <ul id="added_qualifications_list"></ul>
-                        </div>
-                    </div>
-                    <br>
-                </div>
-                <div class="btns-group">
-                    <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
-                    <a href="#" class="btn btn-next"><i class="fas fa-chevron-right"></i></a>
-                </div>
-                <div class="jobposting-buttons">
-                    <button class="jobposting-button jobposting-button-save" onclick="partnerSaveAndPostJob()">Save and Post</button>
-                    <button class="jobposting-button jobposting-button-cancel" onclick="closeThirdPopup()">Cancel</button>
-                </div>
-            </div>   
-            -->
-            <!--
-            <div class="form-step">
-                <div class="jobposting-box">
-                    <label for="jobposting-skills">Skills <span style="color: red;">*</span></label>
-                    <div id="partner-jobposting-skills-container" class="jobposting-skills-container">
-                        <input type="text" id="partner-jobposting-skills-input" placeholder="Enter a skill and press Enter">
-                    </div>
-                </div>
-                <div class="btns-group">
-                    <a href="#" class="btn btn-prev"><i class="fas fa-chevron-left"></i></a>
-                </div>
-                <div class="jobposting-buttons">
-                    <button class="jobposting-button jobposting-button-save" onclick="partnerSaveAndPostJob()">Save and Post</button>
-                    <button class="jobposting-button jobposting-button-cancel" onclick="closeThirdPopup()">Cancel</button>
-                </div>
-            </div>
-            -->
         </div>
     </div>
     
@@ -472,30 +484,6 @@
         <div class="rectangle-5"></div>
     </div>   
     <script>
-        /*document.getElementById('jobposting-qualifications-input').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent the form from submitting
-
-                var skillInput = document.getElementById('jobposting-qualifications-input');
-                var skillValue = skillInput.value.trim();
-
-                if (skillValue !== '') {
-                    var ul = document.getElementById('added_qualifications_list');
-                    var li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${skillValue}</span>
-                        <button class="close-btn">&times;</button>
-                    `;
-                    ul.appendChild(li);
-                    skillInput.value = ''; // Clear the input after adding
-
-                    // Add event listener to the close button
-                    li.querySelector('.close-btn').addEventListener('click', function() {
-                        li.remove();
-                    });
-                }
-            }
-        });*/
       
         const reqCertCheckbox = document.getElementById('partner-req-cert');
         const jobTitleCertInput = document.getElementById('partner-job-title-cert');
@@ -592,43 +580,42 @@
         document.getElementById('partner-search-bar').addEventListener('input', filterPartners);
 
         function filterPartners() {
-            const searchValue = document.getElementById('partner-search-bar').value.toLowerCase();
-            const rows = document.querySelectorAll('table tbody tr'); // Select all table rows
-            let rowCount = 0; // Keep track of visible rows
-            
-            rows.forEach(row => {
-                const companyName = row.querySelector('#company-name').innerText.toLowerCase(); // Get the company name text
+    const searchValue = document.getElementById('partner-search-bar').value.toLowerCase();
+    const rows = document.querySelectorAll('table tbody tr'); // Select all rows
+    let rowCount = 0; // Keep track of visible rows
 
-                // Check if the company name includes the search value
-                if (companyName.includes(searchValue)) {
-                    row.style.display = ''; // Show the row
-                    rowCount++; // Count visible rows
-                } else {
-                    row.style.display = 'none'; // Hide the row
-                }
-            });
+    rows.forEach(row => {
+        const companyNameElement = row.querySelector('#company-name'); // Find the company name cell
+        if (companyNameElement) {
+            const companyName = companyNameElement.innerText.toLowerCase();
 
-            // If no rows are visible, display a "No results found" message
-            const tableBody = document.querySelector('table tbody');
-            const noResultsRow = document.querySelector('.no-results-row');
-
-            if (rowCount === 0) {
-                // If no "no-results" row exists, add one
-                if (!noResultsRow) {
-                    const noResultsMessage = document.createElement('tr');
-                    noResultsMessage.classList.add('no-results-row');
-                    noResultsMessage.innerHTML = `
-                        <td colspan="6" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No available partners found.</td>
-                    `;
-                    tableBody.appendChild(noResultsMessage);
-                }
+            // Check if the company name includes the search value
+            if (companyName.includes(searchValue)) {
+                row.style.display = ''; // Show the row
+                rowCount++;
             } else {
-                // If rows are visible, remove the "No results" message if it exists
-                if (noResultsRow) {
-                    noResultsRow.remove();
-                }
+                row.style.display = 'none'; // Hide the row
             }
         }
+    });
+
+    // Handle "No results found" message
+    const tableBody = document.querySelector('table tbody');
+    const noResultsRow = document.querySelector('.no-results-row');
+
+    if (rowCount === 0) {
+        if (!noResultsRow) {
+            const noResultsMessage = document.createElement('tr');
+            noResultsMessage.classList.add('no-results-row');
+            noResultsMessage.innerHTML = `
+                <td colspan="6" style="text-align: center; color: #2C1875; font-size: 20px; font-weight: bold; padding: 5rem 0rem;">No available partners found.</td>
+            `;
+            tableBody.appendChild(noResultsMessage);
+        }
+    } else if (noResultsRow) {
+        noResultsRow.remove();
+    }
+}
 
         function sortPartners() {
         const sortBy = document.getElementById('sort-by').value; // Get the selected sort-by option

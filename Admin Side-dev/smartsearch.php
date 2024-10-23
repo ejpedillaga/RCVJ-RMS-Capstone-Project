@@ -475,7 +475,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     <td class="candidates-tooltip-container">
                         <i class="fa fa-file-text fa-2xl" aria-hidden="true" 
                         style="color: #2C1875; cursor: pointer;" 
-                        onclick="window.open('JobDetails.php?id=${candidate.candidate.job_id}', '_blank')"></i>
+                        onclick="window.open('../JobDetails.php?id=${candidate.candidate.job_id}', '_blank')"></i>
                         <span class="tooltip-text">Job Details</span>
                     </td>
                     <td>${candidate.candidate.date_applied}</td>

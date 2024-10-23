@@ -1,6 +1,6 @@
 <?php
 
-include_once ("connection.php");
+include 'connection.php'; 
 $conn = connection();
 header('Content-Type: application/json');
 

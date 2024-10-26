@@ -3,10 +3,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Include database connection file
 include 'connection.php';
 
-// Create a connection
 $conn = connection();
 
 // Check if the connection was successful

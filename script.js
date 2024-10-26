@@ -654,22 +654,40 @@ document.getElementById('info').classList.remove('show');
 document.getElementById('overlay').classList.remove('show');
 }
 
-function previewLogo(event) {
-  const input = event.target;
-  const file = input.files[0];
-  if (file) {
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-          const preview = document.getElementById('logo-preview');
-          preview.src = e.target.result;
-          preview.style.display = 'block';
-          document.getElementById('upload-placeholder').style.display = 'none';
-      };
-      
-      reader.readAsDataURL(file);
-  }
-}
+            function previewLogo(file) {
+                    if (!file) return; // Ensure file exists
+
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const preview = document.getElementById('logo-preview');
+                        preview.src = e.target.result;
+                        preview.style.display = 'block'; // Show the preview
+                        document.getElementById('upload-placeholder').style.display = 'none'; // Hide the placeholder
+                    };
+                    reader.readAsDataURL(file); // Read the file as a data URL
+                }
+
+            function validateAndPreviewLogo(event) {
+                const input = event.target;
+
+                // Check if the input exists and has files
+                if (input && input.files && input.files[0]) {
+                    const file = input.files[0];
+                    const maxSize = 1 * 1024 * 1024; // 1MB in bytes
+
+                    if (file.size > maxSize) {
+                        document.getElementById('error-message').style.display = 'block'; // Show error message
+                        document.getElementById('logo-preview').style.display = 'none'; // Hide preview
+                        document.getElementById('upload-placeholder').style.display = 'none'; // Show placeholder
+                        input.value = '';
+                    } else {
+                        document.getElementById('error-message').style.display = 'none'; 
+                        previewLogo(file); 
+                    }
+                } else {
+                    console.error("No file selected or input is invalid."); // Handle invalid input
+                }
+            }
 
 function validateForm() {
   const attachmentInput = document.getElementById('licenseFileUpload');

@@ -537,30 +537,38 @@ if ($result && mysqli_num_rows($result) > 0) {
         const partnerInputBox = document.getElementById('partner-jobposting-search');
 
         // Fetch skill names from the PHP script
-        fetch('fetch_SkillList.php') 
-            .then(response => response.json())  // Parse the JSON response
-            .then(data => {
-                availableKeywords = data;  // Assign the fetched data to the availableKeywords array
-                console.log(availableKeywords);  // Log the data to confirm it's fetched
+        fetch('fetch_SkillList.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();  // Parse JSON if the response is OK
             })
-            .catch(error => console.error('Error fetching data:', error));
-
+            .then(data => {
+                availableKeywords = data;
+                console.log(availableKeywords);  // Confirm data
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error.message);  // Log detailed error
+            });
+        
         partnerInputBox.onkeyup = function() {
             let result = [];
             let input = partnerInputBox.value;
             if (input.length) {
-                result = availableKeywords.filter((keyword) => {
+                result = availableKeywords.filter(keyword => {
                     return keyword.toLowerCase().includes(input.toLowerCase());
                 });
                 console.log(result);
             }
-
+        
             displayPartnerResults(result);
-
+        
             if (!result.length) {
                 partnerResultsBox.innerHTML = '';
             }
         };
+
 
         function displayPartnerResults(result) {
             const content = result.map((list) => {

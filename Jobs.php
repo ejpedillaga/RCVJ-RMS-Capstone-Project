@@ -76,6 +76,7 @@ $conn->close();
         <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
         <link rel="manifest" href="rcvj-logo/site.webmanifest">
+        <script src="//code.tidio.co/nbcdppxlzihdvensqd3g6wcz8k3yqzzp.js" async></script>
     </head>
     <body>
        <!--Desktop Nav-->

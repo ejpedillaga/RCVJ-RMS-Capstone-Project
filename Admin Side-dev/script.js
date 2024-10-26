@@ -652,9 +652,9 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_rejects.php', populateRejectsTable);
     } else*/ if (currentPage.includes('employees.php')){
         fetchData('fetch_employees.php', populateEmployeesTable)
-    } else if (currentPage.includes('partners.php')){
+    } /*else if (currentPage.includes('partners.php')){
         fetchData('fetch_partners.php', populatePartnersTable)
-    } else if(document.querySelector('.container-calendar')){
+    } */else if(document.querySelector('.container-calendar')){
         displaySchedule();
     } else if (currentPage.includes('index.html')) {
         fetchJobCounts();

@@ -32,6 +32,17 @@ if (isset($_SESSION['user'])) {
     // Close the connection
     
 }
+// Fetch 5 random and distinct job titles along with their IDs
+$query = "SELECT id, job_title FROM job_table ORDER BY RAND() LIMIT 5";
+$result = mysqli_query($conn, $query);
+
+$jobs = [];
+if (mysqli_num_rows($result) > 0) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $jobs[] = $row;
+    }
+}
+
 // Query to get the top 4 companies with the most job posts and their logos
 $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM partner_table
                      INNER JOIN job_table ON partner_table.company_name = job_table.company_name
@@ -65,6 +76,7 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
         <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
         <link rel="manifest" href="rcvj-logo/site.webmanifest">
+        <script src="//code.tidio.co/nbcdppxlzihdvensqd3g6wcz8k3yqzzp.js" async></script>
     </head>
     <body>
         <!--Desktop Nav-->
@@ -134,26 +146,17 @@ $sql_top_partners = "SELECT partner_table.company_name, partner_table.logo FROM 
             <div class="main-container">
                 <h1 class="title1">Start working with</h1>
                 <h1 class="title2">RCVJ, Inc.</h1>
-                <div class="searchbar1">
-                    <svg viewBox="0 0 24 24" aria-hidden="true" class="icon">
-                      <g>
-                        <path
-                          d="M21.53 20.47l-3.66-3.66C19.195 15.24 20 13.214 20 11c0-4.97-4.03-9-9-9s-9 4.03-9 9 4.03 9 9 9c2.215 0 4.24-.804 5.808-2.13l3.66 3.66c.147.146.34.22.53.22s.385-.073.53-.22c.295-.293.295-.767.002-1.06zM3.5 11c0-4.135 3.365-7.5 7.5-7.5s7.5 3.365 7.5 7.5-3.365 7.5-7.5 7.5-7.5-3.365-7.5-7.5z"
-                        ></path>
-                      </g>
-                    </svg>
-                    <input class="input" type="search" placeholder="Jobs, Skills..." />
-                </div>
 
                 <div class="content-container">
-                    <h1 class="title3">Don't know where to start?</h1>
+                    <h1 class="title3" style="margin-bottom: 0.5rem;">Don't know where to start?</h1>
                 </div>
                 <div class="tags-container">
-                    <div class="tags">Bagger</div>
-                    <div class="tags">Driver</div>
-                    <div class="tags">Welder</div>
-                    <div class="tags">Gardener</div>
-                    <div class="tags">Ground Maintenance</div>
+                    <?php foreach ($jobs as $job): ?>
+                        <div class="tags" 
+                            onclick="redirectTo('JobDetails.php?id=<?= $job['id'] ?>')">
+                            <?= htmlspecialchars($job['job_title']) ?>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
 
                 <div class="content-container">

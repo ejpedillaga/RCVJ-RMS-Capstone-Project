@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 include_once("connection.php");
 
 $conn = connection();
@@ -59,5 +61,6 @@ if ($result->num_rows > 0) {
 $stmt->close();
 $conn->close();
 
+header('Content-Type: application/json');
 echo json_encode($jobs);
 ?>

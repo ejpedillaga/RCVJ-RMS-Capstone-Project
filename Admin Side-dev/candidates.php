@@ -106,6 +106,90 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
     <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
     <link rel="manifest" href="rcvj-logo/site.webmanifest">
+    <script>
+    function updateStatus(selectElement, candidateId) {
+    const newStatus = selectElement.value;
+
+    fetch('update_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: candidateId, status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Status updated successfully!');
+            location.reload();
+        } else {
+            alert('Failed to update status.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function undoApproval(candidateId) {
+    if (confirm('Are you sure you want to undo the approval for this candidate?')) {
+        fetch('update_candidate_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `candidate_id=${candidateId}`
+        })
+        .then(response => response.text()) // Read the response as text
+        .then(text => {
+            console.log('Response Text:', text); // Log the response text
+            return JSON.parse(text); // Attempt to parse it as JSON
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Candidate status updated to Pending.');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status.');
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Select input elements
+    const sortCompany = document.getElementById('sort_Company');
+    const sortType = document.getElementById('sort_Type');
+    const sortOrder = document.getElementById('sort_Order');
+
+    // Function to send AJAX request whenever filter changes
+    function updateTable() {
+        const company = sortCompany.value;
+        const type = sortType.value;
+        const order = sortOrder.value;
+
+        // Send AJAX request
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', 'your_php_file.php?sort_Company=' + encodeURIComponent(company) + '&sort_Type=' + encodeURIComponent(type) + '&sort_Order=' + encodeURIComponent(order), true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // Replace the table content with the response
+                document.querySelector('#pending tbody').innerHTML = xhr.responseText;
+            } else {
+                console.error('Error fetching filtered data');
+            }
+        };
+        xhr.send();
+    }
+
+    // Event listeners for the select inputs
+    sortCompany.addEventListener('change', updateTable);
+    sortType.addEventListener('change', updateTable);
+    sortOrder.addEventListener('change', updateTable);
+});
+
+
+</script>
 </head>
 <body>
     <div id="mySidebar" class="sidebar closed">
@@ -650,88 +734,4 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
         </div>                                   
     </div>
 </body>
-<script>
-    function updateStatus(selectElement, candidateId) {
-    const newStatus = selectElement.value;
-
-    fetch('update_status.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: candidateId, status: newStatus })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert('Status updated successfully!');
-            location.reload();
-        } else {
-            alert('Failed to update status.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-function undoApproval(candidateId) {
-    if (confirm('Are you sure you want to undo the approval for this candidate?')) {
-        fetch('update_candidate_status.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: `candidate_id=${candidateId}`
-        })
-        .then(response => response.text()) // Read the response as text
-        .then(text => {
-            console.log('Response Text:', text); // Log the response text
-            return JSON.parse(text); // Attempt to parse it as JSON
-        })
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Candidate status updated to Pending.');
-                location.reload();
-            } else {
-                alert('Error: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while updating the status.');
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    // Select input elements
-    const sortCompany = document.getElementById('sort_Company');
-    const sortType = document.getElementById('sort_Type');
-    const sortOrder = document.getElementById('sort_Order');
-
-    // Function to send AJAX request whenever filter changes
-    function updateTable() {
-        const company = sortCompany.value;
-        const type = sortType.value;
-        const order = sortOrder.value;
-
-        // Send AJAX request
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', 'your_php_file.php?sort_Company=' + encodeURIComponent(company) + '&sort_Type=' + encodeURIComponent(type) + '&sort_Order=' + encodeURIComponent(order), true);
-        xhr.onload = function () {
-            if (xhr.status === 200) {
-                // Replace the table content with the response
-                document.querySelector('#pending tbody').innerHTML = xhr.responseText;
-            } else {
-                console.error('Error fetching filtered data');
-            }
-        };
-        xhr.send();
-    }
-
-    // Event listeners for the select inputs
-    sortCompany.addEventListener('change', updateTable);
-    sortType.addEventListener('change', updateTable);
-    sortOrder.addEventListener('change', updateTable);
-});
-
-
-</script>
 

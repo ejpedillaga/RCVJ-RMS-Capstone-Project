@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['signin_submit'])) {
         if (password_verify($password, $user['password'])) {
             $_SESSION['user'] = $user['email'];
             $message = "Login successful! Welcome, " . $user['fname'] . ".";
-            header("Location: index.php");
+            header("Location: ../index.php");
             exit;
         } else {
             $message = "Invalid password.";

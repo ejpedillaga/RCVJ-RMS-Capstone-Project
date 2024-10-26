@@ -1,8 +1,8 @@
 <?php
     function connection(){
-        $servername = "localhost";
-        $username = "root";
-        $password = "12345";
+        $servername = "localhost:3306";
+        $username = "rcvj_admin";
+        $password = "rcvjadmin1992";
         $dbname = "admin_database";
 
         // Create connection

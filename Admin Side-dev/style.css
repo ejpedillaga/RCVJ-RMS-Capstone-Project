@@ -1881,7 +1881,6 @@ input[type="radio"] {
   /* Add a custom circle */
   width: 16px;
   height: 16px;
-  border-radius: 50%;
   border: 2px solid #2c1875; /* Border color */
   background-color: white; /* Background color */
   cursor: pointer;

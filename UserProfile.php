@@ -639,6 +639,89 @@ if (isset($_SESSION['message'])) {
         <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
         <link rel="manifest" href="rcvj-logo/site.webmanifest">
+        <script src="//code.tidio.co/nbcdppxlzihdvensqd3g6wcz8k3yqzzp.js" async></script>
+        <script>
+            var userSkills = <?php echo $skills_json; ?>;
+
+                // Function to display user skills in the info-container
+                function displayUserSkills() {
+                    var ul = document.getElementById('user_skills_list');
+                    userSkills.forEach(function(skill) {
+                        var li = document.createElement('li');
+                        li.textContent = skill;
+                        ul.appendChild(li);
+                    });
+                }
+
+                // Call the function to populate the skills list
+                document.addEventListener('DOMContentLoaded', displayUserSkills);
+                
+                const subClassifications = {
+                    "No Classification": [
+                        "General"
+                    ],
+                    "Construction and Building Trades": [
+                        "Carpentry and Woodworking",
+                        "Masonry and Concrete",
+                        "Welding and Metalworking"
+                    ],
+                    "Mechanical and Technical": [
+                        "Maintenance and Repair",
+                        "Plumbing and Piping",
+                        "Automotive"
+                    ],
+                    "Transportation and Logistics": [
+                        "General Driving",
+                        "Truck Driving",
+                        "Transportation Support"
+                    ],
+                    "Janitorial and Cleaning": [
+                        "General Cleaning",
+                        "Specialized Cleaning",
+                        "Industrial Cleaning"
+                    ],
+                    "Facilities and Operations": [
+                        "Facility Maintenance and Security",
+                        "Customer Service",
+                        "Hospitality and Food Service",
+                        "Attendant"
+                    ]
+                };
+
+                function updateSubClassifications() {
+                    const classification = document.getElementById('classification').value;
+                    const subClassificationSelect = document.getElementById('sub-classification');
+                    // Clear existing options
+                    subClassificationSelect.innerHTML = '<option value="" disabled selected>Select Sub-Classification</option>';
+
+                    // Add new options
+                    if (classification in subClassifications) {
+                        subClassifications[classification].forEach(sub => {
+                            const option = document.createElement('option');
+                            option.value = sub;
+                            option.textContent = sub;
+
+                            // Retain the selected value if it matches the user's data
+                            if (sub === "<?php echo $user_data['subclassi']; ?>") {
+                                option.selected = true;
+                            }
+
+                            subClassificationSelect.appendChild(option);
+                        });
+                    }
+                }
+
+                function validateSubClass() {
+                    const subclassi = document.getElementById('sub-classification').value;
+                    
+                    // Check if sub-classification has a value
+                    if (subclassi === "") {
+                        alert("Please select a sub-classification before submitting the form.");
+                        return false; // Prevent form submission
+                    }
+                    return true; // Allow form submission
+                }
+        </script>
     </head>
     <body>
         <!--Desktop Nav-->
@@ -716,14 +799,24 @@ if (isset($_SESSION['message'])) {
                 <div id="editProfile-sidenav" class="sidenav">
                     <div class="sidenav-header">Edit Profile</div>
                     <div class="edit-profile-form">
-                    <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()"> 
+                    <form action="" method="POST" enctype="multipart/form-data" onsubmit="return validateSubClass()"> 
                         <input type="hidden" name="userid" value="<?php echo htmlspecialchars($user_data['userid']); ?>">
                         <!-- Upload Logo -->
                         <div class="upload-image-group">
                             <div class="upload-image" onclick="document.getElementById('logo-upload').click()">
-                                <input type="file" id="logo-upload" name="profile_image" accept="image/*" onchange="previewLogo(event)" style="display: none;">
-                                <img id="logo-preview" src="<?php echo isset($image_src) ? $image_src : ''; ?>" alt="" style="width: 100%; <?php echo isset($image_src) ? 'display: none;' : 'display: block;'; ?>">
-                                <div id="upload-placeholder" style="<?php echo isset($image_src) ? 'display: block;' : 'display: none;'; ?>">Upload Your Photo</div>
+                                <input type="file" id="logo-upload" name="profile_image" accept="image/*" 
+                                    onchange="validateAndPreviewLogo(event)" style="display: none;">
+                                <img id="logo-preview" 
+                                    src="<?php echo isset($image_src) ? $image_src : ''; ?>" 
+                                    alt="Logo Preview" 
+                                    style="width: 100%; display: none;">
+                                <div id="upload-placeholder" 
+                                    style="display: block;">
+                                    Upload Your Photo
+                                </div>
+                                <div id="error-message" style="color: red; display: none;">
+                                    File size must be less than 1MB.
+                                </div>
                             </div>
                         </div>
                         <div class="form-group">
@@ -1460,21 +1553,6 @@ if (isset($_SESSION['message'])) {
             <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
             <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
             <script type="text/javascript">
-                var userSkills = <?php echo $skills_json; ?>;
-
-                // Function to display user skills in the info-container
-                function displayUserSkills() {
-                    var ul = document.getElementById('user_skills_list');
-                    userSkills.forEach(function(skill) {
-                        var li = document.createElement('li');
-                        li.textContent = skill;
-                        ul.appendChild(li);
-                    });
-                }
-
-                // Call the function to populate the skills list
-                document.addEventListener('DOMContentLoaded', displayUserSkills);
-
                 let availableKeywords = <?php echo $availableSkills_json; ?>;
 
                 const resultsBox = document.querySelector(".result-box");
@@ -1508,72 +1586,7 @@ if (isset($_SESSION['message'])) {
                     inputBox.value = list.innerHTML;
                     resultsBox.innerHTML = '';
                 }
-
-                const subClassifications = {
-                    "No Classification": [
-                        "General"
-                    ],
-                    "Construction and Building Trades": [
-                        "Carpentry and Woodworking",
-                        "Masonry and Concrete",
-                        "Welding and Metalworking"
-                    ],
-                    "Mechanical and Technical": [
-                        "Maintenance and Repair",
-                        "Plumbing and Piping",
-                        "Automotive"
-                    ],
-                    "Transportation and Logistics": [
-                        "General Driving",
-                        "Truck Driving",
-                        "Transportation Support"
-                    ],
-                    "Janitorial and Cleaning": [
-                        "General Cleaning",
-                        "Specialized Cleaning",
-                        "Industrial Cleaning"
-                    ],
-                    "Facilities and Operations": [
-                        "Facility Maintenance and Security",
-                        "Customer Service",
-                        "Hospitality and Food Service",
-                        "Attendant"
-                    ]
-                };
-
-                function updateSubClassifications() {
-                    const classification = document.getElementById('classification').value;
-                    const subClassificationSelect = document.getElementById('sub-classification');
-                    // Clear existing options
-                    subClassificationSelect.innerHTML = '<option value="" disabled selected>Select Sub-Classification</option>';
-
-                    // Add new options
-                    if (classification in subClassifications) {
-                        subClassifications[classification].forEach(sub => {
-                            const option = document.createElement('option');
-                            option.value = sub;
-                            option.textContent = sub;
-
-                            // Retain the selected value if it matches the user's data
-                            if (sub === "<?php echo $user_data['subclassi']; ?>") {
-                                option.selected = true;
-                            }
-
-                            subClassificationSelect.appendChild(option);
-                        });
-                    }
-                }
-
-                function validateForm() {
-                    const subclassi = document.getElementById('sub-classification').value;
-                    
-                    // Check if sub-classification has a value
-                    if (subclassi === "") {
-                        alert("Please select a sub-classification before submitting the form.");
-                        return false; // Prevent form submission
-                    }
-                    return true; // Allow form submission
-                }
+                
             </script>
 
         </body>

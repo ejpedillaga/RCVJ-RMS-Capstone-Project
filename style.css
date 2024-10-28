@@ -1132,6 +1132,10 @@ footer {
   list-style: none;
 }
 
+#location, #date{
+  margin-top: 1rem ;
+}
+
 .jobs-card {
   cursor: pointer;
   background-color: #ef9b50;
@@ -1652,7 +1656,7 @@ footer {
   align-items: center;
   background-color: #2c1875;
   border-radius: 20px;
-  margin: 2rem 2rem 0 1rem;
+  margin: 2rem 2rem 0 -1.5rem;
   padding: 0.5rem 3rem 0.5rem 2rem;
   transition: 0.3s ease;
   max-height: 20rem;
@@ -3099,4 +3103,5 @@ input[type="number"] {
 .profile-body {
   background-color: #fff;
   border-radius: 10px;
+  margin-right: 3rem;
 }

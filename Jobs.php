@@ -248,28 +248,31 @@ $conn->close();
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
         <script>
-            function searchJobs(querySelector, inputName) {
+            function searchJobs(querySelectors, inputName) {
             const input = document.querySelector(`input[name="${inputName}"]`).value.toLowerCase();
             const jobCards = document.querySelectorAll('.jobs-card');
             let hasVisibleJobs = false;
 
             jobCards.forEach(card => {
-                const jobData = card.querySelector(querySelector).textContent.toLowerCase();
-                const isVisible = jobData.includes(input);
+                
+                const matches = querySelectors.some(selector => {
+                    const element = card.querySelector(selector);
+                    return element && element.textContent.toLowerCase().includes(input);
+                });
 
-                card.parentElement.style.display = isVisible ? '' : 'none';
-                hasVisibleJobs = hasVisibleJobs || isVisible;
+                card.parentElement.style.display = matches ? '' : 'none';
+                hasVisibleJobs = hasVisibleJobs || matches;
             });
 
             document.getElementById('no-results-message').style.display = hasVisibleJobs ? 'none' : 'block';
         }
-
+        
         function searchByTitleOrCompany() {
-            searchJobs('#job-title, #company-name', 'job_title');
+            searchJobs(['#job-title', '#company-name'], 'job_title');
         }
 
         function searchByLocation() {
-            searchJobs('#location', 'location');
+            searchJobs(['#location'], 'location');
         }
         </script>
     </body>

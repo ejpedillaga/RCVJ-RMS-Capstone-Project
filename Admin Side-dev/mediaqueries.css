@@ -57,6 +57,33 @@
   .select-company {
     width: 100%;
   }
+
+  .tooltip-text {
+    bottom: 70%;
+  }
+
+  .addemployees-dialog-box input, .option{
+   width: 18rem;
+   font-size: 15px;
+   margin-left: 2rem;
+  }
+
+  .addemployees-dialog-box label{
+    font-size: 18px;
+    width: 5rem;
+  }
+
+  #addemployees-role{
+    width: 18rem;
+    font-size: 15px;
+    margin-right: -1.7em;
+  }
+
+  .addemployees-form-group{
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
 }
 
 @media screen and (max-width: 1100px) {
@@ -88,6 +115,8 @@
   #reminder-section {
     width: 90%;
   }
+
+  
 }
 
 @media screen and (max-width: 900px) {
@@ -161,6 +190,24 @@
   #candidateTableBody td {
     font-size: 15px;
   }
+
+  .addemployees-dialog-box input, .option{
+    width: 18rem;
+    font-size: 15px;
+    margin-left: 2rem;
+   }
+ 
+   .addemployees-dialog-box label{
+     font-size: 18px;
+     width: 5rem;
+   }
+ 
+   #addemployees-role{
+     width: 18rem;
+     font-size: 15px;
+     margin-right: -1.7em;
+   }
+ 
 }
 
 @media screen and (max-width: 850px) {
@@ -347,15 +394,12 @@
     display: none;
   }
 
-  #candidateTableBody {
-    border-radius: 20px;
-  }
 
   #candidateTableBody tr {
     border-radius: 10px;
     display: flex;
     flex-direction: column;
-    padding-top: 2rem;
+    height: 35rem;
   }
 
   #candidateTableBody td {
@@ -367,6 +411,43 @@
     display: grid;
     grid-template-columns: auto auto;
   }
+
+  .addemployees-dialog-box{
+    height: 80%;
+  }
+
+  .addemployees-dialog-box input,
+  #addemployees-role{
+    width: 100%;
+    font-size: 10px;
+    margin-left: 2rem;
+    height: 2.5rem;
+   }
+ 
+   .addemployees-dialog-box label{
+     font-size: 15px;
+     width: 5rem;
+   }
+ 
+  
+   .addemployees-form-group{
+     display: flex;
+     flex-direction: column;
+     margin-left: -4rem;
+   }
+
+   .addemployees-save-button {
+    height: 2rem;
+    font-size: 12px;
+    text-align: center;
+    padding: 10px;
+   }
+
+   .addpartners-back-button{
+    font-size: 13px;
+    margin-left: -3rem;
+   }
+
 }
 
 @media screen and (max-width: 500px) {
@@ -531,6 +612,48 @@
   #candidateTableBody i.fa-solid.fa-trash.fa-2xl {
     margin-top: 2rem;
   }
+
+  .addemployees-dialog-box{
+    height: 70%;
+    overflow-y:auto;
+  }
+
+  .addemployees-dialog-box input, .option{
+    width: 12rem;
+    font-size: 10px;
+    margin-left: 2rem;
+    height: 2.5rem;
+   }
+ 
+   .addemployees-dialog-box label{
+     font-size: 15px;
+     width: 5rem;
+   }
+ 
+   #addemployees-role{
+     width: 12rem;
+     height: 2.5rem;
+     font-size: 15px;
+     margin-left: 2em;
+   }
+ 
+   .addemployees-form-group{
+     display: flex;
+     flex-direction: column;
+     margin-left: -4rem;
+   }
+
+   .addemployees-save-button {
+    height: 2rem;
+    font-size: 12px;
+    text-align: center;
+    padding: 5px;
+   }
+
+   .addpartners-back-button{
+    font-size: 13px;
+    margin-left: -3rem;
+   }
 }
 
 @media (max-width: 468px) {

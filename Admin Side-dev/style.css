@@ -1091,11 +1091,12 @@ table td:last-child {
 
 .addemployees-form-group {
   margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 .addemployees-form-group label {
   font-size: 24px;
-  display: block;
-  margin-bottom: 10px;
+  width: 3rem; 
 }
 .addemployees-form-group input,
 .addemployees-form-group textarea,
@@ -1107,11 +1108,16 @@ table td:last-child {
   padding: 10px;
   font-size: 24px;
   box-sizing: border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  box-sizing:border-box;
 }
+
 .addemployees-form-group textarea {
   height: 268px;
   resize: none;
 }
+
 .addemployees-save-button {
   background-color: var(--primary-color);
   color: #ffffff;

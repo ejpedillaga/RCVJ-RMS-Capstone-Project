@@ -2,11 +2,7 @@
     function connection(){
         $servername = "localhost";
         $username = "root";
-<<<<<<< Updated upstream:User Side/connection.php
-        $password = "12345";
-=======
         $password = "rcvjadmin1992";
->>>>>>> Stashed changes:Login/connection.php
         $dbname = "admin_database";
 
         // Create connection

@@ -1,4 +1,6 @@
+
 <?php
+
 session_start();
 
 // Include the connection.php file
@@ -28,7 +30,25 @@ $offsetDeployed = ($pageDeployed - 1) * $limit;
 
 $currentTab = isset($_GET['tab']) ? $_GET['tab'] : 'pending';
 
-function fetchCandidates($conn, $status, $offset, $limit) {
+// New sorting parameters
+$sortCompany = isset($_POST['sortCompany']) ? $_POST['sortCompany'] : 'All Companies';
+$sortBy = isset($_POST['sortBy']) ? $_POST['sortBy'] : 'company_name';
+$sortOrder = isset($_POST['sortOrder']) ? $_POST['sortOrder'] : 'DESC';
+function fetchCandidates($conn, $status, $offset, $limit, $sortCompany, $sortBy, $sortOrder) {
+    // Default sorting column and order
+    $validSortByColumns = ['company_name', 'date_applied', 'job_title']; // Allowed columns for sorting
+    $validSortOrder = ['ASC', 'DESC']; // Allowed sort orders
+    
+    // Validate and set the sortBy column
+    $sortBy = in_array($sortBy, $validSortByColumns) ? $sortBy : 'date_applied'; // Default to 'date_applied'
+
+    // Validate and set the sortOrder
+    $sortOrder = in_array($sortOrder, $validSortOrder) ? $sortOrder : 'ASC'; // Default to 'ASC'
+
+    // Add condition for filtering by company if not "All Companies"
+    $companyCondition = $sortCompany !== 'All Companies' ? "AND c.company_name = ?" : "";
+
+    // Adjust query
     $query = "
     SELECT 
         c.id, c.userid, CONCAT(a.fname, ' ', a.lname) AS full_name, c.job_title, c.company_name, c.date_applied, c.deployment_status, 
@@ -60,19 +80,31 @@ function fetchCandidates($conn, $status, $offset, $limit) {
         resume_table r ON a.userid = r.userid -- Join with resume_table
     WHERE 
         c.status = 'Approved' AND c.deployment_status = ? 
+        $companyCondition
     GROUP BY 
         c.id, a.fname, a.lname, c.job_title, c.company_name, c.date_applied, c.deployment_status, 
         a.email, a.gender, a.birthday, a.location, a.phone, a.personal_description, 
         e.educational_attainment, e.school, e.course, 
         e.sy_started, e.sy_ended, v.school, v.course, 
         v.year_started, v.year_ended
+    ORDER BY $sortBy $sortOrder
     LIMIT ?, ?";
 
+    // Prepare the statement
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("sii", $status, $offset, $limit);
+
+    // Bind parameters dynamically based on the presence of $sortCompany
+    if ($sortCompany !== 'All Companies') {
+        $stmt->bind_param("ssii", $status, $sortCompany, $offset, $limit);
+    } else {
+        $stmt->bind_param("sii", $status, $offset, $limit);
+    }
+
+    // Execute and return results
     $stmt->execute();
     return $stmt->get_result();
 }
+
 
 // Get counts for each tab
 $statusCounts = [];
@@ -86,12 +118,13 @@ foreach ($statuses as $status) {
 }
 
 // Fetch candidates for different statuses
-$resultPending = fetchCandidates($conn, 'Pending', $offsetPending, $limit);
-$resultScheduled = fetchCandidates($conn, 'Scheduled', $offsetScheduled, $limit);
-$resultInterviewed = fetchCandidates($conn, 'Interviewed', $offsetInterviewed, $limit);
-$resultForDeployment = fetchCandidates($conn, 'For Deployment', $offsetForDeployment, $limit);
-$resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
+$resultPending = fetchCandidates($conn, 'Pending', $offsetPending, $limit, $sortCompany, $sortBy, $sortOrder);
+$resultScheduled = fetchCandidates($conn, 'Scheduled', $offsetScheduled, $limit, $sortCompany, $sortBy, $sortOrder);
+$resultInterviewed = fetchCandidates($conn, 'Interviewed', $offsetInterviewed, $limit, $sortCompany, $sortBy, $sortOrder);
+$resultForDeployment = fetchCandidates($conn, 'For Deployment', $offsetForDeployment, $limit, $sortCompany, $sortBy, $sortOrder);
+$resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit, $sortCompany, $sortBy, $sortOrder);
 ?>
+
 
 <head>
     <meta charset="UTF-8">
@@ -102,6 +135,63 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
     <link rel="stylesheet" href="style.css?v=<?php echo filemtime('style.css'); ?>"></link>
     <link rel="stylesheet" href="mediaqueries.css">
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
+<<<<<<< Updated upstream
+=======
+    <link rel="apple-touch-icon" sizes="180x180" href="rcvj-logo/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="rcvj-logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="rcvj-logo/favicon-16x16.png">
+    <link rel="manifest" href="rcvj-logo/site.webmanifest">
+    <script>
+    function updateStatus(selectElement, candidateId) {
+    const newStatus = selectElement.value;
+
+    fetch('update_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: candidateId, status: newStatus })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Status updated successfully!');
+            location.reload();
+        } else {
+            alert('Failed to update status.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function undoApproval(candidateId) {
+    if (confirm('Are you sure you want to undo the approval for this candidate?')) {
+        fetch('update_candidate_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `candidate_id=${candidateId}`
+        })
+        .then(response => response.text()) // Read the response as text
+        .then(text => {
+            console.log('Response Text:', text); // Log the response text
+            return JSON.parse(text); // Attempt to parse it as JSON
+        })
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Candidate status updated to Pending.');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the status.');
+        });
+    }
+}
+</script>
+>>>>>>> Stashed changes
 </head>
 <body>
     <div id="mySidebar" class="sidebar closed">
@@ -111,7 +201,8 @@ $resultDeployed = fetchCandidates($conn, 'Deployed', $offsetDeployed, $limit);
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-            <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+            <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php" class="active"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" ><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>

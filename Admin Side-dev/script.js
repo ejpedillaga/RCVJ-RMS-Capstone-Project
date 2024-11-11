@@ -3,7 +3,7 @@ let globalJobTitleId = null;
 let globalButtonSelector = true; //t for add title, f for edit title
 document.addEventListener('DOMContentLoaded', function() {
 
-if (window.location.pathname.includes('index.html')){
+if (window.location.pathname.includes('jobs.html')){
 // Tab functionality
     const tab1 = document.getElementById('tab1');
     const tab2 = document.getElementById('tab2');
@@ -656,7 +656,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_partners.php', populatePartnersTable)
     } else if(document.querySelector('.container-calendar')){
         displaySchedule();
-    } else if (currentPage.includes('index.html')) {
+    } else if (currentPage.includes('jobs.html')) {
         fetchJobCounts();
         //Show Open Tab as default
         fetchJobsByStatus('Open');

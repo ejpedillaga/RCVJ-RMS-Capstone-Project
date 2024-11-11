@@ -72,7 +72,8 @@
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-        <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+        <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+        <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
         <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
         <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
         <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>

@@ -161,9 +161,9 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $max_score += 1; // Increment max score
 
     // Match gender
-    if ($row['gender'] == $job_details['gender']) {
+    if ($job_details['gender'] == 'Not Specified' || $row['gender'] == $job_details['gender']) {
         $score += 1;
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . '</span></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . ($job_details['gender'] == 'Not Specified' ? 'Any Gender' : $job_details['gender']) . '</span></div>';
     } else {
         $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Gender <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . ' ≠ ' . $row['gender'] . '</span></div>';
     }
@@ -294,21 +294,27 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         ];
     }
 
-    // Check if any license matches the job's cert_license
-    $license_names = array_column($applicant_licenses, 'license_name'); // Get all license names
+    // Check if there is a required license in the job details
+    if (!empty($job_details['cert_license'])) {
+        // Get all applicant license names
+        $license_names = array_column($applicant_licenses, 'license_name'); 
 
-    // Perform the matching check
-    if (in_array($job_details['cert_license'], $license_names)) {
-        $score += 1; // Add point if there's a match
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . '</span></div>';
+        // Perform the matching check
+        if (in_array($job_details['cert_license'], $license_names)) {
+            $score += 1; // Add point if there's a match
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . '</span></div>';
+        } else {
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . ' not found</span></div>';
+        }
+        $max_score += 1; // Increment max score
     } else {
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . ' not found</span></div>';
+        // If no license is required, we consider it matched by default
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">No license Required</span></div>';
     }
-    $max_score += 1; // Increment max score
 
     // Clean license names for HTML display
     foreach ($applicant_licenses as &$license) {
-    $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
+        $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
     }
 
     // Store candidate data
@@ -681,6 +687,17 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 console.error('Error:', error);
             });
         }
+        
+        function confirmOpenLink(event) {
+            var userConfirmation = confirm("This link will take you to the Tidio website where you can customize the Tidio Chatbot. Please note that a login is required to access the features. Do you want to continue?");
+                
+                if (!userConfirmation) {
+                    event.preventDefault();
+                    return false;
+                }
+                
+                return true;
+        }
     </script>
 </head>
 <body>
@@ -691,12 +708,14 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-            <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+            <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.php" class="active"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.php"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+            <a href="https://www.tidio.com/panel/login" onclick="return confirmOpenLink(event)" target="_blank"><i class="fa-solid fa-robot"></i> <span>Chatbot</span></a>
         </div>
 
         <div id="header">
@@ -872,4 +891,3 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         <div class="rectangle-5"></div>
     </div>                            
 </body>
-

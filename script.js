@@ -86,6 +86,7 @@ function openNav(sidenavId, containerId) {
 document.getElementById(sidenavId).classList.add('active');
 document.getElementById(containerId).style.opacity = "0.1";
 document.body.classList.add('no-scroll', 'overlay-active');
+updateSubClassifications(); 
 previewLicenseFiles();
 previewFiles();
 }
@@ -706,3 +707,19 @@ function confirmLogout() {
       window.location.href = 'logout.php';
   }
 }
+
+    function checkSession() {
+        fetch('check_session.php')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.active) {
+                    // Session inactive, redirect to login page
+                    alert('Your session has expired. You will be redirected to the login page.');
+                    window.location.href = '../index.php'; // Update path as needed
+                }
+            })
+            .catch(error => console.error('Error checking session:', error));
+    }
+
+    // Check session status every 5 seconds
+    setInterval(checkSession, 5000);

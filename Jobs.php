@@ -180,7 +180,7 @@ $conn->close();
                                 echo '<div style="display: flex; justify-content: space-between; align-items: center;">';
                                 echo '<h4 id="available">(' . $row["job_candidates"] . ')</h4>';
                                 if ($isGoodMatch) {
-                                    echo '<div id="rec" class="good-match-badge">For You<span class="tooltiptext">This job is a good match for your profile.</span></div>';
+                                    echo '<div id="rec" class="good-match-badge"><i class="fa fa-thumbs-up" aria-hidden="true"></i><span class="tooltiptext">This job is a good match for your profile.</span></div>';
                                 }
                                 echo '</div>';
                                 echo '</div>';
@@ -254,7 +254,7 @@ $conn->close();
             let hasVisibleJobs = false;
 
             jobCards.forEach(card => {
-                
+
                 const matches = querySelectors.some(selector => {
                     const element = card.querySelector(selector);
                     return element && element.textContent.toLowerCase().includes(input);

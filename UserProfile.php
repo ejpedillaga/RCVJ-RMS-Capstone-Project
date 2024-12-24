@@ -833,7 +833,7 @@ if (isset($_SESSION['message'])) {
 
                         <div id="location-group" class="form-group">
                             <div>
-                                <label class="label" for="location">Location</label>
+                                <label class="label" for="location">Municipality</label>
                                 <input type="text" id="location" name="location" class="input-field" value="<?php echo htmlspecialchars($user_data['location']); ?>">
                             </div>
                         </div>

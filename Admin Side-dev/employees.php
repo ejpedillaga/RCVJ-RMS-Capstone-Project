@@ -1,3 +1,29 @@
+<?php include 'session_check.php';
+    include 'connection.php';
+
+    // Function to get the last employee_id
+    function getLastEmployeeId($conn) {
+        $query = "SELECT employee_id FROM employee_table ORDER BY employee_id DESC LIMIT 1";
+        $result = mysqli_query($conn, $query);
+
+        if ($result && $row = mysqli_fetch_assoc($result)) {
+            return $row['employee_id'];  // Return the last employee_id
+        } else {
+            return 10000;  // Return 0 if no result is found (i.e., the table is empty)
+        }
+    }
+
+
+    $conn = connection();
+    if (!$conn) {
+        die("Database connection failed.");
+    }
+
+    // Get the last employee ID 
+    $lastEmployeeId = getLastEmployeeId($conn);
+    $conn->close();
+?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,19 +47,22 @@
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-            <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+            <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.php" class="active"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+            <a href="chatbot.php"><i class="fa-solid fa-robot"></i> <span>Chatbot</span></a>
+            <a href="activity_log.php"><i class="fa-solid fa-list"></i> <span>Activity Log</span></a>
         </div>
 
         <div id="header">
             <img id="logo" src="img/logo.png" alt="logo">
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
-                <span class="name">Admin</span>
+                <span class="name"><?php echo htmlspecialchars($_SESSION["username"]); ?></span>
                 <!-- LOGOUT -->
                 <button class="logout-btn" onclick="confirmLogout()">
                     <i class="fas fa-sign-out-alt fa-lg"></i>
@@ -76,6 +105,7 @@
                             <th>Employee</th>
                             <th>Date Added</th>
                             <th>Status</th>
+                            <th>Role</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -113,6 +143,7 @@
                             <th>Employee</th>
                             <th>Date Added</th>
                             <th>Status</th>
+                            <th>Role</th>
                             <th></th>
                             <th></th>
                         </tr>
@@ -138,13 +169,10 @@
                 <i class="fas fa-chevron-left"></i> Back
             </div>
 
-            <div class="addemployees-form-group">
+            <div class="addemployees-form-group" style="grid-template-columns: auto auto 30px; gap: 0.5rem;">
                 <label for="addemployees-role">Role</label>
-                <select id="addemployees-role">
-                    <option value="hr-staff">HR Staff</option>
-                    <option value="hr-manager">HR Manager</option>
-                    <option value="it-staff">IT Staff</option>
-                </select>
+                <select class="addemployees-role" id="addemployees-role"></select>
+                <i class="fa fa-plus-square" aria-hidden="true" onclick="showEmployeeTitleDialog()"></i>
             </div>
     
             <div class="addemployees-form-group">
@@ -164,7 +192,10 @@
             
             <div class="addemployees-form-group">
                 <label for="addemployees-password">Password</label>
-                <input type="text" id="addemployees-password">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <input type="text" id="addemployees-password">
+                    <button class="addemployees-save-button" onclick="generatePassword()">Generate Password</button>
+                </div>
             </div>
 
             <div class="addemployees-form-group">
@@ -185,11 +216,8 @@
             </div>
 
             <div class="addemployees-form-group">
-                <label for="addemployees-role">Role</label>
-                <select id="addemployees-role">
-                    <option value="hr-staff">HR Staff</option>
-                    <option value="hr-manager">HR Manager</option>
-                    <option value="it-staff">IT Staff</option>
+                <label for="employees-edit-role">Role</label>
+                <select class="addemployees-role" id="employees-edit-role" onchange="alert('Employee Role Was Changed')">
                 </select>
             </div>
     
@@ -226,6 +254,30 @@
             </div>
 
             <button class="delete-employees-save-button">Delete</button>
+        </div>
+        
+        <!-- Dialog Box Add Employee Role-->
+        <div class="addemployees-dialog-box" id="add-employeerole-dialog-box">
+            <div class="addpartners-back-button" onclick="hideEmployeeTitleDialog()">
+                <i class="fas fa-chevron-left"></i> Back
+            </div>
+
+            <div class="addemployees-form-group">
+                <label for="addemployee-add-role">Employee Role</label>
+                <input type="text" id="addemployee-add-role">
+            </div>
+            <div class="addemployees-form-group">
+                <label for="addemployee-privilege">Privilege</label>
+                <select id="addemployee-privilege">
+                    <option value="administrator">Admin</option>
+                    <option value="employee">Employee</option>
+                </select>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="addemployees-save-button" onclick="validateAndAddRole()">Add Role</button>
+            </div>
+            
         </div>
     </div>
     <div class="shape-container2">
@@ -328,6 +380,73 @@
     // Add event listeners for sorting dropdowns
     document.querySelector('.sort-by').addEventListener('change', sortAndFetchEmployees);
     document.querySelector('.order-sort').addEventListener('change', sortAndFetchEmployees);
+    
+    function confirmOpenLink(event) {
+        var userConfirmation = confirm("This link will take you to the Tidio website where you can customize the Tidio Chatbot. Please note that a login is required to access the features. Do you want to continue?");
+            
+            if (!userConfirmation) {
+                event.preventDefault();
+                return false;
+            }
+            
+            return true;
+    }
+    
+    function generatePassword(){
+        
+        // Get the last name input value
+        var lastName = document.getElementById('addemployees-lastname').value.trim();
+
+        // Use the PHP variable `$lastEmployeeId` passed to JS through data attributes or inline script
+        var lastEmployeeId = <?php echo $lastEmployeeId ? $lastEmployeeId : 0; ?>;
+
+        if(lastName){
+            // Generate the password by concatenating last name and employee_id + 1
+            var generatedPassword = lastName + (lastEmployeeId + 1);
+            console.log(generatedPassword);
+            document.getElementById('addemployees-password').value = generatedPassword;
+        }
+        else{
+            alert('Please input your name.');
+        }
+    }
+    
+    function validateAndAddRole() {
+        var roleName = document.getElementById('addemployee-add-role').value.trim();
+        var rolePrivilege = document.getElementById('addemployee-privilege').value.trim();
+
+        console.log("Role Name: " + roleName)
+        console.log("Role Privilege: " + rolePrivilege)
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Open a POST request to the server-side script
+        xhr.open("POST", "addEmployeeRole.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        // Define the function to handle the server response
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Parse the JSON response from the server
+                var response = JSON.parse(xhr.responseText);
+
+                if (response.valid) {
+                    // Role was successfully added to the database
+                    alert(roleName + " has been successfully added with privilege: " + rolePrivilege);
+                    hideEmployeeTitleDialog();
+                    // After success, update the select field with the updated list of roles
+                    populateEmployeeRoles()
+
+                } else {
+                    // Role already exists in the database
+                    alert(roleName + " already exists. Please choose a different title.");
+                }
+            }
+        };
+
+        // Send the roleName and rolePrivilege to the server
+        xhr.send("roleName=" + encodeURIComponent(roleName) + "&rolePrivilege=" + encodeURIComponent(rolePrivilege));
+    }
 
     </script>
 </body>

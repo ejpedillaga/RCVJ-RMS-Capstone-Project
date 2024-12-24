@@ -1,98 +1,106 @@
-  /*Notifs*/
-  @media screen and (max-width: 768px) {
-    .notification_wrap .dropdown {
-      width: 200px;
-    }
-
-    .popup .candidate-container {
-      padding-left: 0em;
-      padding-right: 2em;
-    }
-
-    .popup #personal-info{
-      width: 25em;
-    }
-
-    .popup .buttons-container{
-      margin-bottom: 3em;
-    }
-
-    .popup .large-profile-photo{
-      height: 5em;
-      width: 5em;
-      margin-bottom: 10em;
-    }
-
-    .profile-card{
-      max-width: 40em;
-    }
-    
-
-
+/*Notifs*/
+@media screen and (max-width: 768px) {
+  .notification_wrap .dropdown {
+    width: 200px;
   }
 
-  @media screen and (max-width: 900px) {
-    #hamburger-nav .hamburger-menu {
-      display: flex;
-      align-items: center;
-    }
-
-    #hamburger-nav .nav-icons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .notification_wrap .notification_icon {
-      width: 30px;
-      height: 30px;
-      font-size: 20px;
-    }
-
-    .notification_wrap .dropdown {
-      width: 200px;
-    }
-
-    .details-header{
-      margin-top: 4em;
+  .popup .candidate-container {
+    padding-left: 0em;
+    padding-right: 2em;
   }
 
-  .flip-card-inner{
+  .popup #personal-info {
+    width: 25em;
+  }
+
+  .popup .buttons-container {
+    margin-bottom: 3em;
+  }
+
+  .popup .large-profile-photo {
+    height: 5em;
+    width: 5em;
+    margin-bottom: 10em;
+  }
+
+  .profile-body {
+    display: block;
+    flex-direction: column;
+    max-width: 45em;
+    min-width: 30em;
+  }
+
+  .profile-card {
+    max-width: 40em;
+  }
+
+  #my-jobs-card {
+    width: 40em;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  #hamburger-nav .hamburger-menu {
+    display: flex;
+    align-items: center;
+  }
+
+  #hamburger-nav .nav-icons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .notification_wrap .notification_icon {
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+  }
+
+  .notification_wrap .dropdown {
+    width: 200px;
+  }
+
+  .details-header {
+    margin-top: 4em;
+  }
+
+  .flip-card-inner {
     height: 30px;
     margin-top: 1em;
   }
-  .flip-card-front, .flip-card-back{
+  .flip-card-front,
+  .flip-card-back {
     height: 20em;
   }
 
-  .flip-card-front .content{
-    margin-left: 10rem;
+  .profile-body {
+    display: block;
+    flex-direction: column;
+    max-width: 45em;
+    min-width: 30em;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .notification_wrap .dropdown {
+    width: 200px;
   }
 
-
-
-  
+  .details-header {
+    margin-top: 3em;
   }
 
-  @media screen and (max-width: 768px) {
-    .notification_wrap .dropdown {
-      width: 200px;
-    }
-
-    .details-header{
-      margin-top: 3em;
-  }
-
-  .flip-main-container{
+  .flip-main-container {
     width: 20rem;
     padding-bottom: 10rem;
   }
 
   .rcvj-section {
-  font-size: 1rem;
+    font-size: 1rem;
   }
 
-  .flip-card-inner{
+  .flip-card-inner {
     height: 40rem;
     width: 20rem;
     border-radius: 80px;
@@ -100,17 +108,14 @@
   }
 
   .rcvj-description {
-    font-size: 16px; 
+    font-size: 16px;
     line-height: 1.7;
     margin-bottom: 1.5rem;
     padding: 1px;
   }
 
-  .flip-card-front .content{
-    margin-left: 10rem;
-  }
-
-  .flip-card-front, .flip-card-back{
+  .flip-card-front,
+  .flip-card-back {
     height: 40rem;
     width: 20rem;
     display: flex;
@@ -118,1116 +123,989 @@
     padding: 1px;
   }
 
-  .footer-distributed{
+  .footer-distributed {
+    margin-top: 10em;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .notification_wrap .dropdown {
+    width: 150px;
+    right: -55px;
+  }
+
+  .notification_wrap .dropdown .notify_item .notify_info {
+    font-size: 0.9rem;
+  }
+
+  .flip-main-container {
+    width: 20rem;
+    padding-bottom: 80rem;
+  }
+
+  .rcvj-section {
+    font-size: 14px;
+  }
+
+  .flip-card-inner {
+    height: 40rem;
+    width: 17rem;
+    border-radius: 80px;
+    margin-left: -1rem;
+  }
+
+  .rcvj-description {
+    font-size: 14px;
+    line-height: 1.7;
+    margin-bottom: 1.5rem;
+    padding: 1px;
+  }
+
+  .flip-card-front,
+  .flip-card-back {
+    height: 40rem;
+    width: 17rem;
+    display: flex;
+    flex-direction: column;
+    padding: 1px;
+  }
+
+  .footer-distributed {
     margin-top: 10em;
   }
 
+  .details-header,
+  .desc-box {
+    margin-left: -3rem;
   }
 
-  @media screen and (max-width: 480px) {
-    .notification_wrap .dropdown {
-      width: 150px;
-      right: -55px;
-    }
-
-    .notification_wrap .dropdown .notify_item .notify_info {
-      font-size: 0.9rem;
-    }
-
-    .flip-main-container{
-      width: 20rem;
-      padding-bottom: 80rem;
-    }
-    
-    .rcvj-section {
-    font-size: 14px;
-    }
-    
-    .flip-card-inner{
-      height: 40rem;
-      width: 17rem;
-      border-radius: 80px;
-      margin-left: -1rem;
-    }
-    
-    .rcvj-description {
-      font-size: 14px; 
-      line-height: 1.7;
-      margin-bottom: 1.5rem;
-      padding: 1px;
-    }
-    
-    .flip-card-front, .flip-card-back{
-      height: 40rem;
-      width: 17rem;
-      display: flex;
-      flex-direction: column;
-      padding: 1px;
-    }
-
-    .flip-card-front .content{
-      margin-left: 10rem;
-    }
-
-    .footer-distributed{
-      margin-top: 10em;
-    }
-    
-    .details-header, .desc-box{
-      margin-left: -3rem;
-    }
-
-    .desc-box{
-      margin-right: 2rem;
-    }
-
-    .tags-container{
-      display: block;
-      width: 10rem;
-      margin-left: 2rem;
-    }
-
-    .tags{
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .popup #personal-info{
-      width: 100%;
-    }
-
-  .locationemail {
-      width: 10px;
-    }
-
-
+  .desc-box {
+    margin-right: 2rem;
   }
 
-  @media screen and (max-width: 1700px) {
-    .jobs-main-container ul {
-      padding: 1px;
-      display: grid;
-      grid-template-columns: auto auto auto;
-    }
-
-    .jobs-card {
-      margin: 1rem;
-      width: 60%;
-      height: 160px;
-    }
-
-    .shape-container1 {
-      z-index: -1;
-    }
-
-    .profile-header{
-      display: block;
-      flex-direction: row;
-    }
-
-    #my-jobs-card{
-      max-width: 80em;
-    }
-    
-    
-    .sections{
-      margin-left: 8rem;
-      width: 60rem;
-    }
-
-    .tab-content ul {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
-
-    .tab-content ul .jobs-card {
-      margin: 0.5rem;
-      height: 10rem;
-      width: 15rem;
-    }
+  .tags-container {
+    display: block;
+    width: 10rem;
+    margin-left: 4rem;
   }
 
-  @media screen and (max-width: 1400px) {
-    .details-section {
-      padding: 0 20rem;
-    }
-    .companyprofile-section {
-      padding: 6rem 5rem;
-      margin: 0%;
-    }
-    .companyprofile-header {
-      margin: 0;
-    }
+  .tags {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
 
-    .partner-main-container ul {
-      width: 50%;
-      display: grid;
-      grid-template-columns: 20em 20em 20em;
-      padding: 20px;
-      justify-content: center;
-    }
-
-    .partner-card {
-      width: 100%; /* Set the width of the partner-card to 100% */
-      max-width: 100%; /* Ensure the card takes up the full width */
-      padding: 2rem 0;
-      height: auto;
-    }
-
-    .jobs-main-container ul {
-      padding: 1px;
-      display: grid;
-      grid-template-columns: auto auto auto;
-    }
-
-    .jobs-card {
-      margin: 1rem;
-      width: 60%;
-      height: 160px;
-    }
-
-    .sections {
-      display: flex;
-      flex-wrap: wrap;
-      padding-right: 35px;
-    }
-
-    #my-jobs-card {
-      padding: 1rem 2rem 0;
-      max-width: 75rem;
-      min-height: 18rem;
-      cursor: pointer;
-    }
-
-    .profile-header {
-      display: block;
-      flex-direction: row; /* switch to column layout on small screens */
-    }
-
-    .tab-content ul {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
-
-    .tab-content ul .jobs-card {
-      margin: 0.5rem;
-      height: 10rem;
-      width: 15rem;
-    }
-
+@media screen and (max-width: 1700px) {
+  .jobs-main-container ul {
+    padding: 1px;
+    display: grid;
+    grid-template-columns: auto auto auto;
   }
 
-  @media screen and (max-width: 1300px) {
-  
-    .footer-distributed .footer-center p {
-      font-size: 0.8em;
-    }
-    .details-section {
-      padding: 0 15rem;
-    }
-    .partner-header h1 {
-      font-size: 2rem;
-    }
-    .myjobs-section {
-      padding: 0 15rem;
-    }
-
-    .partner-header {
-      margin-left: -50px;
-    }
-
-    .partner-main-container ul {
-      width: 50%;
-      display: grid;
-      grid-template-columns: 20em 20em;
-      padding: 20px;
-      justify-content: center;
-    }
-
-    .partner-card {
-      width: 100%;
-      max-width: 100%;
-      padding: 2rem 0;
-      height: auto;
-    }
-
-    .jobs-main-container ul {
-      padding: 1px;
-      display: grid;
-      grid-template-columns: auto auto auto;
-    }
-
-    .jobs-card {
-      margin: 1rem;
-      width: 60%;
-      height: 160px;
-    }
-
-    .shape-container1 {
-      margin-left: -10em;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      filter: blur(5px);
-    }
-
-    #my-jobs-card {
-      padding: 1rem 2rem 0;
-      max-width: 75rem;
-      min-height: 18rem;
-      cursor: pointer;  
-    }
-
-    .profile-header {
-      display: block;
-      flex-direction: row; /* switch to column layout on small screens */
-      padding: 0.5rem; 
-    }
-
-    .tab-content ul {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
-
-    .tab-content ul .jobs-card {
-      margin: 0.5rem;
-      height: 10rem;
-      width: 15rem;
-    }
-
-
+  .jobs-card {
+    margin: 1rem;
+    width: 60%;
+    height: 160px;
   }
 
-  @media screen and (max-width: 1155px) {
-    .jobs-section .jobs-card {
-      max-width: 100%;
-      width: auto;
-    }
+  .shape-container1 {
+    z-index: -1;
+  }
 
-    .jobs-section {
-      width: 100%;
-      margin: 1em 0;
-      margin-top: 5rem;
-      padding-left: 5rem;
-      padding-right: 5rem;
-      height: auto;
-    }
-    .details-section {
-      padding: 0 10rem;
-    }
-    .myjobs-section {
-      padding: 0 10rem;
-    }
-    .partner-section {
-      width: 100%;
-      margin: 1em 0;
-      margin-top: 5rem;
-      padding-left: 5rem;
-      padding-right: 5rem;
-      height: auto;
-    }
+  .profile-header {
+    display: block;
+    flex-direction: row;
+  }
 
-    .tab-content ul {
-      justify-content: space-evenly;
-    }
+  #my-jobs-card {
+    max-width: 80em;
+  }
 
-    .partner-main-container {
-      width: 50%;
-      margin-left: 190px;
-    }
-    .partner-main-container ul {
-      width: 50%;
-      display: grid;
-      grid-template-columns: 20em 20em;
-      padding: 20px;
-      justify-content: center;
-    }
+  .profile-body {
+    display: block;
+    margin-left: -3em;
+  }
 
-    .partner-card {
-      width: 100%; /* Set the width of the partner-card to 100% */
-      max-width: 100%; /* Ensure the card takes up the full width */
-      padding: 2rem 0;
-      height: auto;
-    }
+  .sections {
+    margin-left: 8rem;
+    width: 60rem;
+  }
 
-    .sections {
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
+  .tab-content ul {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
 
-    #my-jobs-card .content {
-      align-items: center;
-    }
+  .tab-content ul .jobs-card {
+    margin: 0.5rem;
+    height: 10rem;
+    width: 15rem;
+  }
+}
 
-    #my-jobs-card{
-      max-width: 40em;
-    }
+@media screen and (max-width: 1400px) {
+  .details-section {
+    padding: 0 20rem;
+  }
+  .companyprofile-section {
+    padding: 6rem 5rem;
+    margin: 0%;
+  }
+  .companyprofile-header {
+    margin: 0;
+  }
 
-    .my-jobs p {
-      margin-right: 5rem;
-    }
+  .partner-main-container ul {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 20em 20em 20em;
+    padding: 20px;
+    justify-content: center;
+  }
 
-    .profile-card{
-      max-width: 73%;
-      margin-left: 3em;
-    }
+  .partner-card {
+    width: 100%; /* Set the width of the partner-card to 100% */
+    max-width: 100%; /* Ensure the card takes up the full width */
+    padding: 2rem 0;
+    height: auto;
+  }
 
+  .jobs-main-container ul {
+    padding: 1px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
 
-    .profile-header {
-      display: block;
-      flex-direction: row; /* switch to column layout on small screens */
-      padding: 0.5rem; 
-    }
+  .jobs-card {
+    margin: 1rem;
+    width: 60%;
+    height: 160px;
+  }
 
+  .sections {
+    display: flex;
+    flex-wrap: wrap;
+    padding-right: 35px;
+  }
 
-  .sections{
+  #my-jobs-card {
+    padding: 1rem 2rem 0;
+    max-width: 75rem;
+    min-height: 18rem;
+    cursor: pointer;
+  }
+
+  .profile-header {
+    display: block;
+    flex-direction: row; /* switch to column layout on small screens */
+    padding: 0.5rem;
+  }
+
+  .tab-content ul {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .tab-content ul .jobs-card {
+    margin: 0.5rem;
+    height: 10rem;
+    width: 15rem;
+  }
+}
+
+@media screen and (max-width: 1300px) {
+  .footer-distributed .footer-center p {
+    font-size: 0.8em;
+  }
+  .details-section {
+    padding: 0 15rem;
+  }
+  .partner-header h1 {
+    font-size: 2rem;
+  }
+  .myjobs-section {
+    padding: 0 15rem;
+  }
+
+  .partner-header {
+    margin-left: -50px;
+  }
+
+  .partner-main-container ul {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 20em 20em;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .partner-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 2rem 0;
+    height: auto;
+  }
+
+  .jobs-main-container ul {
+    padding: 1px;
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
+
+  .jobs-card {
+    margin: 1rem;
+    width: 60%;
+    height: 160px;
+  }
+
+  .shape-container1 {
+    margin-left: -10em;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(5px);
+  }
+
+  #my-jobs-card {
+    padding: 1rem 2rem 0;
+    max-width: 75rem;
+    min-height: 18rem;
+    cursor: pointer;
+  }
+
+  .sections > * {
+    flex-grow: 1;
+  }
+
+  .profile-header {
+    display: block;
+    flex-direction: row; /* switch to column layout on small screens */
+    padding: 0.5rem;
+  }
+
+  .tab-content ul {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .tab-content ul .jobs-card {
+    margin: 0.5rem;
+    height: 10rem;
+    width: 15rem;
+  }
+}
+
+@media screen and (max-width: 1155px) {
+  .jobs-section .jobs-card {
+    max-width: 100%;
+    width: auto;
+  }
+
+  .jobs-section {
+    width: 100%;
+    margin: 1em 0;
+    margin-top: 5rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    height: auto;
+  }
+  .details-section {
+    padding: 0 10rem;
+  }
+  .myjobs-section {
+    padding: 0 10rem;
+  }
+  .partner-section {
+    width: 100%;
+    margin: 1em 0;
+    margin-top: 5rem;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    height: auto;
+  }
+
+  .tab-content ul {
+    justify-content: space-evenly;
+  }
+
+  .partner-main-container {
+    width: 50%;
+    margin-left: 190px;
+  }
+  .partner-main-container ul {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 20em 20em;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .partner-card {
+    width: 100%; /* Set the width of the partner-card to 100% */
+    max-width: 100%; /* Ensure the card takes up the full width */
+    padding: 2rem 0;
+    height: auto;
+  }
+
+  .sections {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-left: 3rem;
+    margin-right: 1rem;
+  }
+
+  #my-jobs-card .content {
+    align-items: center;
+  }
+
+  #my-jobs-card {
+    padding: 1rem 2rem 0;
+    max-width: 55rem;
+    min-height: 18rem;
+    cursor: pointer;
+  }
+
+  .sections > * {
+    flex-grow: 1;
+  }
+
+  .my-jobs p {
+    margin-right: 5rem;
+  }
+
+  .profile-card {
+    max-width: 73%;
+    margin-left: 3em;
+  }
+
+  .profile-header {
+    display: block;
+    flex-direction: row; /* switch to column layout on small screens */
+    padding: 0.5rem;
+  }
+
+  .profile-body {
+    display: block;
+    margin-left: -3em;
+  }
+
+  .sections {
     margin-left: 8rem;
     width: 55rem;
   }
+}
 
-  #profile-container{
+@media screen and (max-width: 950px) {
+  .footer-distributed .footer-center p {
+    font-size: 0.7em;
+  }
+
+  .partner-main-container {
+    width: auto;
+    justify-items: center;
+    margin-left: -40px;
+  }
+
+  .partner-main-container ul {
+    width: 50%;
+    display: grid;
+    grid-template-columns: 20em 20em;
+    padding: 20px;
+    justify-content: center;
+  }
+
+  .partner-card {
+    width: 100%; /* Set the width of the partner-card to 100% */
+    max-width: 100%; /* Ensure the card takes up the full width */
+    padding: 2rem 0;
+    height: auto;
+  }
+
+  .sections {
+    width: auto;
+  }
+
+  .my-jobs p {
+    margin-right: 5rem;
+  }
+
+  .profile-header {
+    display: block;
+    flex-direction: row; /* switch to column layout on small screens */
+    padding: 0.5rem;
+  }
+
+  .profile-body {
+    display: block;
+    margin-left: -6em;
+    width: 65rem;
+  }
+}
+
+@media screen and (max-width: 925px) {
+  .partner-main-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .partner-main-container ul {
+    width: 100%;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+  }
+
+  .partner-main-container ul li {
+    width: 100%; /* Set each list item to take up the full width */
+    margin: 5px;
+  }
+
+  .partner-card {
+    width: 100%; /* Set the width of the partner-card to 100% */
+    max-width: 100%; /* Ensure the card takes up the full width */
+    padding: 2rem 0;
+    height: auto;
+  }
+  .partner-card p {
+    text-align: center;
+    padding: 0 5rem;
+  }
+
+  #desktop-nav {
+    display: none;
+  }
+
+  #hamburger-nav {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .logo {
+    position: fixed;
+    left: 0;
+    margin-left: 3em;
+  }
+
+  .hamburger-menu {
+    position: fixed;
+    right: 0;
+    margin-right: 3em;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  #desktop-nav {
+    display: none;
+  }
+
+  #hamburger-nav {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .nav-acc button {
+    font-size: 14px;
+  }
+
+  .title1 {
+    font-size: 2rem;
+  }
+
+  section {
+    margin-bottom: 10rem;
+    flex-wrap: wrap;
+  }
+
+  .home-section {
+    width: 100%;
+    margin: 1em 0;
+    margin-top: 5rem;
+    text-align: center;
+  }
+
+  .about-section {
+    width: 100%;
+    margin: 1em 0;
+    text-align: center;
+  }
+
+  .jobs-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 5rem;
+    padding: 0 1rem;
+    text-align: center;
+  }
+
+  .jobs-header {
+    text-align: center;
+    width: 100%;
+  }
+
+  .jobs-header img {
+    width: 80%; /* Adjust image size for smaller screens */
+    max-width: 300px; /* Ensure it doesn't get too large */
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  .search-container {
+    width: 100%;
+    margin: 1rem 0; /* Add some margin for spacing */
+  }
+
+  .search-box {
+    flex-direction: column;
+    gap: 1rem; /* Add space between search inputs */
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-input input {
+    width: 100%;
+  }
+
+  .search-button {
+    width: 100%;
+    padding: 0.75rem; /* Adjust padding for better touch targets */
+  }
+
+  .main-container-jobs {
+    width: 90%;
+  }
+
+  .jobs-main-container ul {
+    display: grid;
+    grid-template-columns: auto;
+    padding: 0;
+  }
+
+  .jobs-card {
+    margin: 1rem;
+  }
+
+  .company-box p,
+  .desc-box h3,
+  .desc-box p {
+    font-size: 1rem; /* Ensure all text is readable */
+  }
+
+  .searchbar1 {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+  }
+
+  .shape-container1 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    filter: blur(5px);
+  }
+
+  .shape-container2 {
+    filter: blur(5px);
+  }
+
+  .shape-container1 .rectangle-3 img {
+    opacity: 0%;
+    width: 100%;
+  }
+
+  .searchbar1 {
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .tags-container {
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 0.2rem; /* Added to wrap tags in smaller screens */
+  }
+
+  .partner-container {
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .title5 {
+    font-size: 3rem;
+  }
+
+  footer {
+    margin-top: 20rem;
+    padding: 10px;
+  }
+
+  .rectangle-1,
+  .rectangle-2 {
+    opacity: 50%;
+  }
+  .footer-distributed .footer-center {
+    padding-left: 0rem;
+  }
+  .footer-distributed .footer-center p {
+    font-size: 1em;
+  }
+  .details-section {
+    padding: 0 5rem;
+    margin: 0%;
+  }
+  .myjobs-section {
+    padding: 0;
+    margin: 5rem 0;
+    width: 100%;
+  }
+  .myjobs-section .tab-content {
+    width: 40rem;
+  }
+  .buttons-container {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .applied {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .partner-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 5rem;
+    text-align: center;
+  }
+
+  .partner-header {
+    text-align: center;
+    flex-direction: column;
+    padding: 3rem;
+  }
+
+  .partner-header h1 {
+    font-size: 2rem;
+  }
+
+  .partner-header .search-container {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 880px) {
+  .footer-distributed .footer-left,
+  .footer-distributed .footer-center,
+  .footer-distributed .footer-right {
+    display: block;
+    width: 100%;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  .footer-distributed .footer-center i {
+    margin-left: 0;
+  }
+  .footer-distributed .footer-left img {
+    margin: 0; /* Reset margin for centered alignment */
+  }
+}
+
+@media (min-width: 900px) {
+  .search-container {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .search-box {
+    flex-direction: row;
+    border-radius: 20px;
+  }
+
+  .search-input {
+    border-right: 1px solid #ccc;
+    border-bottom: none;
+  }
+
+  .search-input:last-child {
+    border-right: none;
+  }
+
+  .search-button {
+    margin-top: 0;
+    margin-left: 10px;
+    border-radius: 20px;
+    width: auto;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .back-button {
+    position: relative;
+    left: -1rem;
+  }
+  .jobs-section {
+    margin-top: 3rem;
+  }
+  .jobs-header img {
+    display: none;
+    transition: 0.3s ease;
+  }
+  .details-header {
+    flex-direction: column;
+  }
+  .company-box {
+    text-align: center;
+    margin-right: 0em;
+  }
+  .details-header img {
+    margin: 1rem auto auto auto;
+  }
+  .partner-card {
+    max-width: 100%; /* Allow cards to take full width on smaller screens */
+    margin-bottom: 20px;
+    min-height: none; /* Adjust margin between cards */
+  }
+  .partner-card p {
     padding: 1rem;
   }
-
-  .myjobs-section .main-container{
-    margin-left: -5rem;
+  .companyprofile-section {
+    padding: 6rem 2rem;
+  }
+  .companyprofile-header {
+    flex-direction: column;
+  }
+  .companyprofile-header h1 {
+    margin-left: 0;
+    margin-top: 2rem;
+  }
+  .tabs {
+    margin-top: 1rem;
+  }
+  .myjobs-section .tab-content {
+    width: 100%;
+  }
+  .tab-content ul .jobs-card {
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
   }
 
+  .title4 {
+    color: black;
+  }
+}
 
-
+/* For screens between 768px and 1200 px */
+@media (max-width: 1200px) {
+  .profile-card {
+    flex-basis: 50%;
   }
 
-  @media screen and (max-width: 950px) {
-    .footer-distributed .footer-center p {
-      font-size: 0.7em;
-    }
+  .sections {
+    max-width: 80%;
+  }
+}
 
-    .partner-main-container {
-      width: auto;
-      justify-items: center;
-      margin-left: -40px;
-    }
-
-    .partner-main-container ul {
-      width: 50%;
-      display: grid;
-      grid-template-columns: 20em 20em;
-      padding: 20px;
-      justify-content: center;
-    }
-
-    .partner-card {
-      width: 100%; /* Set the width of the partner-card to 100% */
-      max-width: 100%; /* Ensure the card takes up the full width */
-      padding: 2rem 0;
-      height: auto;
-    }
-
-    .sections {
-      width: auto;
-    }
-
-    .my-jobs p {
-      margin-right: 5rem;
-    }
-
-    .profile-header {
-      display: block;
-      flex-direction: row; /* switch to column layout on small screens */
-      padding: 0.5rem; 
-    }
-
+/* For screens between 480px and 768px */
+@media (max-width: 768px) {
+  .profile-card {
+    flex-basis: 30%;
   }
 
-  @media screen and (max-width: 925px) {
-    .partner-main-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .partner-main-container ul {
-      width: 100%;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      justify-content: center;
-    }
-
-    .partner-main-container ul li {
-      width: 100%; /* Set each list item to take up the full width */
-      margin: 5px;
-    }
-
-    .partner-card {
-      width: 100%; /* Set the width of the partner-card to 100% */
-      max-width: 100%; /* Ensure the card takes up the full width */
-      padding: 2rem 0;
-      height: auto;
-    }
-    .partner-card p {
-      text-align: center;
-      padding: 0 5rem;
-    }
-
-    #desktop-nav {
-      display: none;
-    }
-
-    #hamburger-nav {
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .logo {
-      position: fixed;
-      left: 0;
-      margin-left: 3em;
-    }
-
-    .hamburger-menu {
-      position: fixed;
-      right: 0;
-      margin-right: 3em;
-    }
-
-
+  .sections {
+    flex-basis: 60%;
   }
 
-  @media screen and (max-width: 900px) {
-    #desktop-nav {
-      display: none;
-    }
-
-    #hamburger-nav {
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .nav-acc button {
-      font-size: 14px;
-    }
-
-    .title1 {
-      font-size: 2rem;
-    }
-
-    section {
-      margin-bottom: 10rem;
-      flex-wrap: wrap;
-    }
-
-    .home-section {
-      width: 100%;
-      margin: 1em 0;
-      margin-top: 5rem;
-      text-align: center;
-    }
-
-    .about-section {
-      width: 100%;
-      margin: 1em 0;
-      text-align: center;
-    }
-
-    .jobs-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 5rem;
-      padding: 0 1rem;
-      text-align: center;
-    }
-
-    .jobs-header {
-      text-align: center;
-      width: 100%;
-    }
-
-    .jobs-header img {
-      width: 80%; /* Adjust image size for smaller screens */
-      max-width: 300px; /* Ensure it doesn't get too large */
-      height: auto; /* Maintain aspect ratio */
-    }
-
-    .search-container {
-      width: 100%;
-      margin: 1rem 0; /* Add some margin for spacing */
-    }
-
-    .search-box {
-      flex-direction: column;
-      gap: 1rem; /* Add space between search inputs */
-    }
-
-    .search-input {
-      width: 100%;
-    }
-
-    .search-input input {
-      width: 100%;
-    }
-
-    .search-button {
-      width: 100%;
-      padding: 0.75rem; /* Adjust padding for better touch targets */
-    }
-
-    .main-container-jobs {
-      width: 90%;
-    }
-
-    .jobs-main-container ul {
-      display: grid;
-      grid-template-columns: auto;
-      padding: 0;
-    }
-
-    .jobs-card {
-      margin: 1rem;
-    }
-
-    .company-box p,
-    .desc-box h3,
-    .desc-box p {
-      font-size: 1rem; /* Ensure all text is readable */
-    }
-
-    .searchbar1 {
-      display: flex;
-      justify-content: center;
-      margin: 0 auto;
-    }
-
-    .shape-container1 {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      filter: blur(5px);
-    }
-
-    .shape-container2 {
-      filter: blur(5px);
-    }
-
-    .shape-container1 .rectangle-3 img {
-      opacity: 0%;
-      width: 100%;
-    }
-
-    .searchbar1 {
-      margin-top: 20px;
-      width: 100%;
-    }
-
-    .tags-container {
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 0.2rem; /* Added to wrap tags in smaller screens */
-    }
-
-    .partner-container {
-      justify-content: space-around;
-      flex-wrap: wrap;
-    }
-
-
-    .title5 {
-      font-size: 3rem;
-    }
-
-    footer {
-      margin-top: 20rem;
-      padding: 10px;
-    }
-
-    .rectangle-1,
-    .rectangle-2 {
-      opacity: 50%;
-    }
-    .footer-distributed .footer-center {
-      padding-left: 0rem;
-    }
-    .footer-distributed .footer-center p {
-      font-size: 1em;
-    }
-    .details-section {
-      padding: 0 5rem;
-      margin: 0%;
-    }
-    .myjobs-section {
-      padding: 0;
-      margin: 5rem 0;
-      width: 100%;
-    }
-    .myjobs-section .tab-content {
-      width: 40rem;
-    }
-    .buttons-container {
-      display: flex;
-      justify-content: space-around;
-    }
-
-    .partner-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0 5rem;
-      text-align: center;
-    }
-
-    .partner-header {
-      text-align: center;
-      flex-direction: column;
-      padding: 3rem;
-    }
-
-    .partner-header h1 {
-      font-size: 2rem;
-    }
-
-    .partner-header .search-container {
-      margin-right: 0;
-    }
-
-
+  .jobs-header {
+    padding-top: 4em;
+    padding-bottom: 2em;
   }
 
-  @media (max-width: 880px) {
-    .footer-distributed .footer-left,
-    .footer-distributed .footer-center,
-    .footer-distributed .footer-right {
-      display: block;
-      width: 100%;
-      margin-bottom: 40px;
-      text-align: center;
-    }
-    .footer-distributed .footer-center i {
-      margin-left: 0;
-    }
-    .footer-distributed .footer-left img {
-      margin: 0; /* Reset margin for centered alignment */
-    }
+  .search-input {
+    text-align: center;
+  }
 
-    .tab-content ul {
-      display: grid;
-      grid-template-columns: auto auto;
-    }
+  .profile-header {
+    margin-left: -3rem;
+  }
+
+  .profile-body {
+    display: block;
+    margin-left: -3em;
+  }
+
+  .sections {
+    margin-left: 2rem;
+    width: 33rem;
+  }
+}
+
+/* For smartphone-sized screens (max-width: 480px) */
+@media (max-width: 1050px) {
+  .profile-header {
+    flex-direction: column; /* switch to column layout on small screens */
+    padding: 1rem; /* adjust padding for smaller screens */
+  }
+
+  .profile-body {
+    margin-left: -30px;
+  }
+
+  .my-jobs p {
+    margin-left: -12rem;
+  }
+
+  #my-jobs-card .content {
+    align-items: left;
+  }
+
+  #my-jobs-card {
+    padding: 1rem 2rem 0;
+    max-width: 55rem;
+    min-height: 18rem;
+    cursor: pointer;
+  }
+
+  .sections > * {
+    flex-grow: 1;
+  }
+}
+
+/* **Added media query for PC screens** */
+@media (min-width: 1024px) {
+  .section {
+    flex-basis: 45%; /* **Adjusted width for two columns on PC** */
+  }
+}
+
+/* **Added media query for tablet screens** */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .section {
+    flex-basis: 60%; /* **Adjusted width for two columns on tablet** */
+  }
+}
+
+@media (min-width: 300px) and (max-width: 512px) {
+  .section {
+    width: 50%;
+  }
+
+  .details-header {
+    padding-top: 3em;
+  }
+}
+
+/* **Added media query for smartphone screens** */
+@media (max-width: 767px) {
+  .sections {
+    flex-direction: column; /* **Switched to single column on smartphone** */
+  }
+  .section {
+    width: 100%;
+  }
+
+  .title4 {
+    color: black;
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-card,
+  #my-jobs-card {
+    width: 50em;
+    flex-direction: column; /* Stack content vertically */
+    padding: 1rem 2rem;
+  }
+
+  .profile-card h1,
+  .my-jobs p {
+    font-size: 2.5rem;
+    margin-left: 0;
+    padding: 0;
+  }
+
+  img#profile-picture {
+    margin-bottom: 2rem;
+  }
+
+  .profile-edit {
+    margin-left: 0;
+    padding-bottom: 5rem;
+  }
+
+  .profile-body {
+    width: 55rem;
+  }
+
+  .tab-content ul {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+}
+
+/* For screens smaller than 768px */
+@media (max-width: 768px) {
+  .profile-card,
+  #my-jobs-card {
+    width: 90%; /* Full width */
+    padding: 1rem 1.5rem;
+    margin: 1rem;
+  }
+
+  .profile-card h1,
+  .my-jobs p {
+    font-size: 2rem;
+    margin-left: 0;
+    padding: 0;
+    text-align: center;
+  }
+
+  .profile-contacts {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .profile-contacts .user-address,
+  .profile-contacts .user-email {
+    justify-content: center;
+  }
+
+  img#profile-picture,
+  #mjc-image {
+    max-width: 80%;
+  }
+
+  .profile-body {
+    width: 36rem;
+    padding: 2rem;
+  }
+
+  .tab-content ul {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
 
   .tab-content ul .jobs-card {
-      margin: 0.5rem;
-      width: 15rem;
-    }
-
-    .myjobs-section .main-container{
-      margin-left: -0.5rem;
-    }
-
-    .back-button{
-      margin-left: 6rem;
-      padding: 0.5rem;
-    }
+    margin: 0.5rem;
+    height: 10rem;
+    width: 15rem;
   }
-
-  @media (min-width: 900px) {
-    .search-container {
-      flex-direction: row;
-      align-items: flex-start;
-    }
-
-    .search-box {
-      flex-direction: row;
-      border-radius: 20px;
-    }
-
-    .search-input {
-      border-right: 1px solid #ccc;
-      border-bottom: none;
-    }
-
-    .search-input:last-child {
-      border-right: none;
-    }
-
-    .search-button {
-      margin-top: 0;
-      margin-left: 10px;
-      border-radius: 20px;
-      width: auto;
-    }
-  }
-
-  @media screen and (max-width: 650px) {
-    .back-button {
-      position: relative;
-      left: -1rem;
-    }
-    .jobs-section {
-      margin-top: 3rem;
-    }
-    .jobs-header img {
-      display: none;
-      transition: 0.3s ease;
-    }
-    .details-header {
-      flex-direction: column;
-    }
-    .details-header img {
-      margin: 1rem auto auto auto;
-    }
-    .partner-card {
-      max-width: 100%; /* Allow cards to take full width on smaller screens */
-      margin-bottom: 20px;
-      min-height: none; /* Adjust margin between cards */
-    }
-    .partner-card p {
-      padding: 1rem;
-    }
-    .companyprofile-section {
-      padding: 6rem 2rem;
-    }
-    .companyprofile-header {
-      flex-direction: column;
-    }
-    .companyprofile-header h1 {
-      margin-left: 0;
-      margin-top: 2rem;
-    }
-    .tabs {
-      margin-top: 1rem;
-    }
-    .myjobs-section .tab-content {
-      width: 100%;
-    }
-    .tab-content ul .jobs-card {
-      box-sizing: border-box; /* Ensure padding and border are included in the width */
-    }
-
-    .title4 {
-      color: black;
-    }
-
-
-  }
-
-  /* For screens between 768px and 1200 px */
-  @media (max-width: 1200px) {
-    .profile-card {
-      flex-basis: 50%;
-    }
-
-    .profile-card{
-      max-width: 73%;
-      margin-left: 3em;
-    }
-
-    #my-jobs-card{
-      max-width: 73%;
-    }
-
-    .sections {
-      max-width: 80%;
-    }
-
-    .large-profile-photo{
-      margin-left: auto;
-    }
-
-    .popup #personal-info {
-      width: 100%
-    }
-
-    .candidate-container{
-      overflow: hidden;
-    }
-
-  
-
-
-  }
-
-  /* For screens between 480px and 768px */
-  @media (max-width: 768px) {
-    .profile-card {
-      flex-basis: 30%;
-    }
-
-    .sections {
-      flex-basis: 60%;
-    }
-
-    .jobs-header{
-      padding-top: 4em;
-      padding-bottom: 2em;
-    }
-
-    .search-input{
-      text-align: center;
-    }
-
-    .profile-header{
-      margin-left: -3rem;
-    }
-
-    .sections{
-      margin-left: 2rem;
-      width: 33rem;
-    }
-
-    .profile-body{
-      width: 30rem;
-    }
-
-    .profile-contacts{
-      visibility: hidden;
-    }
-
-    .info-container{
-      padding-top: 3.5rem;
-    }
-
-    .myjobs-section .tabs {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-  }
-  }
-
-  /* For smartphone-sized screens (max-width: 480px) */
-  @media (max-width: 1050px) {
-
-    .my-jobs p {
-      margin-left: -12rem;
-    }
-
-    #my-jobs-card .content {
-      align-items: left;
-    }
-
-
-    
-  }
-
-  /* **Added media query for PC screens** */
-  @media (min-width: 1024px) {
-    .section {
-      flex-basis: 45%; /* **Adjusted width for two columns on PC** */
-    }
-  }
-
-  /* **Added media query for tablet screens** */
-  @media (min-width: 768px) and (max-width: 1023px) {
-    .section {
-      flex-basis: 60%; /* **Adjusted width for two columns on tablet** */
-    }
-  }
-
-  @media (min-width: 300px) and (max-width: 512px) {
-
-    .section {
-      width: 50%;
-    }
-
-    .details-header{
-      padding-top: 3em;
-    }
-  }
-
-  /* **Added media query for smartphone screens** */
-  @media (max-width: 767px) {
-    .sections {
-      flex-direction: column; /* **Switched to single column on smartphone** */
-    }
-    .section {
-      width: 100%;
-    }
-
-
-    .title4 {
-      color: black;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    .profile-card, #my-jobs-card {
-      width: 50em;
-      flex-direction: column; /* Stack content vertically */
-      padding: 2rem;
-    }
-
-    .content{
-      width: 20rem;
-      margin-right: 10rem;
-    }
-
-
-    .profile-card h1,
-    .my-jobs p {
-      font-size: 2.5rem;
-      margin-left: 0;
-      padding: 0;
-    }
-
-    img#profile-picture {
-      margin-bottom: 2rem;
-    }
-
-
-    .tab-content ul{
-      display: grid;
-      grid-template-columns: auto auto;
-      
-    }
-  }
-
-  /* For screens smaller than 768px */
-  @media (max-width: 768px) {
-    .profile-card, #my-jobs-card {
-      width: 90%; /* Full width */
-      padding: 1rem 1.5rem;
-    }
-
-    .profile-card h1,
-    .my-jobs p {
-      font-size: 1.8rem;
-      margin-left: 1em;
-      margin-top:6rem ;
-      padding: 0;
-      width: 5rem;
-    }
-
-    .profile-card{
-      display: block;
-    }
-
-
-    .profile-contacts {
-      margin-left: 0;
-      text-align: center;
-    }
-
-    .profile-contacts .user-address,
-    .profile-contacts .user-email {
-      justify-content: center;
-    }
-
-    #mjc-image {
-      max-width: 80%;
-    }
-
-    #my-jobs-card .content{
-      margin-top: -5rem;
-    }
-
-    #my-jobs-card #mjc-image{
-      margin-left: 6rem;
-      width: 60%;
-    }
-
-    #my-jobs-card #arrow{
-      visibility: hidden;
-    }
-
-    .tab-content ul {
-        display: grid;
-        grid-template-columns: auto auto;
-      }
-
-    .tab-content ul .jobs-card {
-        margin: 0.5rem;
-        height: 15rem;
-        width: 15rem;
-      }
-
-  }
-
-  /* For screens smaller than 480px */
-  @media (max-width: 480px) {
-
-    .profile-card, #my-jobs-card{
-      width: 20rem;
-    }
-
-    #my-jobs-card #mjc-image{
-      margin-left: 4rem;
-      width: 40%;
-    }
-
-    .profile-card .content{
-      margin-top: -4rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-  .profile-card #profile-picture{
-  max-width: 1%;
-  margin-left: -5rem;
-  margin-top: 3.5rem;
-    }
-
-    .profile-card h1{
-  font-size: 2rem;
-  margin-top: -1.5rem;
-  font-size: 1.5rem;
-  margin-left: 1.5rem;
-  width: 20rem;
-  }
-
-  .profile-edit{
-    margin-top: -21rem;
-    z-index: 5555;
-    margin-right: 4.5rem;
-  }
-
-  .profile-body{
+}
+
+/* For screens smaller than 480px */
+@media (max-width: 480px) {
+  .profile-body {
     width: 20rem;
+    margin-left: -80px;
   }
 
-    .tab-content ul .jobs-card {
-      margin: 0.5rem;
-      padding: 2rem;
-      height: 18rem;
-    }
-
-    .job-list{
-      display: block; 
-    }
-
-    .myjobs-section .tabs {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
+  .tab-content ul .jobs-card {
+    margin: 0.5rem;
+    padding: 2rem;
+    height: 18rem;
   }
-
-  .myjobs-section .tab-content ul{
-    display: block;
-  }
-
-  .tab-content ul .jobs-card{
-    width: 100%;
-    height: 13rem;
-  }
-
-
-
-    .footer-distributed .footer-left,
-    .footer-distributed .footer-center,
-    .footer-distributed .footer-right {
-      display: block;
-      width: 100%;
-      margin-bottom: 40px;
-      text-align: center;
-    }
-    .footer-distributed .footer-center i {
-      margin-left: 0;
-    }
-    .footer-distributed .footer-left img {
-      margin: 0; /* Reset margin for centered alignment */
-    }
-
-  
-  }
+}

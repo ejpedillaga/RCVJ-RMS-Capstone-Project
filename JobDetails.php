@@ -179,41 +179,53 @@ $stmt_skills->close();
 
 $company_name = isset($job['company_name']) ? $job['company_name'] : '';
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userid = $user_info['userid'];
-    $full_name = $user_name;
-    $job_title = $job['job_title'];
-    $company_name = $company_name;
-    $job_location = $job['job_location'];
-    $job_id = $job_id;
-    $date_applied = date('Y-m-d');
-    $status = 'Pending';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = json_decode(file_get_contents('php://input'), true);
+    
+    if (isset($data['action'])) {
+        if ($data['action'] === 'apply') {
+            // Handle job application
+            $date_applied = date('Y-m-d');
+            $status = 'Pending';
 
-    // Check if the user has already applied for the same job
-    $sql_check = "SELECT COUNT(*) AS count FROM candidate_list WHERE userid = ? AND job_id = ?";
-    $stmt_check = $conn->prepare($sql_check);
-    $stmt_check->bind_param("ii", $userid, $job_id);
-    $stmt_check->execute();
-    $result = $stmt_check->get_result();
-    $row = $result->fetch_assoc();
+            // Check if the user has already applied
+            $sql_check = "SELECT COUNT(*) AS count FROM candidate_list WHERE userid = ? AND job_id = ?";
+            $stmt_check = $conn->prepare($sql_check);
+            $stmt_check->bind_param("ii", $userid, $job_id);
+            $stmt_check->execute();
+            $result = $stmt_check->get_result();
+            $row = $result->fetch_assoc();
 
-    if ($row['count'] > 0) {
-        // If the user already applied, block the submission
-        echo json_encode(['status' => 'error', 'message' => 'You have already applied for this job.']);
-    } else {
-        // Proceed with inserting the new application
-        $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) 
-                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt_insert = $conn->prepare($sql_insert);
-        $stmt_insert->bind_param("issssiss", $userid, $full_name, $job_title, $company_name, $job_location, $job_id, $date_applied, $status);
+            if ($row['count'] > 0) {
+                echo json_encode(['status' => 'error', 'message' => 'You have already applied for this job.']);
+            } else {
+                $sql_insert = "INSERT INTO candidate_list (userid, full_name, job_title, company_name, job_location, job_id, date_applied, status) 
+                               VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt_insert = $conn->prepare($sql_insert);
+                $stmt_insert->bind_param("issssiss", $userid, $user_name, $job['job_title'], $company_name, $job['job_location'], $job_id, $date_applied, $status);
 
-        if ($stmt_insert->execute()) {
-            echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully!']);
-        } else {
-            echo json_encode(['status' => 'error', 'message' => 'There was an error processing your application.']);
+                if ($stmt_insert->execute()) {
+                    echo json_encode(['status' => 'success', 'message' => 'Application submitted successfully!']);
+                } else {
+                    echo json_encode(['status' => 'error', 'message' => 'There was an error processing your application.']);
+                }
+            }
+            $stmt_check->close();
+        } elseif ($data['action'] === 'cancel') {
+            // Handle cancel application
+            $sql_delete = "DELETE FROM candidate_list WHERE userid = ? AND job_id = ?";
+            $stmt_delete = $conn->prepare($sql_delete);
+            $stmt_delete->bind_param("ii", $userid, $job_id);
+
+            if ($stmt_delete->execute()) {
+                echo json_encode(['status' => 'success', 'message' => 'Your application has been successfully canceled.']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to cancel your application. Please try again.']);
+            }
+            $stmt_delete->close();
         }
     }
-
+    $conn->close();
     exit;
 }
 ?>
@@ -382,7 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             <div class="buttons-container">
-                <button type="submit" class="button-apply" id="submitBtn">Submit</button>
+                <button class="button-apply" onclick="handleApplication('apply')">Apply</button>
                 <button class="button-cp" onclick="redirectTo('UserProfile.php')">Edit</button>
             </div>
         </form>
@@ -466,10 +478,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <p id="location"><i class="fa fa-map-marker-alt" aria-hidden="true"></i> <?php echo htmlspecialchars($job['job_location']); ?></p>
                     <p id="date-posted">Posted on: <?php echo htmlspecialchars(date('m/d/Y', strtotime($job['date_posted']))); ?></p>
                     <p id="available">Available Spots: <?php echo htmlspecialchars($job['job_candidates']); ?></p>
-                    <div class="buttons-container">
-                        <button class="button-apply" onclick="showInfo()">Apply</button>
-                        <button class="button-cp" onclick="redirectTo('CompanyProfile.php?company_name=<?php echo urlencode($company_name); ?>')">Company Profile</button>
-                    </div>
+                    <?php
+                        // Check if the user has already applied
+                        $sql_check = "SELECT COUNT(*) AS count FROM candidate_list WHERE userid = ? AND job_id = ?";
+                        $stmt_check = $conn->prepare($sql_check);
+                        $stmt_check->bind_param("ii", $userid, $job_id);
+                        $stmt_check->execute();
+                        $result_check = $stmt_check->get_result();
+                        $row_check = $result_check->fetch_assoc();
+
+                        if ($row_check['count'] > 0) {
+                            // If the user has already applied
+                            echo '<p class="applied"><i class="fa fa-exclamation-circle" aria-hidden="true"></i> Already Applied For This Job</p>';
+                            echo '<div class="buttons-container">';
+                            echo '<button class="button-apply" onclick="handleApplication(\'cancel\')">Cancel Application</button>';
+                            echo '<button class="button-cp" onclick="redirectTo(\'CompanyProfile.php?company_name=' . urlencode($company_name) . '\')">Company Profile</button>';
+                            echo '</div>';
+                        } else {
+                            // Show the "Apply" button if the user hasn't applied
+                            echo '<div class="buttons-container">';
+                            echo '<button class="button-apply" onclick="showInfo()">Apply</button>';
+                            echo '<button class="button-cp" onclick="redirectTo(\'CompanyProfile.php?company_name=' . urlencode($company_name) . '\')">Company Profile</button>';
+                            echo '</div>';
+                        }
+
+                        $stmt_check->close();
+                        ?>
                 </div>
                 <img id="company-logo" src="data:image/jpeg;base64,<?php echo htmlspecialchars($job['logo']); ?>" alt="Company Logo">
             </div>
@@ -552,29 +586,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="script.js?v=<?php echo filemtime('script.js'); ?>"></script>
     <script>
-                $(document).ready(function() {
-            $('#applyForm').submit(function(e) {
-                e.preventDefault(); // Prevent form from submitting normally
-                $.ajax({
-                    type: 'POST',
-                    url: '', // Same PHP file
-                    data: $(this).serialize(),
-                    success: function(response) {
-                        const res = JSON.parse(response);
-                        if (res.status === 'success') {
-                            alert(res.message);
-                            window.location.href = 'Jobs.php';
-                        } else {
-                            alert(res.message);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                        alert('There was an error processing your request.');
-                    }
-                });
-            });
-        });
+        function handleApplication(action) {
+            const confirmMessage = action === 'cancel' 
+                ? 'Are you sure you want to cancel your application for this job?' 
+                : 'Do you want to apply for this job?';
+            if (confirm(confirmMessage)) {
+                fetch('', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === 'success') location.reload();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
     </script>
 </body>
 </html>

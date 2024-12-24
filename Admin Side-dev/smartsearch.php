@@ -1,6 +1,7 @@
 <?php
 session_start();
-include 'connection.php'; 
+include 'connection.php';
+include 'session_check.php';
 $conn = connection();
 
 if (!$conn) {
@@ -23,16 +24,14 @@ $job_title = '';
 // Fetch partner companies with open job postings
 function fetchPartnerCompanies() {
     $conn = connection();
-    $query = "
-        SELECT DISTINCT p.id, p.company_name 
+    $query = "SELECT DISTINCT p.id, p.company_name 
         FROM partner_table p 
         JOIN job_table j ON p.company_name = j.company_name 
-        WHERE j.job_status = 'Open'
-    ";
+        WHERE j.job_status = 'Open'";
+
     $result = mysqli_query($conn, $query);
-    
     echo "<select id='companyDropdown' class='select-company' onchange='fetchJobs(this.value)'>";
-    echo "<option value='' disabled selected>Select Company</option>";
+    echo "<option value='0' selected>All Companies</option>";
     while ($row = mysqli_fetch_assoc($result)) {
         echo "<option value='".$row['id']."'>".$row['company_name']."</option>";
     }
@@ -46,16 +45,27 @@ if (isset($_POST['fetch_jobs']) && isset($_POST['company_id'])) {
     $company_id = $_POST['company_id'];
     $conn = connection();
 
+    if ($company_id == 0) {
+        $query = "SELECT j.id, j.job_title_id, j.job_title, j.job_location, SUM(j.job_candidates) AS job_candidates 
+          FROM job_table j
+          JOIN partner_table p ON j.company_name = p.company_name
+          WHERE j.job_status = 'Open'
+          GROUP BY j.job_title_id, j.job_title, j.job_location
+          ORDER BY j.job_title ASC";
+    }
+    else{
     $query = "SELECT id, job_title, job_location, job_candidates 
               FROM job_table 
               WHERE company_name = (SELECT company_name FROM partner_table WHERE id = $company_id) 
-              AND job_status = 'Open'";
+              AND job_status = 'Open'
+              ORDER BY job_title ASC"; 
+    }
     
     $result = mysqli_query($conn, $query);
     echo "<select id='jobDropdown' class='select-job' onchange='fetchJobDetails(this.value, $company_id)'>";
     echo "<option value='' disabled selected>Select Job</option>";
     while ($row = mysqli_fetch_assoc($result)) {
-        echo "<option value='".$row['id']."'>".$row['job_title'].", ".$row['job_location']." (".$row['job_candidates'].")</option>";
+        echo "<option value='" . $row['id'] . "'>" . $row['job_title'] . " || " . $row['job_location'] . " (" . $row['job_candidates'] . ")</option>";
     }
     echo "</select>";
 
@@ -83,6 +93,24 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $job_details = mysqli_fetch_assoc($job_result);
 
    // Fetch candidates with "Pending" status that applied for the job by job_id
+   if ($company_id == 0) {
+    $query = "SELECT DISTINCT c.id, a.userid, a.fname, a.lname, a.gender, a.email, a.phone, a.birthday, a.personal_description, 
+    e.educational_attainment, e.course, e.school, e.sy_started, e.sy_ended, 
+    v.school AS vocational_school, v.course AS vocational_course, v.year_started AS vocational_year_started, v.year_ended AS vocational_year_ended, 
+    a.classi, a.subclassi, a.location, c.date_applied, 
+    j.job_title, p.company_name, a.profile_image, SUM(je.year_ended - je.year_started) AS total_years_experience
+    FROM candidate_list c
+    JOIN applicant_table a ON c.userid = a.userid
+    LEFT JOIN education_table e ON a.userid = e.userid
+    LEFT JOIN vocational_table v ON a.userid = v.userid
+    LEFT JOIN job_experience_table je ON a.userid = je.userid
+    LEFT JOIN job_table j ON c.job_id = j.id
+    LEFT JOIN partner_table p ON j.company_name = p.company_name
+    WHERE c.status = 'Pending' 
+    AND j.job_title_id = (SELECT job_title_id FROM job_table WHERE id = $job_id) 
+    AND j.job_location = (SELECT job_location FROM job_table WHERE id = $job_id)
+    GROUP BY a.userid";
+} else {
     $query = "SELECT c.id, a.userid, a.fname, a.lname, a.gender, a.email, a.phone, a.birthday, a.personal_description, 
     e.educational_attainment, e.course, e.school, e.sy_started, e.sy_ended, 
     v.school AS vocational_school, v.course AS vocational_course, v.year_started AS vocational_year_started, v.year_ended AS vocational_year_ended, 
@@ -96,8 +124,10 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     LEFT JOIN job_table j ON c.job_id = j.id
     LEFT JOIN partner_table p ON j.company_name = p.company_name
     WHERE c.status = 'Pending'
-    AND c.job_id = $job_id -- Use job_id instead of job_title
+    AND c.job_id = $job_id
+    AND p.id = $company_id
     GROUP BY a.userid";
+}
 
     $result = mysqli_query($conn, $query);
     $candidates = [];
@@ -161,9 +191,9 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     $max_score += 1; // Increment max score
 
     // Match gender
-    if ($row['gender'] == $job_details['gender']) {
+    if ($job_details['gender'] == 'Not Specified' || $row['gender'] == $job_details['gender']) {
         $score += 1;
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . '</span></div>';
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">Gender <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . ($job_details['gender'] == 'Not Specified' ? 'Any Gender' : $job_details['gender']) . '</span></div>';
     } else {
         $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">Gender <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['gender'] . ' ≠ ' . $row['gender'] . '</span></div>';
     }
@@ -294,21 +324,27 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         ];
     }
 
-    // Check if any license matches the job's cert_license
-    $license_names = array_column($applicant_licenses, 'license_name'); // Get all license names
+    // Check if there is a required license in the job details
+    if (!empty($job_details['cert_license'])) {
+        // Get all applicant license names
+        $license_names = array_column($applicant_licenses, 'license_name'); 
 
-    // Perform the matching check
-    if (in_array($job_details['cert_license'], $license_names)) {
-        $score += 1; // Add point if there's a match
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . '</span></div>';
+        // Perform the matching check
+        if (in_array($job_details['cert_license'], $license_names)) {
+            $score += 1; // Add point if there's a match
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . '</span></div>';
+        } else {
+            $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . ' not found</span></div>';
+        }
+        $max_score += 1; // Increment max score
     } else {
-        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="not-matched">License <i class="fa fa-times" aria-hidden="true"></i></div><span class="tooltip-text">' . $job_details['cert_license'] . ' not found</span></div>';
+        // If no license is required, we consider it matched by default
+        $matchingDetails[] = '<div class="candidates-tooltip-container"><div class="matched">License <i class="fa fa-check" aria-hidden="true"></i></div><span class="tooltip-text">No license Required</span></div>';
     }
-    $max_score += 1; // Increment max score
 
     // Clean license names for HTML display
     foreach ($applicant_licenses as &$license) {
-    $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
+        $license['license_name'] = htmlspecialchars($license['license_name'], ENT_QUOTES); // Clean for HTML display
     }
 
     // Store candidate data
@@ -381,6 +417,12 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
     <script>
         // Fetch job postings for a selected company
         function fetchJobs(companyId) {
+            if (companyId === "0") {
+                showInitialMessage();
+                fetchJobs(0);
+                return; 
+            }
+
             let formData = new FormData();
             formData.append('fetch_jobs', true);
             formData.append('company_id', companyId);
@@ -425,6 +467,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
                 // Show the filter dropdown after fetching candidates
                 document.getElementById('filterContainer').style.display = 'block';
+                document.getElementById('keywordContainer').style.display = 'block';
 
                 // Reset the status filter to "all"
                 document.getElementById('statusFilter').value = 'all';
@@ -435,6 +478,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                     "An error occurred: " + error.message;
             });
         }
+
         // Function to show the initial message when no search has been made
         function showInitialMessage() {
             const tableBody = document.getElementById('candidateTableBody');
@@ -454,6 +498,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         // Call this function when the page loads
         window.onload = function() {
             showInitialMessage();
+            fetchJobs(0);
         };
 
         let currentPage = 1; 
@@ -465,7 +510,17 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
             renderTable(candidates);
         }
 
-        // Function to render table based on candidates and current page
+        // Global variable to store the search keyword
+        let searchKeyword = "";
+
+        // Function to apply the search filter
+        function applySearchFilter() {
+            searchKeyword = document.getElementById('keywordInput').value.trim().toLowerCase(); // Get and normalize the keyword
+            currentPage = 1; // Reset to the first page when search is applied
+            renderTable(candidates); // Re-render the table with the filtered candidates
+        }
+
+        // Modify the renderTable function to include search filtering
         function renderTable(data) {
             const rowTemplate = (candidate, statusClass, statusText, matchDetails, statusValue) => `
                 <tr class="tr1" data-status="${statusValue}">
@@ -511,8 +566,17 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 return;
             }
 
-            // Pagination logic
-            const filteredCandidates = applyCurrentFilter(); // Apply the current filter
+            // Apply both search and status filters
+            const filteredCandidates = applyCurrentFilter().filter(candidate => {
+                if (!searchKeyword) return true; // If no keyword, include all
+
+                // Concatenate all candidate fields into a single searchable string
+                const candidateInfo = JSON.stringify(candidate).toLowerCase();
+
+                // Check if the keyword exists in the concatenated string
+                return candidateInfo.includes(searchKeyword);
+            })
+
             const totalResults = filteredCandidates.length;
             const totalPages = Math.ceil(totalResults / resultsPerPage);
             const startIndex = (currentPage - 1) * resultsPerPage;
@@ -523,7 +587,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="7" style="text-align: center; font-weight: bold; color: #2C1875;">
-                            No candidates found with the selected status.
+                            No candidates match your search criteria.
                         </td>
                     </tr>`;
             } else {
@@ -622,7 +686,7 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
         function applyFilter() {
             currentPage = 1; // Reset to the first page when filter is applied
             renderTable(candidates); // Render table based on the current filter and pagination
-        }
+        }   
 
         function approveApplication(userId, jobId) { 
         
@@ -685,6 +749,17 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 console.error('Error:', error);
             });
         }
+        
+        function confirmOpenLink(event) {
+            var userConfirmation = confirm("This link will take you to the Tidio website where you can customize the Tidio Chatbot. Please note that a login is required to access the features. Do you want to continue?");
+                
+                if (!userConfirmation) {
+                    event.preventDefault();
+                    return false;
+                }
+                
+                return true;
+        }
     </script>
 </head>
 <body>
@@ -695,19 +770,23 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-            <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+            <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.php" class="active"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.php"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+            <a href="chatbot.php"><i class="fa-solid fa-robot"></i> <span>Chatbot</span></a>
+            <a href="activity_log.php"><i class="fa-solid fa-list"></i> <span>Activity Log</span></a> 
+
         </div>
 
         <div id="header">
             <img id="logo" src="img/logo.png" alt="logo">
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
-                <span class="name">Admin</span>
+                <span class="name"><?php echo htmlspecialchars($_SESSION["username"]); ?></span>
                 <!-- LOGOUT -->
                 <button class="logout-btn" onclick="confirmLogout()">
                     <i class="fas fa-sign-out-alt fa-lg"></i>
@@ -725,7 +804,11 @@ if (isset($_POST['fetch_job_details']) && isset($_POST['job_id']) && isset($_POS
 
                 <!-- Job Postings Dropdown -->
                 <div id="jobDropdownContainer">
-                    <!-- Job dropdown will be populated here by JS -->
+                    
+                </div>
+                <div class="search-wrapper" id="keywordContainer" style="display: none; width:100%;">
+                    <i class="fas fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="keywordInput" class="search-bar" placeholder="Search Keywords (Skills, Experience, Etc.)" oninput="applySearchFilter()">
                 </div>
                 <div id="filterContainer" style="display: none;">
                     <select id="statusFilter" class="select-company" onchange="applyFilter()">

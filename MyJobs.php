@@ -6,7 +6,7 @@ session_start();
 // Initialize user name and profile image
 $user_name = 'Sign Up / Sign In'; // Default value
 $profile_image = null;
-$applied_jobs = $interview_jobs = $for_deployment_jobs = $current_jobs = []; // Arrays to store jobs per category
+$applied_jobs = $interview_jobs = $interviewed_jobs = $for_deployment_jobs = $current_jobs = $rejected_jobs = [];  // Arrays to store jobs per category
 
 if (isset($_SESSION['user'])) {
     // Fetch user's email from the session
@@ -32,7 +32,9 @@ SELECT
     cl.job_location, 
     cl.status, 
     cl.deployment_status, 
-    s.scheduled_date 
+    s.scheduled_date,
+    s.start_time,
+    s.end_time
 FROM candidate_list cl
 LEFT JOIN schedule_table s ON cl.job_title = s.job_title 
     AND cl.company_name = s.company_name 
@@ -170,12 +172,12 @@ $conn->close();
                 </div>
                 <h1 class="title1">My Jobs</h1>
                 <div class="tabs">
-                    <div class="tab active" onclick="openTab('applied')">Applied</div>
-                    <div class="tab" onclick="openTab('interview')">Scheduled</div>
-                    <div class="tab" onclick="openTab('interviewed')">Interviewed</div>
-                    <div class="tab" onclick="openTab('fordeployment')">For Deployment</div>
-                    <div class="tab" onclick="openTab('currentjob')">Current Job</div>
-                    <div class="tab" onclick="openTab('rejected')">Rejected</div>
+                    <div class="tab active" onclick="openTab('applied')">Applied (<?php echo count($applied_jobs); ?>)</div>
+                    <div class="tab" onclick="openTab('interview')">Scheduled (<?php echo count($interview_jobs); ?>)</div>
+                    <div class="tab" onclick="openTab('interviewed')">Interviewed (<?php echo count($interviewed_jobs); ?>)</div>
+                    <div class="tab" onclick="openTab('fordeployment')">For Deployment (<?php echo count($for_deployment_jobs); ?>)</div>
+                    <div class="tab" onclick="openTab('currentjob')">Current Job (<?php echo count($current_jobs); ?>)</div>
+                    <div class="tab" onclick="openTab('rejected')">Rejected (<?php echo count($rejected_jobs); ?>)</div>
                 </div>
 
                 <div id="applied" class="tab-content active">
@@ -210,7 +212,7 @@ $conn->close();
                         <?php if (!empty($interview_jobs)): ?>
                             <?php foreach ($interview_jobs as $job): ?>
                                 <li>
-                                    <div class="jobs-card" onclick="redirectTo('JobDetails.php?id=<?php echo $job['job_id']; ?>')">
+                                    <div class="jobs-card" style="height: auto;" onclick="redirectTo('JobDetails.php?id=<?php echo $job['job_id']; ?>')">
                                         <div class="job-header">
                                             <h3 id="job-title"><?php echo htmlspecialchars($job['job_title']); ?></h3>
                                         </div>
@@ -218,6 +220,9 @@ $conn->close();
                                             <p id="company"><?php echo htmlspecialchars($job['company_name']); ?></p>
                                             <p id="location"><i class="fas fa-map-marker-alt"></i><?php echo htmlspecialchars($job['job_location']); ?></p>
                                             <p id="date"><i class="fas fa-calendar-alt"></i><?php echo date('m/d/Y', strtotime($job['scheduled_date'])); ?></p>
+                                            <p id="time"><i class="fas fa-clock"></i>
+                                                <?php echo date('g:i A', strtotime($job['start_time'])); ?> - <?php echo date('g:i A', strtotime($job['end_time'])); ?>
+                                            </p>
                                         </div>
                                     </div>
                                 </li>

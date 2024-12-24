@@ -1,6 +1,6 @@
 <?php
 include 'connection.php'; // Include the database connection
-
+include 'session_check.php';
 $conn = connection();
 
 // Fetch distinct company names
@@ -72,19 +72,23 @@ mysqli_close($conn);
                 <i class="fas fa-bars"></i>
             </button>
         </div>
-            <a href="index.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
+            <a href="dashboard.php"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
+            <a href="jobs.html"><i class="fa-solid fa-suitcase"></i> <span>Jobs</span></a>
             <a href="smartsearch.php"><i class="fa-solid fa-magnifying-glass"></i> <span>Smart Search</span></a>
             <a href="candidates.php"><i class="fa-solid fa-user"></i></i> <span>Candidates</span></a>
             <a href="schedules.php" class="active"><i class="fa-solid fa-calendar"></i></i> <span>Schedules</span></a>
             <a href="partners.php"><i class="fa-solid fa-handshake"></i> <span>Partners</span></a>
             <a href="employees.php"><i class="fa-solid fa-user-tie"></i> <span>Employees</span></a>
+            <a href="chatbot.php"><i class="fa-solid fa-robot"></i> <span>Chatbot</span></a>
+            <a href="activity_log.php"><i class="fa-solid fa-list"></i> <span>Activity Log</span></a> 
+
         </div>
 
         <div id="header">
             <img id="logo" src="img/logo.png" alt="logo">
             <div class="profile">
                 <img src="img/pfp.png" alt="Profile Picture">
-                <span class="name">Admin</span>
+                <span class="name"><?php echo htmlspecialchars($_SESSION["username"]); ?></span>
                 <!-- LOGOUT -->
                 <button class="logout-btn" onclick="confirmLogout()">
                     <i class="fas fa-sign-out-alt fa-lg"></i>
@@ -700,6 +704,18 @@ mysqli_close($conn);
 
         // Call this function to load existing events when the page loads
         loadExistingEvents();
+        
+        
+        function confirmOpenLink(event) {
+            var userConfirmation = confirm("This link will take you to the Tidio website where you can customize the Tidio Chatbot. Please note that a login is required to access the features. Do you want to continue?");
+                
+                if (!userConfirmation) {
+                    event.preventDefault();
+                    return false;
+                }
+                
+                return true;
+        }
     </script>
 </body>
 

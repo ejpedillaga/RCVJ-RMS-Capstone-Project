@@ -63,3 +63,383 @@ Stack trace:
 Stack trace:
 #0 {main}
   thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[28-Oct-2024 06:10:50 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[28-Oct-2024 06:10:50 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[28-Oct-2024 06:10:50 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[28-Oct-2024 06:10:50 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[28-Oct-2024 11:35:08 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[28-Oct-2024 11:35:08 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[28-Oct-2024 11:35:08 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[28-Oct-2024 11:35:08 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[28-Oct-2024 11:48:11 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[28-Oct-2024 11:48:11 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[28-Oct-2024 11:48:11 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[28-Oct-2024 11:48:11 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[28-Oct-2024 12:02:07 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[28-Oct-2024 12:02:07 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[28-Oct-2024 12:02:07 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[28-Oct-2024 12:02:07 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[05-Nov-2024 00:02:29 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[05-Nov-2024 00:02:29 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[05-Nov-2024 00:02:29 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[05-Nov-2024 00:02:29 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[08-Nov-2024 10:14:57 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[10-Nov-2024 01:45:28 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[11-Nov-2024 07:45:24 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:45:26 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:45:27 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:45:33 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:45:52 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:46:10 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:46:18 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:46:18 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:53:26 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:53:29 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 07:53:52 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/JobDetails.php on line 470
+[11-Nov-2024 11:14:25 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:25 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:28 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:28 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:29 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:29 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:30 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:30 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:30 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:30 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:47 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:14:47 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:13 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:13 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:14 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:14 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:15 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:15 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:15 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:15 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:59 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:15:59 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:07 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:07 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:08 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:08 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:09 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:09 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:09 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:09 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:32 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:32 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:37 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:16:37 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:11 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:11 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:12 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:12 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:13 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:13 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:13 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:13 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:14 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:14 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:15 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:15 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:16 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:17:16 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:18:18 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:18:18 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:41:18 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 11:41:18 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[11-Nov-2024 23:30:24 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[14-Nov-2024 07:19:18 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[17-Nov-2024 07:12:31 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/m7roj2tdeh49/public_html/cancel_application.php on line 7
+[17-Nov-2024 07:12:31 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/cancel_application.php on line 7
+[17-Nov-2024 07:12:31 UTC] PHP Warning:  Undefined variable $conn in /home/m7roj2tdeh49/public_html/cancel_application.php on line 11
+[17-Nov-2024 07:12:31 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/m7roj2tdeh49/public_html/cancel_application.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/cancel_application.php on line 11
+[17-Nov-2024 07:12:57 UTC] PHP Warning:  Undefined global variable $_SESSION in /home/m7roj2tdeh49/public_html/cancel_application.php on line 7
+[17-Nov-2024 07:12:57 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/m7roj2tdeh49/public_html/cancel_application.php on line 7
+[17-Nov-2024 07:12:57 UTC] PHP Warning:  Undefined variable $conn in /home/m7roj2tdeh49/public_html/cancel_application.php on line 11
+[17-Nov-2024 07:12:57 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/m7roj2tdeh49/public_html/cancel_application.php:11
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/cancel_application.php on line 11
+[17-Nov-2024 07:49:30 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[17-Nov-2024 07:49:30 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:188
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 188
+[17-Nov-2024 07:52:24 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 182
+[17-Nov-2024 07:52:24 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:182
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 182
+[17-Nov-2024 08:05:57 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:05:57 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:05:59 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:05:59 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:31 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:31 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:32 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:32 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:53 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:07:53 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:08:10 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:10 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:11 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:11 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:12 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:12 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:13 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:13 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:13 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:13 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:14 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:14 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:196
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 196
+[17-Nov-2024 08:08:25 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:08:25 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:08:33 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:08:33 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:08 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:08 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:09 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:09 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:10 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:10 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:55 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:09:55 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:10:47 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:10:47 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:11:29 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:11:29 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:11:34 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:11:34 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:24 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:24 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:177
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:25 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:25 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:177
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:26 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:26 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:177
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 177
+[17-Nov-2024 08:13:44 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:44 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:46 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:46 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:46 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:46 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:47 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:47 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:50 UTC] PHP Warning:  Undefined variable $interviewed_jobs in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[17-Nov-2024 08:13:50 UTC] PHP Fatal error:  Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, null given in /home/m7roj2tdeh49/public_html/MyJobs.php:178
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/MyJobs.php on line 178
+[18-Nov-2024 07:33:41 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[29-Nov-2024 02:42:08 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[29-Nov-2024 03:28:59 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[29-Nov-2024 23:12:18 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[29-Nov-2024 23:53:03 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[30-Nov-2024 00:09:58 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[30-Nov-2024 00:17:46 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[30-Nov-2024 00:17:46 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[30-Nov-2024 00:17:46 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[30-Nov-2024 00:17:46 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[30-Nov-2024 00:17:47 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[30-Nov-2024 00:17:47 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[30-Nov-2024 00:17:47 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[30-Nov-2024 00:17:47 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[30-Nov-2024 00:17:48 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $skills_json in /home/m7roj2tdeh49/public_html/UserProfile.php on line 644
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $profile_image in /home/m7roj2tdeh49/public_html/UserProfile.php on line 741
+[30-Nov-2024 00:17:48 UTC] PHP Warning:  Undefined variable $user_email in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1308
+[30-Nov-2024 00:17:48 UTC] PHP Fatal error:  Uncaught TypeError: Cannot access offset of type string on string in /home/m7roj2tdeh49/public_html/UserProfile.php:1358
+Stack trace:
+#0 {main}
+  thrown in /home/m7roj2tdeh49/public_html/UserProfile.php on line 1358
+[30-Nov-2024 00:27:33 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397
+[30-Nov-2024 04:35:03 UTC] PHP Warning:  Undefined variable $license_id in /home/m7roj2tdeh49/public_html/UserProfile.php on line 397

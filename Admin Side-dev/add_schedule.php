@@ -1,7 +1,34 @@
 <?php
+include ("session_check.php");
 include 'connection.php'; // Include the database connection
+include_once("audit_script.php");
+
 
 $conn = connection();
+
+if (isset($_SESSION["username"])) {
+    $username = $_SESSION["username"];
+    
+    // Create the SQL query
+    $sql = "SELECT employee_id FROM employee_table WHERE username = ?";
+    
+    // Prepare and execute the query
+    if ($stmt = $conn->prepare($sql)) {
+        $stmt->bind_param("s", $username); // Bind the $username parameter to the query
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $employee_id = $row['employee_id'];
+            
+        } else {
+            // Handle case when no matching employee is found
+        }
+        
+        $stmt->close();
+    }
+}
 
 // Check if POST request
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -24,6 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!mysqli_stmt_execute($stmt)) {
             throw new Exception(mysqli_error($conn));
         }
+        
+        $schedule_id = mysqli_insert_id($conn);
+        
         mysqli_stmt_close($stmt);
 
         // Update the deployment_status to 'Scheduled' in candidate_list
@@ -39,6 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Commit the transaction
         mysqli_commit($conn);
+        logAuditAction($employee_id, 'Add', 'Schedule Interview', $schedule_id, "Candidate: $candidate_name, Company: $company_name, Title: $job_title, Scheduled Date: $schedule_date : $start_time - $end_time");
+        
         echo json_encode(['status' => 'success']);
     } catch (Exception $e) {
         // Rollback on failure

@@ -3,7 +3,7 @@ let globalJobTitleId = null;
 let globalButtonSelector = true; //t for add title, f for edit title
 document.addEventListener('DOMContentLoaded', function() {
 
-if (window.location.pathname.includes('index.html')){
+if (window.location.pathname.includes('jobs.html')){
 // Tab functionality
     const tab1 = document.getElementById('tab1');
     const tab2 = document.getElementById('tab2');
@@ -398,11 +398,33 @@ function hideDialog() {
     logoUpload.value = ''; // Clear the file input
 }
 
+function fetchRoles(selectId) {
+    const roleSelect = document.getElementById(selectId);
+
+    // Simulating fetching roles from the server
+    return fetch('fetch_employeeRoles.php') // Replace with your actual endpoint
+        .then(response => response.json())
+        .then(roles => {
+            // Clear current options
+            roleSelect.innerHTML = '';
+
+            // Populate the select element with options
+            roles.forEach(role => {
+                const option = document.createElement('option');
+                option.value = role.employee_title;
+                option.textContent = role.employee_title;
+                roleSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error fetching roles:', error));
+}
+
 function showEmployeeDialog() {
     document.getElementById('dialogBox').style.display = 'block';
     document.getElementById('dialogBox').classList.add('show');
     document.getElementById('overlay').classList.add('show');
 
+    fetchRoles('addemployees-role');
     document.getElementById('addemployees-firstname').value = '';
     document.getElementById('addemployees-lastname').value = '';
     document.getElementById('addemployees-userid').value = '';
@@ -656,7 +678,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchData('fetch_partners.php', populatePartnersTable)
     } */else if(document.querySelector('.container-calendar')){
         displaySchedule();
-    } else if (currentPage.includes('index.html')) {
+    } else if (currentPage.includes('jobs.html')) {
         fetchJobCounts();
         //Show Open Tab as default
         fetchJobsByStatus('Open');
@@ -1037,6 +1059,7 @@ function populateEmployeesTable(data) {
                         <option value="Inactive" ${employee.status === 'Inactive' ? 'selected' : ''}>Inactive</option>
                     </select>
                 </td>
+                <td>${employee.employee_title}</td>
                 <td>
                     <div class="employees-tooltip-container">
                         <i class="fa-solid fa-pen-to-square fa-2xl" style="color: #2C1875; cursor: pointer;" onclick="showEditDialog(${employee.employee_id})"></i>
@@ -1242,7 +1265,7 @@ function handleStatusChange(jobId) {
         // User confirmed the change
         console.log(`Job status changed to: ${selectedValue}`);
         // Update the original value with the new selection
-        dropdown.setAttribute('data-original-value', selectedValue);
+        dropdown.setAttribute('data-original-value', selectedValue, originalValue);
 
         // Send an AJAX request to update the status in the database
         updateJobStatusInDatabase(jobId, selectedValue);
@@ -1323,7 +1346,7 @@ function openEditJobPopup(jobId) {
 
 // Function to save and post the edited job
 function editJob() {
-
+    const comp = document.getElementById('edit-jobposting-partner-company').value;
     const jobTitle = document.getElementById('edit-jobposting-job-title').value;
     const location = document.getElementById('edit-jobposting-location').value;
     const openings = document.getElementById('edit-jobposting-openings').value;
@@ -1331,6 +1354,7 @@ function editJob() {
 
     // Collect skills
     const skillsArray = Array.from(skillsSet); // Convert the Set to an array
+    console.log('Company:', comp)
     console.log('Job Title:', jobTitle);
     console.log('Location:', location);
     console.log('Openings:', openings);
@@ -1353,6 +1377,7 @@ function editJob() {
 
     // Create form data
     const formData = new FormData();
+    formData.append('company_name', comp)
     formData.append('job_title', jobTitle);
     formData.append('job_location', location);
     formData.append('job_candidates', openings);
@@ -1652,7 +1677,7 @@ function partnerSaveAndPostJob() {
         if (data.message) {
             console.log('Success:', data.message);
             alert('Job post added successfully!');
-            closePopup('popup');
+            closePopup('thirdPopup');
 
             fetchJobCounts();
             fetchJobsByStatus('Open');
@@ -1671,24 +1696,30 @@ function partnerSaveAndPostJob() {
 }
 
 
-function showEditDialog(employeeId){
+function showEditDialog(employeeId) {
     currentEmployeeId = employeeId;
     document.getElementById('edit-dialogBox').style.display = 'block';
     document.getElementById('edit-dialogBox').classList.add('show');
     document.getElementById('overlay').classList.add('show');
+    const roleSelect = document.getElementById('employees-edit-role');
+    roleSelect.value = ''; // Reset the select field
 
     console.log(employeeId);
 
     fetch(`getEmployeeData.php?id=${employeeId}`)
         .then(response => response.json())
         .then(employee => {
-
-            // Populate form fields with the partner's data
+            // Populate form fields with the employee's data
             document.getElementById('edit-employees-firstname').value = employee.first_name;
             document.getElementById('edit-employees-lastname').value = employee.last_name;
-            document.getElementById('edit-employees-userid').value = employee.employee_id;
+
+            // Call fetchRoles and set the role after the options are populated
+            fetchRoles('employees-edit-role').then(() => {
+                roleSelect.value = employee.employee_title; // Set the value after options are added
+                console.log(employee.employee_title);
+            });
         })
-        .catch(error => console.error('Error fetching partner data:', error));
+        .catch(error => console.error('Error fetching Employee data:', error));
 }
 
 function hideEditDialog(){
@@ -1700,7 +1731,10 @@ function hideEditDialog(){
 function editEmployee() {
     const firstName = document.getElementById('edit-employees-firstname').value.trim();
     const lastName = document.getElementById('edit-employees-lastname').value.trim();
+    const roleSelect = document.getElementById('employees-edit-role')
+    const newRole = roleSelect.options[roleSelect.selectedIndex].text;
 
+    console.log(newRole)
     // Input validation
     if (!firstName || !lastName) {
         alert('Please fill out all required fields.');
@@ -1711,6 +1745,7 @@ function editEmployee() {
     const formData = new FormData();
     formData.append('first_name', firstName);
     formData.append('last_name', lastName);
+    formData.append('employee_title', newRole)
     formData.append('employee_id', currentEmployeeId); // Assuming currentEmployeeId is defined
 
     // Send data using fetch
@@ -1736,15 +1771,28 @@ function editEmployee() {
     });
 }
 
+function showEmployeeTitleDialog(){
+    document.getElementById('add-employeerole-dialog-box').style.display = 'block';
+    document.getElementById('add-employeerole-dialog-box').classList.add('show');
+    hideEmployeeDialog()
+    document.getElementById('overlay').classList.add('show');
+}
 
-
-
+function hideEmployeeTitleDialog(){
+    document.getElementById('add-employeerole-dialog-box').style.display = 'none';
+    document.getElementById('add-employeerole-dialog-box').classList.remove('show');
+    showEmployeeDialog()
+}
 
 function addNewEmployee() {
     const firstName = document.getElementById('addemployees-firstname').value.trim();
     const lastName = document.getElementById('addemployees-lastname').value.trim();
     const username = document.getElementById('addemployees-username').value.trim(); // Get username directly
     const password = document.getElementById('addemployees-password').value.trim();
+    const roleSelect = document.getElementById('addemployees-role')
+    const role = roleSelect.options[roleSelect.selectedIndex].text;
+    
+    console.log(role);
 
     // Input validation
     if (!firstName || !lastName || !username) {
@@ -1758,6 +1806,7 @@ function addNewEmployee() {
     formData.append('last_name', lastName);
     formData.append('username', username); // Pass username from input
     formData.append('password', password);
+    formData.append('employee_title', role);
 
     // Send data using Fetch
     fetch('addEmployee.php', {
@@ -2315,17 +2364,6 @@ function showEditJobTitlePopup(){
                     document.getElementById('min-job-title-exp').style.display = "block";
                     document.getElementById('max-job-title-exp').style.display = "block";
                 }
-
-                // Initialize skills input
-                initializeSkillsInput('add-job-title-popup', 'jobposting-skills-input', 'add-jobposting-skills-container');
-
-                // Clear any existing skills in the container
-                const skillsContainer = document.querySelector('#add-jobposting-skills-container');
-                const skillsInput = document.querySelector('#jobposting-skills-input');
-
-                // Add fetched skills to the container
-                jobTitleData.skills.forEach(skill => addSkill(skillsContainer, skill, skillsInput));
-
             } else {
                 alert(data.message || 'Error fetching job title data.');
             }
@@ -2771,6 +2809,9 @@ function openTab(tabName) {
     const url = new URL(window.location);
     url.searchParams.set('tab', tabName);
     window.history.pushState({}, '', url);
+
+    // Fetch candidates for the selected tab
+    fetchCandidatesForTab(tabName);
 }
 
 // Load the correct tab on page load based on the URL parameter

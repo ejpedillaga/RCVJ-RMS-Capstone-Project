@@ -29,9 +29,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Redirect based on the login type
             if ($login_type == "admin") {
-                header("Location: ../Admin Side-dev/index.html");
+                header("Location: ../Admin Side-dev/dashboard.php");
             } elseif ($login_type == "employee") {
-                header("Location: ../Employee Side/index.html");
+                header("Location: ../Employee Side/dashboard.php");
             }
         } else {
             echo '<script>alert("Incorrect username or password. Please try again.");</script>';
@@ -129,7 +129,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div class="progress-step progress-step-active"></div>
       <div class="progress-step"></div>
     </div>
-
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const sign_in_btn = document.querySelector("#sign-in-btn");
+          const sign_up_btn = document.querySelector("#sign-up-btn");
+          const container = document.querySelector(".container");
+        
+          sign_up_btn.addEventListener("click", () => {
+            container.classList.add("sign-up-mode");
+          });
+        
+          sign_in_btn.addEventListener("click", () => {
+            container.classList.remove("sign-up-mode");
+          });
+        });
+    </script>
     <script src="app.js"></script>
   </body>
 </html>
